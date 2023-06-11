@@ -1,2 +1,2 @@
 # SunTzu
-Enhancing faceit's experience with detailed match insights
+Enhancing faceit's experience with detailed matchmaking insights
