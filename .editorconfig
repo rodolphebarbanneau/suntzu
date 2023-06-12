@@ -1,0 +1,15 @@
+# Top-most EditorConfig file
+root = true
+
+# Global config
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Disable trim trailing whitespace for .md files
+[*.md]
+trim_trailing_whitespace = false
