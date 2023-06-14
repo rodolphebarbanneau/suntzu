@@ -61,10 +61,10 @@ function createManifest(
       let template = fs.readFileSync(target, 'utf-8');
       fs.readdirSync(assets).forEach(file => {
         if (file.match(/^content.*\.js$/)) {
-          template = template.replace('{{content}}', file);
+          template = template.replace('{{content}}', `assets/${file}`);
         }
         if (file.match(/^service.*\.js$/)) {
-          template = template.replace('{{service}}', file);
+          template = template.replace('{{service}}', `assets/${file}`);
         }
       });
       fs.writeFileSync(target, template);
@@ -192,7 +192,7 @@ export default defineConfig(({ command, mode }) => {
         output: {
           dir: outDir,
           entryFileNames: 'assets/[name]-[hash].js',
-          chunkFileNames: 'assets/[name]-[hash].[ext]',
+          chunkFileNames: 'assets/[name]-[hash].js',
           assetFileNames: 'assets/[name]-[hash].[ext]',
         },
       },

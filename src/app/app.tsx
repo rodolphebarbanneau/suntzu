@@ -1,12 +1,15 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.scss';
-
-import NxWelcome from './nx-welcome';
+import { About } from './views/about';
+import { Header } from './views/header';
+import { MapStats } from './views/map-stats';
+import { PlayerStats } from './views/player-stats';
 
 export function App() {
   return (
-    <div>
-      <NxWelcome title="suntzu" />
+    <div className="app">
+      <Header />
+      <MapStats />
+      <PlayerStats />
+      <About />
     </div>
   );
 }

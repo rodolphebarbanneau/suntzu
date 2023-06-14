@@ -1,6 +1,6 @@
 export enum SuntzuFeature {
-  MapStats = "showMapStats",
-  PlayerStats = "showPlayerStats",
+  MapStats = 'showMapStats',
+  PlayerStats = 'showPlayerStats',
 }
 
 export const DEFAULT_SETTINGS = new Map<SuntzuFeature, boolean>([
