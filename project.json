@@ -5,59 +5,94 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist"],
+      "defaultConfiguration": "production-chrome",
       "options": {
-        "outputPath": "dist/suntzu"
+        "command": "npx vite build --mode=\"{args.mode}\" --outDir=\"{args.outputPath}\""
       },
       "configurations": {
-        "development": {
-          "mode": "development"
+        "development-chrome": {
+          "mode": "development",
+          "outputPath": "dist/chrome"
         },
-        "production": {
-          "mode": "production"
+        "development-firefox": {
+          "mode": "development",
+          "outputPath": "dist/firefox"
+        },
+        "production-chrome": {
+          "mode": "production",
+          "outputPath": "dist/chrome"
+        },
+        "production-firefox": {
+          "mode": "production",
+          "outputPath": "dist/firefox"
         }
+      }
+    },
+    "bundle": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist"],
+      "options": {
+        "commands": [
+          "cross-env BUNDLE=true npx nx run suntzu:build:production-chrome",
+          "cross-env BUNDLE=true npx nx run suntzu:build:production-firefox"
+        ],
+        "parallel": true
       }
     },
     "serve": {
       "executor": "@nx/vite:dev-server",
-      "defaultConfiguration": "development",
+      "defaultConfiguration": "development-chrome",
       "options": {
         "buildTarget": "suntzu:build"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "suntzu:build:development",
+        "development-chrome": {
+          "buildTarget": "suntzu:build:development-chrome",
           "hmr": true
         },
-        "production": {
-          "buildTarget": "suntzu:build:production",
+        "development-firefox": {
+          "buildTarget": "suntzu:build:development-firefox",
+          "hmr": true
+        },
+        "production-chrome": {
+          "buildTarget": "suntzu:build:production-chrome",
+          "hmr": false
+        },
+        "production-firefox": {
+          "buildTarget": "suntzu:build:production-firefox",
           "hmr": false
         }
       }
     },
     "preview": {
       "executor": "@nx/vite:preview-server",
-      "defaultConfiguration": "development",
+      "defaultConfiguration": "development-chrome",
       "options": {
         "buildTarget": "suntzu:build"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "suntzu:build:development"
+        "development-chrome": {
+          "buildTarget": "suntzu:build:development-chrome"
         },
-        "production": {
-          "buildTarget": "suntzu:build:production"
+        "development-firefox": {
+          "buildTarget": "suntzu:build:development-firefox"
+        },
+        "production-chrome": {
+          "buildTarget": "suntzu:build:production-chrome"
+        },
+        "production-firefox": {
+          "buildTarget": "suntzu:build:production-firefox"
         }
       }
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["coverage/suntzu"],
+      "outputs": ["coverage"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "coverage/suntzu"
+        "reportsDirectory": "coverage"
       }
     },
     "lint": {
