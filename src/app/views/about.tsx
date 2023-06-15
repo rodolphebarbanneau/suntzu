@@ -24,7 +24,7 @@ export const About = () => (
   <Section>
     <SectionHeader title="About" />
     <SectionBody description="Display players's individual and team map-related stats in the matchroom to make more educated decisions during the veto process." />
-    <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px", marginBottom: "5px" }}>
       <AboutColumn title="Reach out">
         <Link
           url="https://www.reddit.com/r/suntzu-faceit/"

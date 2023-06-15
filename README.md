@@ -1,7 +1,8 @@
 # Suntzu ✨
+
 **Enhancing [FACEIT](https://www.faceit.com/) experience with detailed matchmaking insights.**
 
-## Distribution
+## Extension
 
 https://developer.chrome.com/docs/extensions/mv3/getstarted/tut-reading-time/
 https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked

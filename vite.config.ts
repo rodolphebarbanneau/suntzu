@@ -15,9 +15,8 @@ const env = {
 
 /**
  * Retrieve the argument from the command line.
- *
- * @param {string} argName - The name of the argument to retrieve.
- * @returns {string} The value of the argument.
+ * @param argName - The name of the argument to retrieve.
+ * @returns The value of the argument.
  */
 function getArgValue(argName: string): string | undefined {
   const arg = process.argv.find(arg => arg.startsWith(`--${argName}`));
@@ -36,11 +35,11 @@ function getArgValue(argName: string): string | undefined {
  * path of built `js` files found in the target asset directory. The function operates during the
  * `post` enforcement stage of the Rollup build lifecycle.
  *
- * @param {object} options - The options object.
- * @param {string} options.src - The relative path to the source manifest template file.
- * @param {string} options.dist - The relative path to the distribution directory.
- * @param {string} options.browser - The manifest target browser.
- * @returns {Plugin} A Rollup Plugin that performs the processing of the manifest file.
+ * @param options - The options object.
+ * @param options.src - The relative path to the source manifest template file.
+ * @param options.dist - The relative path to the distribution directory.
+ * @param options.browser - The manifest target browser.
+ * @returns A Rollup Plugin that performs the processing of the manifest file.
  */
 function createManifest(
   { src, dist, browser }: { src: string, dist: string, browser: string }
@@ -81,10 +80,10 @@ function createManifest(
  * will be named according to the provided browser name and placed in the distribution package
  * directory.
  *
- * @param {object} options - The options object.
- * @param {string} options.dist - The relative path to the distribution directory.
- * @param {string} options.browser - The target browser for the bundle (without .zip extension).
- * @returns {Plugin} A Rollup Plugin that performs the compression of the directory into a zip file.
+ * @param options - The options object.
+ * @param options.dist - The relative path to the distribution directory.
+ * @param options.browser - The target browser for the bundle (without .zip extension).
+ * @returns A Rollup Plugin that performs the compression of the directory into a zip file.
  */
 function createBundle(
   { dist, browser }: { dist: string, browser: string }
@@ -133,10 +132,10 @@ function createBundle(
  * `createBundle` functions to process the manifest file and create a zip bundle of the output
  * directory.
  *
- * @param {object} args - The object containing the command and mode.
- * @param {string} args.command - The command given to Vite, e.g., 'build'.
- * @param {string} args.mode - The mode in which Vite is running.
- * @returns {object} The Vite configuration object.
+ * @param args - The object containing the command and mode.
+ * @param args.command - The command given to Vite, e.g., 'build'.
+ * @param args.mode - The mode in which Vite is running.
+ * @returns The Vite configuration object.
  */
 export default defineConfig(({ command, mode }) => {
   // retrieve output directory
