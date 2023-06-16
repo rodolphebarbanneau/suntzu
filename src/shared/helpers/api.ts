@@ -4,7 +4,7 @@ import pRetry, { AbortError } from 'p-retry';
 import type {
   MatchModel,
   MatchStatsModel,
-  MatchVetoModel,
+  MatchVetosModel,
   PlayerModel,
   PlayerMatchesModel,
   PlayerStatsModel,
@@ -35,10 +35,11 @@ export class Api {
 
   /**
    * Create an application programming interface.
+   * @param token - The api token.
    */
-  constructor() {
+  constructor(token?: string) {
     // initialize token
-    this._token = Api.getLocalToken();
+    this._token = token ?? Api.getLocalToken();
 
     // initialize memoized
     this.fetch = mem(this.fetch, {
@@ -73,9 +74,9 @@ export class Api {
   ): Promise<T | null> {
     // initialize options
     const url = options.url;
-    const base = options.base || FACEIT_API_BASE_URL;
-    const searchParams = options.searchParams || {};
-    const unwrap = options.unwrap || true;
+    const base = options.base ?? FACEIT_API_BASE_URL;
+    const searchParams = options.searchParams ?? {};
+    const unwrap = options.unwrap ?? true;
     // build headers
     const headers = {
       'Content-Type': 'application/json',
@@ -138,7 +139,9 @@ export class Api {
    * @param matchId - The match id.
    * @returns The match data model.
    */
-  async fetchMatch(matchId: string): Promise<MatchModel | null> {
+  async fetchMatch(
+    matchId: string,
+  ): Promise<MatchModel | null> {
     return this.fetch({
       url: `/data/v4/matches/${matchId}`,
     });
@@ -149,18 +152,22 @@ export class Api {
    * @param matchId - The match id.
    * @returns The match stats data model.
    */
-  async fetchMatchStats(matchId: string): Promise<MatchStatsModel | null> {
+  async fetchMatchStats(
+    matchId: string,
+  ): Promise<MatchStatsModel | null> {
     return this.fetch({
       url: `/data/v4/matches/${matchId}/stats`,
     });
   }
 
   /**
-   * Fetch match veto by match id.
+   * Fetch match vetos by match id.
    * @param matchId - The match id.
-   * @returns The match veto data model.
+   * @returns The match vetos data model.
    */
-  async fetchMatchVeto(matchId: string): Promise<MatchVetoModel | null> {
+  async fetchMatchVetos(
+    matchId: string,
+  ): Promise<MatchVetosModel | null> {
     return this.fetch({
       url: `/democracy/v1/${matchId}/history`,
     });
@@ -171,7 +178,9 @@ export class Api {
    * @param playerId - The player id.
    * @returns The player data model.
    */
-  async fetchPlayer(playerId: string): Promise<PlayerModel | null> {
+  async fetchPlayer(
+    playerId: string,
+  ): Promise<PlayerModel | null> {
     return this.fetch({
       url: `/data/v4/players/${playerId}`,
     });
@@ -182,9 +191,17 @@ export class Api {
    * @param playerId - The player id.
    * @returns The player matches data model.
    */
-  async fetchPlayerMatches(playerId: string): Promise<PlayerMatchesModel | null> {
+  async fetchPlayerMatches(
+    playerId: string,
+    game: string,
+    from = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60),
+    to = Math.floor(Date.now() / 1000),
+    offset = 0,
+    limit = 20,
+  ): Promise<PlayerMatchesModel | null> {
     return this.fetch({
-      url: `/data/v4/players/${playerId}/history`,
+      url: `/data/v4/players/${playerId}/history`
+        + `/?game=${game}&from=${from}&to=${to}&offset=${offset}&limit=${limit}`,
     });
   }
 
@@ -193,9 +210,12 @@ export class Api {
    * @param playerId - The player id.
    * @returns The player stats data model.
    */
-  async fetchPlayerStats(playerId: string): Promise<PlayerStatsModel | null> {
+  async fetchPlayerStats(
+    playerId: string,
+    game_id: string,
+  ): Promise<PlayerStatsModel | null> {
     return this.fetch({
-      url: `/data/v4/players/${playerId}/stats/csgo`,
+      url: `/data/v4/players/${playerId}/stats/${game_id}`,
     });
   }
 }
