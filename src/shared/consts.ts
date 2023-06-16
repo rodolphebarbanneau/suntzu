@@ -1,4 +1,5 @@
-import type { MapCode, MapName } from './types';
+import type { MapCode, MapName } from './types/maps';
+import type { MetricsRange } from './types/metrics-ranges';
 
 export const EXTENSION_NAME = 'suntzu';
 
@@ -21,3 +22,9 @@ export const MAP_POOL = new Map<MapCode, MapName>([
   ['de_train', 'Train'],
   ['de_vertigo', 'Vertigo'],
 ]);
+
+export const METRICS_RANGE: MetricsRange = {
+  match: '20',
+  time: '3M',
+  player: 'ANY',
+};
