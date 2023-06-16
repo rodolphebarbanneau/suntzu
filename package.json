@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
-    "package": "nx package",
+    "bundle": "nx bundle",
     "test": "nx test"
   },
   "private": true,
