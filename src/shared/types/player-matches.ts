@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/** Player matches model (faceit response). */
+/* Player matches model (faceit response). */
 export interface PlayerMatchesModel {
   end: number;
   from: number;

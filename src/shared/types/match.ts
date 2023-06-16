@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/** Match model (faceit response). */
+/* Match model (faceit response). */
 export interface MatchModel {
   best_of: number;
   broadcast_start_time: number;
