@@ -2,7 +2,7 @@
   <a href="https://suntzu.gg"><img src="./www/assets/suntzu-banner.png" alt="FastAPI"></a>
 </p>
 <p align="center">
-    <em>Enhancing <a href="https://www.faceit.com">FACEIT</a> experience with detailed matchmaking insights</em>
+    <em>“If you know the enemy and know yourself, you need not fear the result of a hundred battles. If you know yourself but not the enemy, for every victory gained you will also suffer a defeat. If you know neither the enemy nor yourself, you will succumb in every battle.”</em>
 </p>
 
 ---
@@ -15,9 +15,11 @@
 
 ## Extension
 
+✨ Enhancing [FACEIT](https://www.faceit.com) experience with detailed matchmaking insights.
+
 | Browser | Status | Marketplace | Documentation |
 | ------- | ------ | ----------- | ------------- |
-| Chrome  | ✅ | | [Getting Started](https://developer.chrome.com/docs/extensions/mv3/getstarted/) |
+| Chrome  | ✅ | | [Getting Started](https://developer.chrome.com/docs/extensions/mv3/getstarted) |
 | Firefox | ✅ | | |
 | Edge    | 😓 | | |
 | Opera   | 😓 | | |
@@ -25,17 +27,19 @@
 The extension distribution will generate a folder with the following structure:
 ```
 extension/
+├── assets/
+│   ├── content.js
+│   ├── index.js
+│   ├── service.js
+│   ├── settings.js
+│   ├── index.css
+│   ├── suntzu.svg
+│   └── ...
 ├── images/
 │   ├── icon-16.png
 │   ├── icon-32.png
 │   ├── icon-48.png
 │   └── icon-128.png
-├── scripts/
-│   ├── content.css
-│   ├── content.js
-│   ├── index.css
-│   ├── index.js
-│   └── service.js
 └── manifest.json
 ```
 
