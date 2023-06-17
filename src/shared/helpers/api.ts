@@ -109,8 +109,8 @@ export class Api {
         const data: WrappedData<T> = await response.json();
         const { code, result, payload } = data;
         // check for response errors
-        if ((code && code.toUpperCase() !== "OPERATION-OK")
-          || (result && result.toUpperCase() !== "OK")
+        if ((code && code.toUpperCase() !== 'OPERATION-OK')
+          || (result && result.toUpperCase() !== 'OK')
         ) throw new Error(
           'Data fetch operation failed. Received an invalid response.'
         );

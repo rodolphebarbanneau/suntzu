@@ -27,7 +27,7 @@ export const About = () => (
     <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px", marginBottom: "5px" }}>
       <AboutColumn title="Reach out">
         <Link
-          url="https://www.reddit.com/r/suntzu-faceit/"
+          url="https://www.reddit.com/r/suntzugg"
           title="Suntzu Reddit"
           text="Reddit"
           img={svgReddit}

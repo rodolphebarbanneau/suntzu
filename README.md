@@ -1,12 +1,28 @@
-# Suntzu ✨
+<p align="center">
+  <a href="https://suntzu.gg"><img src="./www/assets/suntzu-banner.png" alt="FastAPI"></a>
+</p>
+<p align="center">
+    <em>Enhancing <a href="https://www.faceit.com">FACEIT</a> experience with detailed matchmaking insights</em>
+</p>
 
-**Enhancing [FACEIT](https://www.faceit.com/) experience with detailed matchmaking insights.**
+---
+
+**Documentation**: <a href="https://suntzu.gg/docs" target="_blank">https://suntzu.gg/docs</a>
+
+**Source Code**: <a href="https://github.com/rodolphebarbanneau/suntzu" target="_blank">https://github.com/rodolphebarbanneau/suntzu</a>
+
+---
 
 ## Extension
 
-https://developer.chrome.com/docs/extensions/mv3/getstarted/tut-reading-time/
-https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked
+| Browser | Status | Marketplace | Documentation |
+| ------- | ------ | ----------- | ------------- |
+| Chrome  | ✅ | | [Getting Started](https://developer.chrome.com/docs/extensions/mv3/getstarted/) |
+| Firefox | ✅ | | |
+| Edge    | 😓 | | |
+| Opera   | 😓 | | |
 
+The extension distribution will generate a folder with the following structure:
 ```
 extension/
 ├── images/
@@ -25,15 +41,9 @@ extension/
 
 ## Start the app 
 
-To start the development server run `nx serve suntzu`. Open your browser and navigate to http://localhost:4200/. Happy coding!
+To start using the extension in development environment, run first `nx bundle suntzu`. Then, add manually the extension to your favorite browser or use VS Code with the provided debugging task `Attach Viewer (chrome)`.
 
-## Generate code
-
-If you happen to use Nx plugins, you can leverage code generators that might come with it.
-
-Run `nx list` to get a list of available plugins and whether they have generators. Then run `nx list <plugin-name>` to see what generators are available.
-
-Learn more about [Nx generators on the docs](https://nx.dev/plugin-features/use-code-generators).
+Happy gaming!
 
 ## Running tasks
 
@@ -63,18 +73,9 @@ Have a look at the [Nx Console extensions](https://nx.dev/nx-console). It provid
 
 ## Ready to deploy?
 
-Just run `nx build demoapp` to build the application. The build artifacts will be stored in the `dist/` directory, ready to be deployed.
-
-## Set up CI!
-
-Nx comes with local caching already built-in (check your `nx.json`). On CI you might want to go a step further.
-
-- [Set up remote caching](https://nx.dev/core-features/share-your-cache)
-- [Set up task distribution across multiple machines](https://nx.dev/core-features/distribute-task-execution)
-- [Learn more how to setup CI](https://nx.dev/recipes/ci)
+Just run `nx build suntzu` to build the application. The build artifacts will be stored in the `dist/` directory, ready to be deployed.
 
 ## Connect with us!
 
-- [Join the community](https://nx.dev/community)
-- [Subscribe to the Nx Youtube Channel](https://www.youtube.com/@nxdevtools)
-- [Follow us on Twitter](https://twitter.com/nxdevtools)
+- [Join the community](https://www.reddit.com/r/suntzugg)
+- [Follow us on Twitter](https://twitter.com/suntzugg)
