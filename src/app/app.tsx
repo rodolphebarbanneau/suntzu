@@ -1,14 +1,14 @@
 import { About } from './views/about';
 import { Header } from './views/header';
-import { MapStats } from './views/map-stats';
-import { PlayerStats } from './views/player-stats';
+import { MapMetrics } from './views/map-metrics';
+import { PlayerMetrics } from './views/player-metrics';
 
 export function App() {
   return (
     <div className="app">
       <Header />
-      <MapStats />
-      <PlayerStats />
+      <MapMetrics />
+      <PlayerMetrics />
       <About />
     </div>
   );

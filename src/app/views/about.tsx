@@ -33,7 +33,7 @@ export const About = () => (
           img={svgReddit}
         />
       </AboutColumn>
-      <AboutColumn title="Creators">
+      <AboutColumn title="Authors">
         <div style={{ display: "flex", justifyContent: "space-between", gap: "10px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: "5px" }}>
             <Link

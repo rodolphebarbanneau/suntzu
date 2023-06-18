@@ -1,11 +1,11 @@
 export enum SuntzuFeature {
-  MapStats = 'showMapStats',
-  PlayerStats = 'showPlayerStats',
+  MapMetrics = 'showMapMetrics',
+  PlayerMetrics = 'showPlayerMetrics',
 }
 
 export const DEFAULT_SETTINGS = new Map<SuntzuFeature, boolean>([
-  [SuntzuFeature.MapStats, true],
-  [SuntzuFeature.PlayerStats, true],
+  [SuntzuFeature.MapMetrics, true],
+  [SuntzuFeature.PlayerMetrics, true],
 ]);
 
 export const isFeatureEnabled = async (featureName: SuntzuFeature) => {

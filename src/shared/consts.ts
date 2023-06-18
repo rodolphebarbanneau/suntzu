@@ -5,7 +5,7 @@ export const EXTENSION_NAME = 'suntzu';
 
 export const FACEIT_OPEN_BASE_URL = 'https://open.faceit.com';
 export const FACEIT_API_BASE_URL = 'https://api.faceit.com';
-export const FACEIT_GAME = 'csgo';
+export const FACEIT_MATCHROOM_ROUTES = ['csgo'];
 
 // slightly more than average game length (1000ms * 60 * 60 = 60 minutes)
 export const CACHE_TIME = 1000 * 60 * 60;
