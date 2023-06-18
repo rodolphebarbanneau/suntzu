@@ -1,54 +1,48 @@
-//import { isFeatureEnabled, MappioFeature } from '../shared/settings';
-//import debounceAddMapDropProbabilities from './features/add-map-drop-probabilities';
-//import debounceAddPlayerMapStats from './features/add-player-map-stats';
-//import { memFetchAllMatchPlayersMapStats } from './helpers/faceit-api';
-//import {
-//  getMatchroomId,
-//  hasMainContentElement,
-//  isMatchroomOverviewLoaded,
-//  isMatchroomPage,
-//  isShadowRootLoaded,
-//} from './helpers/matchroom';
+import { isFeatureEnabled, SuntzuFeature } from '../../shared/settings';
+import { Matchroom } from '../../shared/helpers/matchroom';
+import { hasRoot } from '../../shared/helpers/utils';
+import addMapFeature from './map-metrics';
+import addPlayerFeature from './player-metrics';
 
-import { Api } from '../../shared/helpers/api';
+//todo: retrieve/update metrics on range change
 
 const handleMutation = async (
   mutations: MutationRecord[],
   observer: MutationObserver
 ) => {
-  const api = new Api();
-  api.fetchMe().then((res) => console.log(res));
-  console.log('zz');
+  // return if root element does not exist
+  if (!hasRoot()) return;
 
-//  // If not page of interest -> do nothing
-//  if (!hasMainContentElement() || !isMatchroomPage()) return;
-//
-//  const matchroomId = getMatchroomId();
-//  // Start fetching and memoize player details before page fully loaded
-//  memFetchAllMatchPlayersMapStats(matchroomId);
-//
-//  // If page is not fully loaded yet -> do nothing
-//  if (!isShadowRootLoaded() || !isMatchroomOverviewLoaded()) return;
-//
-//  // When page fully loaded, run feature scripts if respective features are enabled
-//  // Add player statistics
-//  if (await isFeatureEnabled(MappioFeature.PlayerMapStats))
-//    debounceAddPlayerMapStats(matchroomId);
-//
-//  // Add map drop probabilities
-//  if (await isFeatureEnabled(MappioFeature.MapDropProbabilities))
-//    debounceAddMapDropProbabilities(matchroomId);
-//
-//  mutations.forEach((mutation) => {
-//    mutation.addedNodes.forEach((addedNode: any) => {
-//      if (addedNode.shadowRoot) {
-//        observer.observe(addedNode.shadowRoot, {
-//          childList: true,
-//          subtree: true,
-//        });
-//      }
-//    });
-//  });
+  // initialize matchroom
+  const matchroom = await Matchroom.initialize();
+
+  // return if matchroom is invalid
+  if (!matchroom.isValid()) return;
+
+  // return if matchroom is not fully loaded
+  if (!matchroom.hasContainer()) return;
+
+  // add map metrics
+  if (await isFeatureEnabled(SuntzuFeature.PlayerMetrics)){
+    addMapFeature(matchroom);
+  }
+
+  // add player metrics
+  if (await isFeatureEnabled(SuntzuFeature.MapMetrics)) {
+    addPlayerFeature(matchroom);
+  }
+
+  mutations.forEach((mutation) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutation.addedNodes.forEach((addedNode: any) => {
+      if (addedNode.shadowRoot) {
+        observer.observe(addedNode.shadowRoot, {
+          childList: true,
+          subtree: true,
+        });
+      }
+    });
+  });
 };
 
 const observer = new MutationObserver(handleMutation);
