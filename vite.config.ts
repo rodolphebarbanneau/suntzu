@@ -1,9 +1,10 @@
-/// <reference types="vitest" />
+/// <reference types='vitest' />
 import archiver from 'archiver';
 import fs from 'fs';
+import fsExtra from 'fs-extra';
 import path from 'path';
 
-import { defineConfig, Plugin } from 'vite';
+import { build, defineConfig, Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
@@ -28,51 +29,86 @@ function getArgValue(argName: string): string | undefined {
 }
 
 /**
- * Process manifest template file.
+ * Create a browser extension.
  *
- * This function creates a Rollup plugin that copies a manifest template file from a source
- * directory to a target browser directory. The template file is then processed and updated with the
- * path of built `js` files found in the target asset directory. The function operates during the
- * `post` enforcement stage of the Rollup build lifecycle.
+ * The process of creating a browser extension involves the following steps:
+ *
+ * 1. Build the commonjs scripts for the browser extension:
+ *    Iterate over the scripts array and invoke the Vite build function for each script, using the
+ *    provided `outDir` as the output directory. The configuration options for each build are set
+ *    according to the script's entry file and the specified output directory.
+ *
+ * 2. Process the manifest template file.
+ *    Copy the manifest template file from the source directory to the target browser directory. The
+ *    template file is then processed and updated with the path of built `js` files found in the
+ *    target asset directory.
  *
  * @param options - The options object.
- * @param options.src - The relative path to the source manifest template file.
+ * @param options.scripts - The array of script entries.
+ * @param options.manifest - The relative path to the source manifest template file.
  * @param options.dist - The relative path to the distribution directory.
  * @param options.browser - The manifest target browser.
  * @returns A Rollup Plugin that performs the processing of the manifest file.
  */
-function createManifest(
-  { src, dist, browser }: { src: string, dist: string, browser: string }
-): Plugin {
-  return {
-    name: 'create-manifest',
-    enforce: 'post',
-    writeBundle() {
-      // export manifest template
-      const assets = `./${dist}/${browser}/assets`;
-      const target = `./${dist}/${browser}/manifest.json`;
-      fs.copyFileSync(
-        path.resolve(__dirname, src),
-        path.resolve(__dirname, target)
-      );
+async function createExtension(
+  { scripts, manifest, dist, browser }: {
+    scripts: { entry: string, name: string }[],
+    manifest: string,
+    dist: string,
+    browser: string,
+  },
+): Promise<void> {
+  // build commonjs scripts for the browser extension
+  await Promise.all(scripts.map((script) => build({
+    configFile: false,
 
-      // render manifest template
-      let template = fs.readFileSync(target, 'utf-8');
-      fs.readdirSync(assets).forEach(file => {
-        if (file.match(/^content.*\.js$/)) {
-          template = template.replace('{{content}}', `assets/${file}`);
-        }
-        if (file.match(/^service.*\.js$/)) {
-          template = template.replace('{{service}}', `assets/${file}`);
-        }
-      });
-      fs.writeFileSync(target, template);
+    plugins: [
+      react(),
+      viteTsConfigPaths({
+        root: './',
+      }),
+    ],
+
+    build: {
+      emptyOutDir: false,
+      rollupOptions: {
+        input: {
+          [script.name]: script.entry,
+        },
+        output: {
+          format: 'cjs',
+          dir: `${dist}/${browser}`,
+          entryFileNames: 'assets/[name]-[hash].js',
+          chunkFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
+        },
+      },
     },
-  };
+  })));
+
+  // export manifest template
+  const assets = `./${dist}/${browser}/assets`;
+  const target = `./${dist}/${browser}/manifest.json`;
+  fs.copyFileSync(
+    path.resolve(__dirname, manifest),
+    path.resolve(__dirname, target)
+  );
+
+  // render manifest template
+  let template = fs.readFileSync(target, 'utf-8');
+  fs.readdirSync(assets).forEach(file => {
+    if (file.match(/^content.*\.js$/)) {
+      template = template.replace('{{content}}', `assets/${file}`);
+    }
+    if (file.match(/^service.*\.js$/)) {
+      template = template.replace('{{service}}', `assets/${file}`);
+    }
+  });
+  fs.writeFileSync(target, template);
 }
 
 /**
- * Creates a zip bundle of a given distributed target browser directory.
+ * Create a zip bundle of a given distributed target browser directory.
  *
  * This function creates a Rollup plugin that compresses a given directory into a zip file with a
  * high compression level. It operates during the `post` enforcement stage of the Rollup build
@@ -122,7 +158,7 @@ function createBundle(
 }
 
 /**
- * Generates the Vite configuration object for a browser extension project.
+ * Generate the Vite configuration object for a browser extension project.
  *
  * This function uses the command line arguments and the provided `command` and `mode` to generate
  * an appropriate Vite configuration object. The output directory is extracted from the command line
@@ -137,9 +173,10 @@ function createBundle(
  * @param args.mode - The mode in which Vite is running.
  * @returns The Vite configuration object.
  */
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(async ({ command, mode }) => {
   // retrieve output directory
   const outDir = getArgValue('outDir') || env.outDir;
+  const emptyOutDir = getArgValue('emptyOutDir') ?? true;
 
   // retrieve distribution and target browser directory
   const outDirIndex = outDir.lastIndexOf('/');
@@ -151,6 +188,20 @@ export default defineConfig(({ command, mode }) => {
 
   // generate configuration
   console.log(`processing "${browser}" browser extension ${command} in "${mode}" mode...`);
+
+  // clear out directory
+  if (emptyOutDir) await fsExtra.emptyDir(`${dist}/${browser}`);
+
+  // create browser extension
+  await createExtension({
+    scripts: [
+      { name: 'content', entry: './src/scripts/content/index.ts' },
+      { name: 'service', entry: './src/scripts/service/index.ts' },
+    ],
+    manifest: `./src/browsers/manifest.${browser}.json`,
+    dist,
+    browser,
+  });
 
   return {
     cacheDir: './node_modules/.vite/suntzu',
@@ -170,11 +221,6 @@ export default defineConfig(({ command, mode }) => {
       viteTsConfigPaths({
         root: './',
       }),
-      createManifest({
-        src: `./src/browsers/manifest.${browser}.json`,
-        dist,
-        browser,
-      }),
       createBundle({
         dist,
         browser,
@@ -182,11 +228,10 @@ export default defineConfig(({ command, mode }) => {
     ],
 
     build: {
+      emptyOutDir: false,
       rollupOptions: {
         input: {
           index: './index.html',
-          content: './src/scripts/content/index.ts',
-          service: './src/scripts/service/index.ts',
         },
         output: {
           dir: outDir,
