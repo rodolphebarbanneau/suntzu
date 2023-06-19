@@ -27,10 +27,12 @@
     "name": "Rodolphe Barbanneau",
     "email": "rodolphe.barbanneau@gmail.com"
   },
-  "contributors": [{
-    "name": "Lucas Barbanneau",
-    "email": "lucas.barbanneau@gmail.com"
-  }],
+  "contributors": [
+    {
+      "name": "Lucas Barbanneau",
+      "email": "lucas.barbanneau@gmail.com"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rodolphebarbanneau/suntzu.git"
@@ -60,12 +62,14 @@
     "@testing-library/react": "14.0.0",
     "@types/archiver": "^5.3.2",
     "@types/chrome": "^0.0.237",
+    "@types/fs-extra": "^11.0.1",
     "@types/node": "18.14.2",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
     "@vitejs/plugin-react": "^3.0.0",
+    "@vitest/browser": "^0.32.2",
     "@vitest/coverage-c8": "^0.31.0",
     "@vitest/ui": "^0.31.0",
     "archiver": "^5.3.1",
@@ -78,6 +82,7 @@
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
+    "fs-extra": "^11.1.1",
     "jsdom": "~20.0.3",
     "nx": "16.3.2",
     "nx-cloud": "latest",
@@ -87,6 +92,7 @@
     "vite": "^4.3.4",
     "vite-plugin-eslint": "^1.8.1",
     "vite-tsconfig-paths": "^4.0.2",
-    "vitest": "^0.31.0"
+    "vitest": "^0.31.0",
+    "webdriverio": "^8.11.2"
   }
 }
