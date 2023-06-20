@@ -5,14 +5,218 @@
   "plugins": ["@nx"],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nx/typescript"],
-      "rules": {}
-    },
-    {
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nx/javascript"],
       "rules": {}
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nx/typescript"],
+      "rules": {
+        /* Ensure consistent use of file extension within the import path. */
+        "import/extensions": "off",
+        /* Forbid the import of external modules that are not declared in the package.json"s
+           dependencies, devDependencies, optionalDependencies, peerDependencies, or
+           bundledDependencies. */
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": [
+              "vite.config.ts",
+              "src/**/*.test.ts",
+              "src/**/*.spec.ts",
+              "src/**/*.test.tsx",
+              "src/**/*.spec.tsx"
+            ]
+          }
+        ],
+        /* Prefer using default export when there is only a single export from a module. */
+        "import/prefer-default-export": "off",
+        /* Disallow the use of console. */
+        "no-console": "warn",
+        /* Disallows reassignment of function parameters. */
+        "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["req", "res"] }],
+        /* Disallow dangling underscores in identifiers. */
+        "no-underscore-dangle": ["error", { "allowAfterThis": true, "allowAfterSuper": true }],
+        /* Enforces consistent spacing after the `//` or `/*` in a comment. */
+        "spaced-comment": ["warn", "always", { "markers": ["/"] }],
+        /* Enforces consistent usage of type assertions. */
+        "@typescript-eslint/consistent-type-assertions": [
+          "error",
+          {
+            "assertionStyle": "as",
+            "objectLiteralTypeAssertions": "allow-as-parameter"
+          }
+        ],
+        /* Enforces consistent usage of type imports. */
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          {
+            "disallowTypeAnnotations": true,
+            "prefer": "type-imports"
+          }
+        ],
+        /* Enforces a consistent member delimiter style in interfaces and type literals. */
+        "@typescript-eslint/member-delimiter-style": [
+          "error",
+          {
+            "multiline": {
+              "delimiter": "semi",
+              "requireLast": true
+            },
+            "singleline": {
+              "delimiter": "semi",
+              "requireLast": false
+            },
+            "multilineDetection": "brackets"
+          }
+        ],
+        /* Aims to standardize the way class declarations, class expressions, interfaces and type
+           literals are structured and ordered. */
+        "@typescript-eslint/member-ordering": [
+          "error",
+          {
+            "default": {
+              "memberTypes": [
+                // index signature
+                "signature",
+                // fields
+                "public-static-field",
+                "protected-static-field",
+                "private-static-field",
+                "public-decorated-field",
+                "protected-decorated-field",
+                "private-decorated-field",
+                "public-instance-field",
+                "protected-instance-field",
+                "private-instance-field",
+                "public-abstract-field",
+                "protected-abstract-field",
+                // constructors
+                "public-constructor",
+                "protected-constructor",
+                "private-constructor",
+                // getters and setters
+                ["public-static-get", "public-static-set"],
+                ["protected-static-get", "protected-static-set"],
+                ["private-static-get", "private-static-set"],
+                ["public-decorated-get", "public-decorated-set"],
+                ["protected-decorated-get", "protected-decorated-set"],
+                ["private-decorated-get", "private-decorated-set"],
+                ["public-instance-get", "public-instance-set"],
+                ["protected-instance-get", "protected-instance-set"],
+                ["private-instance-get", "private-instance-set"],
+                ["public-abstract-get", "public-abstract-set"],
+                ["protected-abstract-get", "protected-abstract-set"],
+                ["public-get", "public-set"],
+                ["protected-get", "protected-set"],
+                ["private-get", "private-set"],
+                ["static-get", "static-set"],
+                ["instance-get", "instance-set"],
+                ["abstract-get", "abstract-set"],
+                ["decorated-get", "decorated-set"],
+                ["get", "set"],
+                // methods
+                "public-static-method",
+                "protected-static-method",
+                "private-static-method",
+                "public-decorated-method",
+                "protected-decorated-method",
+                "private-decorated-method",
+                "public-instance-method",
+                "protected-instance-method",
+                "private-instance-method",
+                "public-abstract-method",
+                "protected-abstract-method"
+              ]
+            }
+          }
+        ],
+        /* Enforces naming conventions for everything across a codebase.
+           See https://typescript-eslint.io/rules/naming-convention/ */
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            // default
+            "selector": "default",
+            "format": ["camelCase"]
+          },
+          {
+            // protected members
+            "selector": "enumMember",
+            "format": ["PascalCase"]
+          },
+          {
+            // protected members
+            "selector": "memberLike",
+            "modifiers": ["protected"],
+            "format": ["camelCase"],
+            "leadingUnderscore": "require"
+          },
+          {
+            // private members
+            "selector": "memberLike",
+            "modifiers": ["private"],
+            "format": ["camelCase"],
+            "leadingUnderscore": "require"
+          },
+          {
+            // object literals
+            "selector": ["objectLiteralMethod", "objectLiteralProperty"],
+            "format": ["camelCase", "PascalCase", "UPPER_CASE"]
+          },
+          {
+            // object literals requiring quotes
+            "selector": ["objectLiteralMethod", "objectLiteralProperty"],
+            "modifiers": ["requiresQuotes"],
+            "format": null
+          },
+          {
+            // types
+            "selector": "typeLike",
+            "format": ["PascalCase"],
+            "custom": {
+              "regex": "^I[A-Z]",
+              "match": false
+            }
+          },
+          {
+            // variables exported constants
+            "selector": "variable",
+            "modifiers": ["const", "exported"],
+            "types": ["function"],
+            "format": ["PascalCase"]
+          },
+          {
+            // variables exported constants
+            "selector": "variable",
+            "modifiers": ["const", "exported"],
+            "format": ["UPPER_CASE"]
+          }
+        ],
+        /* Disallows the declaration of empty interfaces. */
+        "@typescript-eslint/no-empty-interface": [
+          "error",
+          {
+            "allowSingleExtends": true
+          }
+        ],
+        /* Disallows explicit type declarations for variables or parameters initialized to a number,
+           string, or boolean. */
+        "@typescript-eslint/no-inferrable-types": [
+          "error",
+          {
+            "ignoreParameters": true,
+            "ignoreProperties": true
+          }
+        ],
+        /* Disallows variable declarations from shadowing variables declared in the outer scope. */
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": "error",
+        /* Disallows unused variables. */
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": ["error"]
+      }
     }
   ]
 }
