@@ -3,7 +3,7 @@ import { Header } from './views/header';
 import { MapMetrics } from './views/map-metrics';
 import { PlayerMetrics } from './views/player-metrics';
 
-export function App() {
+export const App = () => {
   return (
     <div className="app">
       <Header />
