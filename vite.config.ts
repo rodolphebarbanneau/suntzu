@@ -4,7 +4,8 @@ import fs from 'fs';
 import fsExtra from 'fs-extra';
 import path from 'path';
 
-import { build, defineConfig, Plugin } from 'vite';
+import type { Plugin } from 'vite';
+import { build, defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
@@ -14,15 +15,18 @@ const env = {
   outDir: process.env.OUT_DIR || 'dist/chrome',
 }
 
+// read project version
+const project = JSON.parse(fs.readFileSync(path.resolve(__dirname, './package.json'), 'utf8'));
+
 /**
  * Retrieve the argument from the command line.
  * @param argName - The name of the argument to retrieve.
  * @returns The value of the argument.
  */
 function getArgValue(argName: string): string | undefined {
-  const arg = process.argv.find(arg => arg.startsWith(`--${argName}`));
-  if (arg) {
-    return arg.split(new RegExp(`--${argName}[ =]*`))[1];
+  const value = process.argv.find((arg) => arg.startsWith(`--${argName}`));
+  if (value) {
+    return value.split(new RegExp(`--${argName}[ =]*`))[1];
   } else {
     return undefined;
   }
@@ -52,10 +56,10 @@ function getArgValue(argName: string): string | undefined {
  */
 async function createExtension(
   { scripts, manifest, dist, browser }: {
-    scripts: { entry: string, name: string }[],
-    manifest: string,
-    dist: string,
-    browser: string,
+    scripts: { entry: string; name: string }[];
+    manifest: string;
+    dist: string;
+    browser: string;
   },
 ): Promise<void> {
   // build commonjs scripts for the browser extension
@@ -96,6 +100,7 @@ async function createExtension(
 
   // render manifest template
   let template = fs.readFileSync(target, 'utf-8');
+  template = template.replace('{{version}}', project.version);
   fs.readdirSync(assets).forEach(file => {
     if (file.match(/^content.*\.js$/)) {
       template = template.replace('{{content}}', `assets/${file}`);
@@ -122,7 +127,7 @@ async function createExtension(
  * @returns A Rollup Plugin that performs the compression of the directory into a zip file.
  */
 function createBundle(
-  { dist, browser }: { dist: string, browser: string }
+  { dist, browser }: { dist: string; browser: string }
 ): Plugin {
   return {
     name: 'create-bundle',
@@ -187,6 +192,7 @@ export default defineConfig(async ({ command, mode }) => {
   if (!browser) throw new Error('missing browser extension in output directory path');
 
   // generate configuration
+  // eslint-disable-next-line no-console
   console.log(`processing "${browser}" browser extension ${command} in "${mode}" mode...`);
 
   // clear out directory
