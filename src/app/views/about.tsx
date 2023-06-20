@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { Link } from '../components/link';
 import { Section, SectionHeader, SectionBody } from '../components/section';
@@ -7,13 +7,12 @@ import svgFaceit from '../../assets/faceit.svg';
 import svgGithub from '../../assets/github.svg';
 import svgReddit from '../../assets/reddit.svg';
 
-const AboutColumn = ({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode | ReactNode[];
-}) => (
+const AboutColumn = (
+  { title, children }: {
+    title: string;
+    children: ReactNode | ReactNode[];
+  },
+) => (
   <div>
     <h3 style={{ marginBottom: "10px" }}>{title}</h3>
     {children}
@@ -29,8 +28,8 @@ export const About = () => (
         <Link
           url="https://www.reddit.com/r/suntzugg"
           title="Suntzu Reddit"
-          text="Reddit"
           img={svgReddit}
+          text="Reddit"
         />
       </AboutColumn>
       <AboutColumn title="Authors">
@@ -39,8 +38,8 @@ export const About = () => (
             <Link
               url="https://www.faceit.com/en/players/erunosaurus"
               title="Creator's FACEIT account (ERU)"
-              text="ERU"
               img={svgFaceit}
+              text="ERU"
             />
             <Link
               url="https://github.com/rodolphebarbanneau"
@@ -52,8 +51,8 @@ export const About = () => (
             <Link
               url="https://www.faceit.com/en/players/Skayzr"
               title="Creator's FACEIT account (Skayzr)"
-              text="Skayzr"
               img={svgFaceit}
+              text="Skayzr"
             />
             <Link
               url="https://github.com/lbrbn"

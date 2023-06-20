@@ -1,14 +1,16 @@
 import { About } from './views/about';
 import { Header } from './views/header';
-import { MapMetrics } from './views/map-metrics';
-import { PlayerMetrics } from './views/player-metrics';
+import { MapFeature } from './views/map-feature';
+import { PlayerFeature } from './views/player-feature';
+
+import styles from './app.module.scss';
 
 export const App = () => {
   return (
-    <div className="app">
+    <div id="app" className={styles.app}>
       <Header />
-      <MapMetrics />
-      <PlayerMetrics />
+      <MapFeature />
+      <PlayerFeature />
       <About />
     </div>
   );

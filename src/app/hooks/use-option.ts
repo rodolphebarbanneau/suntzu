@@ -1,6 +1,7 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { SuntzuFeature } from '../../shared/settings';
+import type { SuntzuFeature } from '../../shared/settings';
 
 export const useOption = (
   key?: SuntzuFeature

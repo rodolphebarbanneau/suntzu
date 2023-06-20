@@ -5,7 +5,7 @@ import { EXTENSION_NAME } from '../consts';
  * @returns The document root container.
  */
 export function getRoot(): HTMLDivElement | null {
-  return document.querySelector('div.main-content');
+  return document.querySelector('div#main-content');
 }
 
 /**
@@ -19,10 +19,12 @@ export function hasRoot(): boolean {
 /**
  * Check if element has an extension feature.
  * @param element - The element to check.
+ * @param feature - The extension feature to check (optional).
  * @returns True if element has an extension feature, false otherwise.
  */
 export function hasExtension(
-  element: HTMLElement = document.body,
+  target: Element = document.body,
+  feature = '',
 ): boolean {
-  return !!element?.querySelector(`.${EXTENSION_NAME}`);
+  return !!target?.querySelector(`[id^="${EXTENSION_NAME}${feature ? `-${feature}` : ''}"]`);
 }

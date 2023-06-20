@@ -1,0 +1,39 @@
+/* Colors */
+@import '../../colors';
+
+/* Link */
+a {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 25px;
+  border-radius: 4px;
+  text-decoration: none;
+  background-color: $color-bg-500;
+  color: $color-fg-900;
+  cursor: pointer;
+}
+
+a:hover {
+  background-color: $color-bg-100;
+}
+
+a.sm {
+  padding: 2px 4px;
+}
+
+a.lg {
+  padding: 2px 9px;
+}
+
+a img {
+  width: 14px;
+}
+
+a.lg img {
+  margin-right: 6px;
+}
+
+a p {
+  font-size: .75rem;
+}

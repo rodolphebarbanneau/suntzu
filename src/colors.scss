@@ -1,9 +1,18 @@
-$color-bg-black: #161616;
-$color-bg-grey: #303030;
-$color-bg-lightgrey: #505050;
-$color-fg-white: #f0eff4;
-$color-fg-grey: #a0a0a0;
-$color-faceit-grey: rgba(255, 255, 255, 0.6);
+/* Background colors */
+$color-bg-900: #161616;
+$color-bg-700: #1f1f1f;
+$color-bg-500: #282828;
+$color-bg-300: #404040;
+$color-bg-100: #484848;
+
+/* Foreground colors */
+$color-fg-900: #a0a0a0;
+$color-fg-700: #b8b8b8;
+$color-fg-500: #d0d0d0;
+$color-fg-300: #f8f8f8;
+$color-fg-100: #ffffff;
+
+/* Faceit colors */
 $color-faceit-green: #1ce400;
 $color-faceit-yellow: #f6c30e;
 $color-faceit-orange: #ff6309;

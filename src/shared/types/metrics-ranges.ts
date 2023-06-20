@@ -3,8 +3,8 @@
 /* Metrics range options (suntzu). */
 export interface MetricsRange {
   match: MetricsMatchRange;
+  period: MetricsPeriodRange;
   player: MetricsPlayerRange;
-  time: MetricsTimeRange;
 }
 
 /* Metrics match range (suntzu). */
@@ -14,18 +14,18 @@ export type MetricsMatchRange =
   | '50'
   | '100';
 
-/* Metrics player range (suntzu). */
-export type MetricsPlayerRange =
-  | 'ANY'
-  | 'MIN-2'
-  | 'MIN-3'
-  | 'MIN-4'
-  | 'ALL';
-
-/* Metrics time range (suntzu). */
-export type MetricsTimeRange =
+/* Metrics period range (suntzu). */
+export type MetricsPeriodRange =
   | '1W'
   | '2W'
   | '1M'
   | '3M'
   | '6M';
+
+/* Metrics player range (suntzu). */
+export type MetricsPlayerRange =
+  | 'ANY'
+  | 'MIN:2'
+  | 'MIN:3'
+  | 'MIN:4'
+  | 'ALL';

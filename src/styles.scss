@@ -1,10 +1,7 @@
 /* Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap");
 
-/* Colors */
-@import 'colors';
-
-/* Global */
+/* Application */
 * {
   padding: 0;
   margin: 0;
@@ -13,183 +10,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Application */
-.app {
-  width: 400px;
-  background-color: $color-bg-black;
-  font-family: "Source Sans Pro", sans-serif;
-  color: $color-fg-white;
+h1 {
+  font-size: 1.500rem;
 }
 
-.app h1 {
-  font-size: 1.5rem;
+h2 {
+  font-size: 1.250rem;
 }
 
-.app h2 {
-  font-size: 1.275rem;
-}
-
-.app h3 {
-  font-size: 0.877rem;
-}
-
-.app > header {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 0px;
-  border-bottom: 1px solid $color-bg-grey;
-}
-
-.app > header > img {
-  min-height: 64px;
-  height: 64px;
-}
-
-.app > section {
-  display: flex;
-  flex-direction: column;
-  padding: 15px 20px;
-  border-bottom: 1px solid $color-bg-grey;
-}
-
-.app > section:last-of-type {
-  border: none;
-}
-
-.app > section > header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.app > section > p {
-  color: $color-fg-grey;
-  margin-bottom: 8px;
-  font-size: 0.75rem;
-}
-
-/* Link */
-a {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: 25px;
-  border-radius: 4px;
-  text-decoration: none;
-  background-color: $color-bg-grey;
-  color: $color-fg-grey;
-  cursor: pointer;
-}
-
-a:hover {
-  background-color: $color-bg-lightgrey;
-}
-
-a.sm {
-  padding: 2px 4px;
-}
-
-a.lg {
-  padding: 2px 9px;
-}
-
-a img {
-  width: 14px;
-}
-
-a.lg img {
-  margin-right: 6px;
-}
-
-a p {
-  font-size: 0.75rem;
-}
-
-/* Loading */
-.loading {
-  width: 45px;
-  height: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.loading .loading-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  display: inline-block;
-  background-color: $color-fg-white;
-  transform: scale(0.4);
-  animation: loadot 0.6s infinite;
-}
-
-.loading-dot:nth-child(2) {
-  animation-delay: 0.3s;
-}
-
-.loading-dot:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-@keyframes loadot {
-  0%,
-  100% {
-    transform: scale(0.4);
-  }
-  50% {
-    transform: scale(1);
-    background-color: $color-faceit-orange;
-  }
-}
-
-/* Toggle */
-.toggle  {
-  position: relative;
-  display: inline-block;
-  width: 45px;
-  height: 20px;
-}
-
-.toggle > input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggle > span.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 19px;
-  background-color: $color-bg-grey;
-  transition: 0.4s ease-in-out;
-}
-
-.toggle > input:checked + span.slider {
-  background-color: $color-faceit-green;
-}
-
-.toggle > span.slider::before {
-  box-sizing: border-box;
-  position: absolute;
-  content: "";
-  height: 14px;
-  width: 14px;
-  top: 50%;
-  transform: translate(4px, -50%);
-  border-radius: 50%;
-  background-color: $color-fg-white;
-  transition: 0.4s ease-in-out;
-}
-
-.toggle > input:checked + span.slider::before {
-  top: 50%;
-  transform: translate(28px, -50%);
+h3 {
+  font-size: 0.875rem;
 }

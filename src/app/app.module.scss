@@ -1,0 +1,24 @@
+/* Colors */
+@import '../colors';
+
+/* Application */
+.app {
+  width: 400px;
+  background-color: $color-bg-900;
+  color: $color-fg-300;
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+.app > header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 0px;
+  border-bottom: 1px solid $color-bg-500;
+}
+
+.app > header > img {
+  min-height: 80px;
+  height: 80px;
+}

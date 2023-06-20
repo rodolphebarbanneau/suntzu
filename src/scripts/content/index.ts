@@ -23,12 +23,12 @@ const handleMutation = async (
   if (!matchroom.hasContainer()) return;
 
   // add map metrics
-  if (await isFeatureEnabled(SuntzuFeature.PlayerMetrics)){
+  if (await isFeatureEnabled(SuntzuFeature.PlayerFeature)) {
     addMapFeature(matchroom);
   }
 
   // add player metrics
-  if (await isFeatureEnabled(SuntzuFeature.MapMetrics)) {
+  if (await isFeatureEnabled(SuntzuFeature.MapFeature)) {
     addPlayerFeature(matchroom);
   }
 

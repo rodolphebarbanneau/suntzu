@@ -1,0 +1,92 @@
+/* Colors */
+@import '../../../colors';
+
+/* Selector */
+.selector-wrapper {
+  display: flex;
+  position: relative;
+  background-color: $color-bg-700;
+  color: $color-fg-900;
+  border-radius: .2rem;
+	font-size: .7rem;
+}
+
+.selector-wrapper > h2 {
+  padding: .2rem .3rem;
+	font-size: .7rem;
+  font-weight: normal;
+}
+
+.selector-wrapper > select {
+  display: none; // hide original select element
+}
+
+.selector-wrapper > .selection {
+  display: flex;
+  position: relative;
+  background-color: $color-bg-500;
+  color: $color-fg-300;
+  align-items: center;
+	border-radius: 0 .2rem .2rem 0;
+}
+
+.selector-wrapper > .selection:after {
+  // point arrow downwards when the select element is closed
+  content: '';
+  margin-left: .2rem;
+  border: .25rem solid;
+  border-color: $color-fg-100 transparent transparent transparent;
+  transform: translateY(25%);
+}
+
+.selector-wrapper > .selecting:after {
+  // point arrow upwards when the select element is opened
+  border-color: transparent transparent $color-fg-100 transparent;
+  transform: translateY(-25%);
+}
+
+.selector-wrapper > .selection,
+.selector-wrapper > .selector-items > div {
+  cursor: pointer;
+  user-select: none;
+	padding: .2rem .3rem;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.2) transparent;
+}
+
+.selector-wrapper > .selector-items {
+  position: absolute;
+  z-index: 99;
+	top: calc(100% + .2rem);
+  left: 0;
+  right: 0;
+  color: $color-fg-900;
+  border-radius: .2rem;
+	box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.2);
+}
+
+.selector-wrapper > .selector-items div:first-child {
+  border-radius: .2rem .2rem 0 0;
+}
+
+.selector-wrapper > .selector-items div:last-child {
+  border-radius: 0 0 .2rem .2rem;
+}
+
+.selector-wrapper > .selector-items div:nth-child(odd) {
+  background-color: $color-bg-700;
+}
+
+.selector-wrapper > .selector-items div:nth-child(even) {
+  background-color: $color-bg-500;
+}
+
+.selector-wrapper > .selector-items.hide {
+  display: none; // hide items when the select element is closed
+}
+
+.selector-wrapper > .selector-items > div:hover,
+.selector-wrapper > .selector-items > div.selected {
+	background-color: $color-bg-300;
+  color: $color-fg-300;
+}

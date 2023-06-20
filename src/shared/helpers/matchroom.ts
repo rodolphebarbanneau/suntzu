@@ -1,11 +1,9 @@
-import type { MatchModel } from '../types';
-import { FACEIT_MATCHROOM_ROUTES } from '../consts';
+import type { MatchModel, MetricsRange } from '../types';
+import { FACEIT_MATCHROOM_ROUTES, METRICS_DEFAULT_RANGES } from '../consts';
 import { Api } from './api';
 import { MatchroomPlayer } from './matchroom-player';
 import { MatchroomMap } from './matchroom-map';
 import { Metrics } from './metrics';
-
-//todo: add range to metrics
 
 /**
  * The matchroom states.
@@ -34,7 +32,7 @@ export class Matchroom {
   private _details: MatchModel | null | undefined;
 
   /* The matchroom details. */
-  private _metrics: Metrics | null | undefined;
+  private _metrics: Metrics | undefined;
 
   /**
    * Create a matchroom.
@@ -57,9 +55,9 @@ export class Matchroom {
   }
 
   /* Get the matchroom id. */
-  get id(): string | null {
+  get id(): string {
     const match = this._url.match(/\/room\/(.*?)(?:\/|$)/);
-    return match ? match[1] : null;
+    return match ? match[1] : '';
   }
 
   /* Get the application programming interface used to fetch data. */
@@ -81,9 +79,8 @@ export class Matchroom {
     const matchroom = new Matchroom();
     // initialize
     if (matchroom.isValid()) {
-      const matchroomId = matchroom.id ?? '';
-      matchroom._details = await matchroom._api.fetchMatch(matchroomId);
-      matchroom._metrics = await Metrics.initialize(matchroom._api, matchroomId);
+      // eslint-disable-next-line no-underscore-dangle
+      matchroom._details = await matchroom.api.fetchMatch(matchroom.id);
     }
     return matchroom;
   }
@@ -103,7 +100,7 @@ export class Matchroom {
    * @returns The document matchroom container.
    */
   getContainer(): HTMLDivElement | null {
-    return document.querySelector('div.parasite-container div.MATCHROOM-OVERVIEW');
+    return document.querySelector('div#parasite-container div#MATCHROOM-OVERVIEW');
   }
 
   /**
@@ -237,5 +234,28 @@ export class Matchroom {
       if (map) maps.push(new MatchroomMap(map as HTMLDivElement));
     }
     return maps;
+  }
+
+  /**
+   * Get the matchroom metrics.
+   * @returns The matchroom metrics.
+   */
+  async getMetrics(range: MetricsRange = METRICS_DEFAULT_RANGES): Promise<Metrics> {
+    // check if metrics are already initialized
+    if (!this._metrics) {
+      this._metrics = await Metrics.initialize(this.api, this.id, range);
+    }
+    // check if metrics need to be updated
+    if (Object.entries(range).some(([key, value]) => {
+      if (Object.prototype.hasOwnProperty.call(this._metrics?.range, key)) {
+        const check = key as keyof MetricsRange;
+        return this._metrics?.range[check] !== value;
+      }
+      return true;
+    })) {
+      this._metrics = await Metrics.initialize(this.api, this.id, range);
+    }
+    // return the metrics
+    return this._metrics;
   }
 }

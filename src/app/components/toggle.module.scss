@@ -1,0 +1,50 @@
+/* Colors */
+@import '../../colors';
+
+/* Toggle */
+.toggle  {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 20px;
+}
+
+.toggle > input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle > span {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 19px;
+  background-color: $color-bg-500;
+  transition: 0.4s ease-in-out;
+}
+
+.toggle > input:checked + span {
+  background-color: $color-faceit-green;
+}
+
+.toggle > span::before {
+  box-sizing: border-box;
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  top: 50%;
+  transform: translate(4px, -50%);
+  border-radius: 50%;
+  background-color: $color-fg-300;
+  transition: 0.4s ease-in-out;
+}
+
+.toggle > input:checked + span::before {
+  top: 50%;
+  transform: translate(28px, -50%);
+}

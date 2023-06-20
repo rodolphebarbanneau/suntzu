@@ -1,0 +1,34 @@
+/* Colors */
+@import '../../../colors';
+
+/* Toolbar */
+* {
+	padding: 0;
+	margin: 0;
+	justify-content: left;
+	align-items: center;
+	font-family: Play, sans-serif;
+}
+
+.header {
+  display: flex;
+  padding-bottom: .2rem;
+}
+
+.header > svg {
+  fill: $color-fg-900;
+  min-height: 16px;
+  height: 16px;
+}
+
+.header > h1 {
+  color: $color-fg-900;
+  font-size: .8rem;
+  font-weight: normal;
+}
+
+.toolbar {
+  display: flex;
+  padding-bottom: 1rem;
+  gap: .2rem;
+}

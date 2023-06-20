@@ -1,9 +1,11 @@
+import styles from './loading.module.scss';
+
 export const Loading = () => (
-  <div className="loading">
-    <div className="loading-dot"></div>
-    <div className="loading-dot"></div>
-    <div className="loading-dot"></div>
-    <div className="loading-dot"></div>
+  <div className={styles.loading}>
+    <div className={styles.loadingdot}></div>
+    <div className={styles.loadingdot}></div>
+    <div className={styles.loadingdot}></div>
+    <div className={styles.loadingdot}></div>
   </div>
 );
 

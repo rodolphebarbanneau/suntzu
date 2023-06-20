@@ -21,8 +21,8 @@ export {
 export {
   MetricsRange,
   MetricsMatchRange,
+  MetricsPeriodRange,
   MetricsPlayerRange,
-  MetricsTimeRange,
 } from './metrics-ranges';
 
 // source

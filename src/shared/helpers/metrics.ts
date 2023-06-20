@@ -9,7 +9,7 @@ import type {
 } from '../types';
 import type { Api } from './api';
 
-import { METRICS_RANGE } from '../consts';
+import { METRICS_DEFAULT_RANGES } from '../consts';
 
 /**
  * Matchroom metrics.
@@ -47,7 +47,7 @@ export class Metrics {
     // initialize
     this._api = api;
     this._matchId = matchId;
-    this._range = range ?? METRICS_RANGE;
+    this._range = range ?? METRICS_DEFAULT_RANGES;
   }
 
   /* Get the application programming interface used to fetch data. */
@@ -83,13 +83,14 @@ export class Metrics {
     // create metrics
     const metrics = new Metrics(api, matchId, range);
     // initialize
+    // eslint-disable-next-line no-underscore-dangle
     metrics._source = await metrics.getSource();
     return metrics;
   }
 
   /**
-   * Get the matchroom metrics range as a number tuple. The first element is the offset value and
-   * the second element is the limit value.
+   * Get the matchroom metrics match count range as a tuple of 2 numbers. The first element is the
+   * offset value and the second element is the limit value.
    * @returns The matchroom match metrics range.
    */
   public getMatchRange(): [number, number] {
@@ -103,13 +104,13 @@ export class Metrics {
   }
 
   /**
-   * Get the matchroom metrics range as a number tuple. The first element is the start time and
-   * the second element is the end time specified as a Unix timestamp.
-   * @returns The matchroom time metrics range.
+   * Get the matchroom metrics periopd range as a tuple of 2 number. The first element is the start
+   * of the period and the second element is the end of the period specified as a Unix timestamp.
+   * @returns The matchroom metrics period range.
    */
-  public getTimeRange(): [number, number] {
+  public getPeriodRange(): [number, number] {
     const end = Math.floor(Date.now() / 1000);
-    switch (this._range.time) {
+    switch (this._range.period) {
       case '1W': return [end -   (7 * 24 * 60 * 60), end];
       case '2W': return [end -  (14 * 24 * 60 * 60), end];
       case '1M': return [end -  (30 * 24 * 60 * 60), end];
@@ -124,6 +125,7 @@ export class Metrics {
    * @returns The source model.
    */
   public async getSource(): Promise<SourceModel | null> {
+    /* eslint-disable @typescript-eslint/naming-convention */
     // fetch matchroom
     const matchroom = await this._api.fetchMatch(this._matchId);
     // check matchroom
@@ -159,6 +161,7 @@ export class Metrics {
       match_id: matchroom.match_id,
       teams: Object.fromEntries(teams ?? []),
     };
+    /* eslint-enable @typescript-eslint/naming-convention */
   }
 
   /**
@@ -173,13 +176,13 @@ export class Metrics {
   ): Promise<SourceMatchModel[] | null> {
     // retrieve ranges
     const matchRange = this.getMatchRange();
-    const timeRange = this.getTimeRange();
+    const periodRange = this.getPeriodRange();
     // fetch matches
     const matches = await this._api.fetchPlayerMatches(
       playerId,
       gameId,
-      timeRange[0],
-      timeRange[1],
+      periodRange[0],
+      periodRange[1],
       matchRange[0],
       matchRange[1],
     );
@@ -203,6 +206,7 @@ export class Metrics {
     playerId: string,
     matchId: string,
   ): Promise<SourceMatchModel | null> {
+    /* eslint-disable @typescript-eslint/naming-convention */
     // fetch in parallel match, stats, and vetos
     const [match, stats, vetos] = await Promise.all([
       this._api.fetchMatch(matchId),
@@ -214,7 +218,7 @@ export class Metrics {
     // retrieve player team
     const [faction, team] = Object
       .entries(match.teams ?? {})
-      .find(([, team]) => team.roster.some(
+      .find(([, target]) => target.roster.some(
         (player) => player.player_id === playerId
       )) ?? [];
     // return player match
@@ -233,6 +237,7 @@ export class Metrics {
         (veto) => !veto.random && veto.selected_by === faction
       ) ?? [],
     };
+    /* eslint-enable @typescript-eslint/naming-convention */
   }
 
   /**

@@ -1,14 +1,15 @@
-export const Toggle = ({
-  isToggled,
-  onToggle,
-}: {
-  isToggled: boolean;
-  onToggle: () => void;
-}) => {
+import styles from './toggle.module.scss';
+
+export const Toggle = (
+  { isToggled, onToggle }: {
+    isToggled: boolean;
+    onToggle: () => void;
+  },
+) => {
   return (
-    <label className="toggle">
+    <label className={styles.toggle}>
       <input type="checkbox" checked={isToggled} onChange={onToggle} />
-      <span className="slider" />
+      <span />
     </label>
   );
 };

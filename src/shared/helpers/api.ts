@@ -10,7 +10,12 @@ import type {
   PlayerStatsModel,
   UserModel,
 } from '../types';
-import { CACHE_TIME, FACEIT_API_BASE_URL } from '../consts';
+import {
+  CACHE_TIME,
+  FACEIT_OPEN_API_KEY,
+  FACEIT_OPEN_BASE_URL,
+  FACEIT_API_BASE_URL,
+} from '../consts';
 import { getCookie } from './cookie';
 
 /**
@@ -44,7 +49,7 @@ export class Api {
     // initialize memoized
     this.fetch = mem(this.fetch, {
       maxAge: CACHE_TIME,
-      cacheKey: (arguments_) => JSON.stringify(arguments_),
+      cacheKey: (args) => JSON.stringify(args),
     });
   }
 
@@ -66,21 +71,22 @@ export class Api {
    */
   async fetch<T>(
     options: {
-      url: string,
-      base?: string,
-      searchParams?: Record<string, string>,
-      unwrap?: boolean,
+      url: string;
+      base?: string;
+      searchParams?: Record<string, string>;
+      unwrap?: boolean;
     },
   ): Promise<T | null> {
     // initialize options
     const url = options.url;
-    const base = options.base ?? FACEIT_API_BASE_URL;
+    const base = options.base ?? FACEIT_OPEN_BASE_URL;
     const searchParams = options.searchParams ?? {};
     const unwrap = options.unwrap ?? true;
     // build headers
+    const bearer = base === FACEIT_OPEN_BASE_URL ? FACEIT_OPEN_API_KEY : this._token;
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this._token}`,
+      'Authorization': `Bearer ${bearer}`,
     };
     // build endpoint
     const endpoint = new URL(url, base);
@@ -119,6 +125,7 @@ export class Api {
       return await response.json() as T;
     } catch (err) {
       // log and return null if error
+      // eslint-disable-next-line no-console
       console.error(err)
       return null;
     }
@@ -131,6 +138,7 @@ export class Api {
   async fetchMe(): Promise<UserModel | null> {
     return this.fetch({
       url: '/users/v1/sessions/me',
+      base: FACEIT_API_BASE_URL,
     });
   }
 
@@ -170,6 +178,7 @@ export class Api {
   ): Promise<MatchVetosModel | null> {
     return this.fetch({
       url: `/democracy/v1/${matchId}/history`,
+      base: FACEIT_API_BASE_URL,
     });
   }
 
@@ -212,10 +221,10 @@ export class Api {
    */
   async fetchPlayerStats(
     playerId: string,
-    game_id: string,
+    gameId: string,
   ): Promise<PlayerStatsModel | null> {
     return this.fetch({
-      url: `/data/v4/players/${playerId}/stats/${game_id}`,
+      url: `/data/v4/players/${playerId}/stats/${gameId}`,
     });
   }
 }

@@ -1,0 +1,27 @@
+/* Colors */
+@import '../../colors';
+
+/* Section */
+.section {
+  display: flex;
+  flex-direction: column;
+  padding: 15px 20px;
+  border-bottom: 1px solid $color-bg-500;
+}
+
+.section:last-of-type {
+  border: none;
+}
+
+.section > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.section > p {
+  color: $color-fg-900;
+  margin-bottom: 8px;
+  font-size: .75rem;
+}
