@@ -1,30 +1,30 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Source model (suntzu). */
+/* Source model (suntzu) */
 export interface SourceModel {
   match_id: string;
   teams: {
-    [key: string]: SourceTeamModel;
+    [key: string]: TeamSourceModel;
   };
 };
 
-/* Source team model (suntzu). */
-export interface SourceTeamModel {
+/* Team source model (suntzu) */
+export interface TeamSourceModel {
   faction_id: string;
   name: string;
   leader: string;
-  roster: SourcePlayerModel[];
+  roster: PlayerSourceModel[];
 };
 
-/* Source player model (suntzu). */
-export interface SourcePlayerModel {
+/* Player source model (suntzu) */
+export interface PlayerSourceModel {
   player_id: string;
   nickname: string;
-  matches: SourceMatchModel[];
+  matches: MatchSourceModel[];
 };
 
-/* Source match model (suntzu). */
-export interface SourceMatchModel {
+/* Match source model (suntzu) */
+export interface MatchSourceModel {
   match_id: string;
   timestamp: number;
   map_pick: string;
@@ -34,17 +34,17 @@ export interface SourceMatchModel {
     player_id: string;
     nickname: string;
   }[];
-  stats: SourceMatchStatsModel;
-  vetos: SourceMatchVetoModel[];
+  stats: MatchStatsSourceModel;
+  vetos: MatchVetoSourceModel[];
 };
 
-/* Source match stats model (suntzu). */
-export interface SourceMatchStatsModel {
+/* Match stats source model (suntzu) */
+export interface MatchStatsSourceModel {
   [key: string]: string;
 };
 
-/* Source match veto model (suntzu). */
-export interface SourceMatchVetoModel {
+/* Match veto source model (suntzu) */
+export interface MatchVetoSourceModel {
   guid: string;
   status: string;
   random: boolean;

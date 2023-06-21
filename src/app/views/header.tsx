@@ -1,4 +1,4 @@
-import svgSuntzu from '../../assets/suntzu.svg';
+import svgSuntzu from 'src/assets/suntzu.svg';
 
 export const Header = () => (
   <header>

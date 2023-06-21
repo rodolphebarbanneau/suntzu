@@ -15,7 +15,7 @@ import {
   FACEIT_OPEN_API_KEY,
   FACEIT_OPEN_BASE_URL,
   FACEIT_API_BASE_URL,
-} from '../consts';
+} from '../settings';
 import { getCookie } from './cookie';
 
 /**
@@ -32,7 +32,11 @@ export interface WrappedData<T = unknown> {
 }
 
 /**
- * An application programming interface.
+ * The application programming interface for managing HTTP requests.
+ * It is mainly used for fetching data from the Faceit Open API and the regular Faceit API. It also
+ * utilizes the `pRetry` package for robustness against network errors, retrying requests multiple
+ * times before ultimately failing. Results are also cached for a specific amount of time defined in
+ * the settings to minimize unnecessary network usage.
  */
 export class Api {
   /** The api token. */

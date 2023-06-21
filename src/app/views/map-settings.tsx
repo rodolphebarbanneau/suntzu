@@ -1,7 +1,7 @@
-import { SuntzuFeature } from '../../shared/settings';
+import { SuntzuFeature } from 'src/shared/features';
 import { Section, SectionHeader, SectionBody } from '../components/section';
 
-export const MapFeature = () => (
+export const MapSettings = () => (
   <Section>
     <SectionHeader
       title="Map metrics"
@@ -11,4 +11,4 @@ export const MapFeature = () => (
   </Section>
 );
 
-export default MapFeature;
+export default MapSettings;

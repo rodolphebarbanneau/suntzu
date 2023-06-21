@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Metrics model (suntzu). */
+/* Metrics model (suntzu) */
 export interface MetricsModel {
   matches?: number;
   win_rate?: number;
@@ -12,8 +12,8 @@ export interface MetricsModel {
   drop_rate?: number;
 }
 
-/* Metrics map model (suntzu). */
-export type MetricsMapModel = {
+/* Map metrics model (suntzu) */
+export type MapMetricsModel = {
   [key: string]: {
     relative_win_rate?: number;
     teams: {
@@ -22,8 +22,8 @@ export type MetricsMapModel = {
   };
 };
 
-/* Metrics player model (suntzu). */
-export type MetricsPlayerModel = {
+/* Player metrics model (suntzu) */
+export type PlayerMetricsModel = {
   [key: string]: {
     maps: {
       [key: string]: MetricsModel;

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Match stats model (faceit response). */
+/* Match stats model (faceit response) */
 export interface MatchStatsModel {
   rounds: {
     best_of: string;

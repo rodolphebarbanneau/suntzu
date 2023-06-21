@@ -1,8 +1,8 @@
-import { isFeatureEnabled, SuntzuFeature } from '../../shared/settings';
-import { Matchroom } from '../../shared/helpers/matchroom';
-import { hasRoot } from '../../shared/helpers/utils';
-import addMapFeature from './map-metrics';
-import addPlayerFeature from './player-metrics';
+import { isFeatureEnabled, SuntzuFeature } from 'src/shared/features';
+import { Matchroom } from 'src/shared/helpers/matchroom';
+import { hasRoot } from 'src/shared/helpers/utils';
+import addMapFeature from './map-feature';
+import addPlayerFeature from './player-feature';
 
 //todo: retrieve/update metrics on range change
 

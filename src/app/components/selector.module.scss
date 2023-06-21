@@ -1,10 +1,11 @@
 /* Colors */
-@import '../../../colors';
+@import '../../colors';
 
 /* Selector */
 .selector-wrapper {
   display: flex;
   position: relative;
+  align-items: stretch;
   background-color: $color-bg-700;
   color: $color-fg-900;
   border-radius: .2rem;

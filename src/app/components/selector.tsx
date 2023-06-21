@@ -1,26 +1,37 @@
 import { useEffect, useState, useRef } from 'react';
 
+import { SuntzuRange, MatchRange, PlayerRange, TimeRange } from 'src/shared/ranges';
+import { useRange } from '../hooks/use-range';
+
 import styles from './selector.module.scss';
 import stylesheet from './selector.module.scss?inline';
 
 export const Selector = (
-  { title, options, value }: {
+  { title, range }: {
     title: string;
-    options: string[];
-    value?: string;
+    range: SuntzuRange;
   },
 ) => {
-  // check if the value is in the options
-  if (value && !options.includes(value[0])) {
-    throw new Error('The value is not in the options');
+  const [option, setRange] = useRange(range);
+  // retrieve options based on the provided range type
+  const options: string[] = [];
+  switch (range) {
+    case SuntzuRange.MatchRange:
+      options.push(...Object.values(MatchRange));
+      break;
+    case SuntzuRange.PlayerRange:
+      options.push(...Object.values(PlayerRange));
+      break;
+    case SuntzuRange.TimeRange:
+      options.push(...Object.values(TimeRange));
+      break;
   }
 
   const wrapper = useRef<HTMLDivElement>(null);
-  const [selection, setSelection] = useState(value ?? options[0]);
   const [isSelecting, setSelecting] = useState(false);
 
-  const onClick = (option: string) => {
-    setSelection(option);
+  const onClick = (value: string) => {
+    setRange(value)
     setSelecting(false);
   };
 
@@ -53,16 +64,16 @@ export const Selector = (
           }
           onMouseDown={() => setSelecting(!isSelecting)}
         >
-          {selection}
+          {option}
         </div>
         <div className={`${styles['selector-items']} ${isSelecting ? '' : styles.hide}`}>
-          {options.map((option, index) => (
+          {options.map((value, index) => (
             <div
               key={index}
-              onMouseUp={() => onClick(option)}
-              className={option === selection ? styles.selected : ''}
+              onMouseUp={() => onClick(value)}
+              className={value === option ? styles.selected : ''}
             >
-              {option}
+              {value}
             </div>
           ))}
         </div>

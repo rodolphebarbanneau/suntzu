@@ -1,5 +1,8 @@
 /**
  * A matchroom map.
+ * It represents a map in a matchroom. This contains details about the map such as the container and
+ * the map's name. The container is the HTML element that encapsulates the map's information, and
+ * the name is the identifier used for the map within the game.
  */
 export class MatchroomMap {
   /* The matchroom map container. */

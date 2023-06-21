@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Player stats model (faceit response). */
+/* Player stats model (faceit response) */
 export interface PlayerStatsModel {
   game_id: string;
   lifetime: {

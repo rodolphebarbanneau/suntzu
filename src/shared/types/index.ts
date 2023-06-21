@@ -1,7 +1,4 @@
-// cs
-export { MapCode, MapName } from './maps';
-
-// faceit
+/* Faceit */
 export { MatchModel } from './match';
 export { MatchStatsModel } from './match-stats';
 export { MatchVetosModel } from './match-veto';
@@ -10,27 +7,19 @@ export { PlayerMatchesModel } from './player-matches';
 export { PlayerStatsModel } from './player-stats';
 export { UserModel } from './user';
 
-// metrics
+/* Metrics */
 export {
   MetricsModel,
-  MetricsMapModel,
-  MetricsPlayerModel,
+  MapMetricsModel,
+  PlayerMetricsModel,
 } from './metrics';
 
-// metrics range
-export {
-  MetricsRange,
-  MetricsMatchRange,
-  MetricsPeriodRange,
-  MetricsPlayerRange,
-} from './metrics-ranges';
-
-// source
+/* Source */
 export {
   SourceModel,
-  SourceTeamModel,
-  SourcePlayerModel,
-  SourceMatchModel,
-  SourceMatchStatsModel,
-  SourceMatchVetoModel,
+  TeamSourceModel,
+  PlayerSourceModel,
+  MatchSourceModel,
+  MatchStatsSourceModel,
+  MatchVetoSourceModel,
 } from './source';

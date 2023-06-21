@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { SuntzuFeature } from '../../shared/settings';
-import { useOption } from '../hooks/use-option';
+import type { SuntzuFeature } from 'src/shared/features';
+import { useFeature } from '../hooks/use-feature';
 import { Loading } from './loading';
 import { Toggle } from './toggle';
 
@@ -19,7 +19,7 @@ export const SectionHeader = (
     feature?: SuntzuFeature;
   },
 ) => {
-  const [option, setOption] = useOption(feature);
+  const [option, setFeature] = useFeature(feature);
 
   return (
     <header>
@@ -28,7 +28,7 @@ export const SectionHeader = (
         feature !== undefined ?
           (option === null
             ? <Loading />
-            : <Toggle isToggled={option} onToggle={() => setOption(!option)} />
+            : <Toggle isToggled={option} onToggle={() => setFeature(!option)} />
           )
         : null
       }

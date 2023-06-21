@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Match veto model (faceit response). */
+/* Match veto model (faceit response) */
 export interface MatchVetosModel {
   match_id: string;
   tickets: {

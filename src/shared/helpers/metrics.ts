@@ -1,18 +1,38 @@
+import type { MatchRange, PlayerRange, TimeRange } from '../ranges';
 import type {
-  MetricsRange,
-  MetricsMapModel,
-  MetricsPlayerModel,
+  MapMetricsModel,
+  PlayerMetricsModel,
   SourceModel,
-  SourceMatchModel,
-  SourceMatchStatsModel,
-  SourceMatchVetoModel,
+  MatchSourceModel,
+  MatchStatsSourceModel,
+  MatchVetoSourceModel,
 } from '../types';
 import type { Api } from './api';
 
-import { METRICS_DEFAULT_RANGES } from '../consts';
+/**
+ * Metrics range for a matchroom.
+ *
+ * It is used to define the range of metrics for a `Matchroom` source model. It includes ranges for
+ * match, player, and time. These ranges are required to fetch data for the `Matchroom` source model
+ * effectively.
+ *
+ * @property {MatchRange} match - Defines the range of matches.
+ * @property {PlayerRange} player - Specifies the range of players.
+ * @property {TimeRange} time - Represents the range of time.
+ */
+export interface MetricsRange {
+  match: MatchRange;
+  player: PlayerRange;
+  time: TimeRange;
+}
 
 /**
- * Matchroom metrics.
+ * Metrics for a matchroom.
+ *
+ * It is responsible for aggregating and managing metrics related to a specific matchroom, including
+ * source data, map metrics, player metrics, and more. This class makes use of an API to fetch and
+ * provide access to these metrics, with specific ranges determined by the instance's
+ * `MetricsRange`.
  */
 export class Metrics {
   /* The application programming interface used to fetch data. */
@@ -28,10 +48,10 @@ export class Metrics {
   private _source?: SourceModel | null;
 
   /* The map metrics. */
-  private _maps?: MetricsMapModel | null;
+  private _maps?: MapMetricsModel | null;
 
   /* The player metrics. */
-  private _players?: MetricsPlayerModel | null;
+  private _players?: PlayerMetricsModel | null;
 
   /**
    * Create matchroom metrics.
@@ -42,12 +62,12 @@ export class Metrics {
   private constructor(
     api: Api,
     matchId: string,
-    range?: MetricsRange,
+    range: MetricsRange,
   ) {
     // initialize
     this._api = api;
     this._matchId = matchId;
-    this._range = range ?? METRICS_DEFAULT_RANGES;
+    this._range = range;
   }
 
   /* Get the application programming interface used to fetch data. */
@@ -63,10 +83,10 @@ export class Metrics {
   get source(): SourceModel | null { return this._source ?? null; }
 
   /* Get the map metrics. */
-  get maps(): MetricsMapModel | null { return this._maps ?? null; }
+  get maps(): MapMetricsModel | null { return this._maps ?? null; }
 
   /* Get the player metrics. */
-  get players(): MetricsPlayerModel | null { return this._players ?? null; }
+  get players(): PlayerMetricsModel | null { return this._players ?? null; }
 
   /**
    * Initialize matchroom metrics.
@@ -78,7 +98,7 @@ export class Metrics {
   public static async initialize(
     api: Api,
     matchId: string,
-    range?: MetricsRange,
+    range: MetricsRange,
   ): Promise<Metrics> {
     // create metrics
     const metrics = new Metrics(api, matchId, range);
@@ -89,8 +109,8 @@ export class Metrics {
   }
 
   /**
-   * Get the matchroom metrics match count range as a tuple of 2 numbers. The first element is the
-   * offset value and the second element is the limit value.
+   * Get the matchroom metrics match range as a tuple of 2 numbers. The first element is the offset
+   * value and the second element is the limit value.
    * @returns The matchroom match metrics range.
    */
   public getMatchRange(): [number, number] {
@@ -104,13 +124,14 @@ export class Metrics {
   }
 
   /**
-   * Get the matchroom metrics periopd range as a tuple of 2 number. The first element is the start
-   * of the period and the second element is the end of the period specified as a Unix timestamp.
-   * @returns The matchroom metrics period range.
+   * Get the matchroom metrics time range as a tuple of 2 number. The first element is the start
+   * of the time interval and the second element is the end of the time interval specified as a Unix
+   * timestamp.
+   * @returns The matchroom metrics time range.
    */
-  public getPeriodRange(): [number, number] {
+  public getTimeRange(): [number, number] {
     const end = Math.floor(Date.now() / 1000);
-    switch (this._range.period) {
+    switch (this._range.time) {
       case '1W': return [end -   (7 * 24 * 60 * 60), end];
       case '2W': return [end -  (14 * 24 * 60 * 60), end];
       case '1M': return [end -  (30 * 24 * 60 * 60), end];
@@ -173,16 +194,16 @@ export class Metrics {
   public async getPlayerMatches(
     playerId: string,
     gameId: string,
-  ): Promise<SourceMatchModel[] | null> {
+  ): Promise<MatchSourceModel[] | null> {
     // retrieve ranges
     const matchRange = this.getMatchRange();
-    const periodRange = this.getPeriodRange();
+    const timeRange = this.getTimeRange();
     // fetch matches
     const matches = await this._api.fetchPlayerMatches(
       playerId,
       gameId,
-      periodRange[0],
-      periodRange[1],
+      timeRange[0],
+      timeRange[1],
       matchRange[0],
       matchRange[1],
     );
@@ -193,7 +214,7 @@ export class Metrics {
       await Promise.all(matches.items.map((match) =>
         this.getPlayerMatch(playerId, match.match_id)
       ))
-    ).filter((match) => match !== null) as SourceMatchModel[];
+    ).filter((match) => match !== null) as MatchSourceModel[];
   }
 
   /**
@@ -205,7 +226,7 @@ export class Metrics {
   public async getPlayerMatch(
     playerId: string,
     matchId: string,
-  ): Promise<SourceMatchModel | null> {
+  ): Promise<MatchSourceModel | null> {
     /* eslint-disable @typescript-eslint/naming-convention */
     // fetch in parallel match, stats, and vetos
     const [match, stats, vetos] = await Promise.all([
@@ -249,7 +270,7 @@ export class Metrics {
   public async getPlayerMatchStats(
     playerId: string,
     matchId: string,
-  ): Promise<SourceMatchStatsModel | null> {
+  ): Promise<MatchStatsSourceModel | null> {
     // fetch stats
     const stats = await this._api.fetchMatchStats(matchId);
     // check stats
@@ -272,7 +293,7 @@ export class Metrics {
    */
   public async getPlayerMatchVetos(
     matchId: string,
-  ): Promise<SourceMatchVetoModel[] | null> {
+  ): Promise<MatchVetoSourceModel[] | null> {
     // fetch vetos
     const vetos = await this._api.fetchMatchVetos(matchId);
     // check vetos

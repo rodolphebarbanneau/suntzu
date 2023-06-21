@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Player model (faceit response). */
+/* Player model (faceit response) */
 export interface PlayerModel {
   avatar: string;
   country: string;

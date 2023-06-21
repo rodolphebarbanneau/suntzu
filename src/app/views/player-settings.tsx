@@ -1,7 +1,7 @@
-import { SuntzuFeature } from '../../shared/settings';
+import { SuntzuFeature } from 'src/shared/features';
 import { Section, SectionHeader, SectionBody } from '../components/section';
 
-export const PlayerFeature = () => (
+export const PlayerSettings = () => (
   <Section>
     <SectionHeader
       title="Player metrics"
@@ -11,4 +11,4 @@ export const PlayerFeature = () => (
   </Section>
 );
 
-export default PlayerFeature;
+export default PlayerSettings;

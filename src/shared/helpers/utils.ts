@@ -1,4 +1,4 @@
-import { EXTENSION_NAME } from '../consts';
+import { EXTENSION_NAME } from '../settings';
 
 /**
  * Get the document root container.
@@ -17,14 +17,14 @@ export function hasRoot(): boolean {
 }
 
 /**
- * Check if element has an extension feature.
- * @param element - The element to check.
- * @param feature - The extension feature to check (optional).
- * @returns True if element has an extension feature, false otherwise.
+ * Check if the target container has an extension element.
+ * @param target - The target to check.
+ * @param name - The extension element name to check for (optional).
+ * @returns True if target contains an extension element, false otherwise.
  */
 export function hasExtension(
   target: Element = document.body,
-  feature = '',
+  name = '',
 ): boolean {
-  return !!target?.querySelector(`[id^="${EXTENSION_NAME}${feature ? `-${feature}` : ''}"]`);
+  return !!target?.querySelector(`[id^="${EXTENSION_NAME}${name ? `-${name}` : ''}"]`);
 }

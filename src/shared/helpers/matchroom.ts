@@ -1,5 +1,6 @@
-import type { MatchModel, MetricsRange } from '../types';
-import { FACEIT_MATCHROOM_ROUTES, METRICS_DEFAULT_RANGES } from '../consts';
+import type { MatchModel } from '../types';
+import type { MetricsRange } from './metrics';
+import { FACEIT_MATCHROOM_ROUTES } from '../settings';
 import { Api } from './api';
 import { MatchroomPlayer } from './matchroom-player';
 import { MatchroomMap } from './matchroom-map';
@@ -7,6 +8,15 @@ import { Metrics } from './metrics';
 
 /**
  * The matchroom states.
+ * @property {number} Voting - State when players are voting for the match settings. This typically
+ * includes settings such as map selection.
+ * @property {number} Configuring - State after voting has concluded and the match settings are
+ * being finalized. This typically include server configuration and setting up the match with the
+ * chosen options from the voting phase.
+ * @property {number} Ready - State when the match has been configured and is ready to begin.
+ * Players can join the match at this stage.
+ * @property {number} Finished - State after the match has concluded. The final scores, stats, and
+ * other post-match data can be accessed in this state.
  */
 export enum MatchroomStates {
   Voting,
@@ -17,6 +27,9 @@ export enum MatchroomStates {
 
 /**
  * A matchroom.
+ * It contains various details of a matchroom like document, url, api, details and metrics. It also
+ * provides methods to initialize a matchroom, validate a matchroom, and access various properties
+ * of the matchroom such as players, maps, and metrics.
  */
 export class Matchroom {
   /* The matchroom document. */
@@ -240,7 +253,7 @@ export class Matchroom {
    * Get the matchroom metrics.
    * @returns The matchroom metrics.
    */
-  async getMetrics(range: MetricsRange = METRICS_DEFAULT_RANGES): Promise<Metrics> {
+  async getMetrics(range: MetricsRange): Promise<Metrics> {
     // check if metrics are already initialized
     if (!this._metrics) {
       this._metrics = await Metrics.initialize(this.api, this.id, range);

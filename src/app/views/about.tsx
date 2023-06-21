@@ -3,9 +3,9 @@ import type { ReactNode } from 'react';
 import { Link } from '../components/link';
 import { Section, SectionHeader, SectionBody } from '../components/section';
 
-import svgFaceit from '../../assets/faceit.svg';
-import svgGithub from '../../assets/github.svg';
-import svgReddit from '../../assets/reddit.svg';
+import svgFaceit from 'src/assets/faceit.svg';
+import svgGithub from 'src/assets/github.svg';
+import svgReddit from 'src/assets/reddit.svg';
 
 const AboutColumn = (
   { title, children }: {
