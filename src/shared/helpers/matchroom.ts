@@ -151,7 +151,12 @@ export class Matchroom {
    * @returns The document matchroom information.
    */
   getInformationWrapper(): HTMLDivElement | undefined {
-    return this.getInformation()?.children?.[0].children?.[0] as HTMLDivElement | undefined;
+    // retrieve document matchroom information children
+    const children = Array.from(this.getInformation()?.children ?? []);
+    // retrieve document matchroom information wrapper
+    return children.find(
+      (child: Element) => !child.id.startsWith('suntzu')
+    )?.children?.[0] as HTMLDivElement | undefined;
   }
 
   /**
