@@ -1,0 +1,43 @@
+/* Colors */
+@import '../../colors';
+
+/* Table */
+.table-cell {
+  display: flex;
+  width: 35;
+  justify-content: center;
+  align-items: center;
+  color: $color-faceit-green;
+  font-size: .7rem;
+  font-weight: bold;
+}
+
+.Table {
+  display: flex;
+  flex-direction: column;
+}
+
+.TableCell {
+  padding: 10px;
+  border: 1px solid #000;
+  text-align: center;
+  white-space: nowrap; // Ensures cell content stays in one line
+}
+
+.TableHeader {
+  display: flex;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.TableBody {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.TableRow {
+  display: flex;
+}

@@ -8,6 +8,8 @@ import { hasExtension } from 'src/shared/helpers/utils';
 import { Selector } from 'src/app/components/selector';
 import { Toolbar } from 'src/app/components/toolbar';
 
+import { DropCell, Bar } from 'src/app/components/map';
+
 export default debounce(async (matchroom: Matchroom) => {
   // retrieve the matchroom information
   const info = matchroom.getInformation();
@@ -26,4 +28,33 @@ export default debounce(async (matchroom: Matchroom) => {
       <Selector title="Player" range={SuntzuRange.PlayerRange} />
     </Toolbar>
   );
+
+  // test
+  const maps = matchroom.getMaps();
+  console.log(maps)
+  maps.forEach((map) => {
+    console.log(map)
+    const mapContainer = document.createElement('div');
+    mapContainer.id = `${EXTENSION_NAME}-map-metrics`;
+    map.container.append(mapContainer)
+    const mapRoot = createRoot(mapContainer);
+    mapRoot.render(
+      <DropCell value={100} />
+    );
+    const h = 120, // Hue for green // 60 yellow, 0 red
+          s = 15, // Saturation
+          l = 15; // Lightness - reduce by darkness factor
+    map.container.style.backgroundColor = `hsl(${h},${s}%,${l}%)`;
+    //map.container.style.opacity = '0.1';
+
+
+    const barContainer = document.createElement('div');
+    barContainer.id = `${EXTENSION_NAME}-map-metrics`;
+    map.container.prepend(barContainer)
+    const barRoot = createRoot(barContainer);
+    barRoot.render(
+      <Bar value={100} />
+    );
+
+  });
 }, 300);

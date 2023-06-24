@@ -1,0 +1,14 @@
+/* Colors */
+@import '../../colors';
+
+/* Cell */
+.sidebar {
+  position: absolute;
+  width: .2rem;
+  height: 98%;
+  top: 0;
+  left: 0;
+  margin: 1px 0;
+	border-radius: 4px 0 0 4px;
+  background-color: $color-faceit-green;
+}

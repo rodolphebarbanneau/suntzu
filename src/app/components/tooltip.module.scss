@@ -1,0 +1,35 @@
+
+/* Colors */
+@import '../../colors';
+
+/* Tooltip */
+.tooltip-button {
+  display: flex;
+  position: relative;
+  width: 10px;
+  height: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: $color-bg-500;
+  color: $color-fg-900;
+  cursor: pointer;
+}
+
+.tooltip-box {
+  display: flex;
+  position: absolute;
+  box-sizing: border-box;
+  width: 200px;
+  height: auto;
+  bottom: 100%;
+  left: 50%;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: .2rem;
+  background-color: $color-bg-500;
+  color: $color-fg-900;
+  border: 1px solid $color-bg-700;
+  transform: translateX(-50%);
+}
