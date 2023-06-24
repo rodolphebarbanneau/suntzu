@@ -3,9 +3,9 @@ import type { ReactNode } from 'react';
 import { Link } from '../components/link';
 import { Section, SectionHeader, SectionBody } from '../components/section';
 
+import svgDiscord from 'src/assets/discord.svg';
 import svgFaceit from 'src/assets/faceit.svg';
 import svgGithub from 'src/assets/github.svg';
-import svgReddit from 'src/assets/reddit.svg';
 
 const AboutColumn = (
   { title, children }: {
@@ -28,8 +28,8 @@ export const About = () => (
         <Link
           url="https://www.reddit.com/r/suntzugg"
           title="Suntzu Reddit"
-          img={svgReddit}
-          text="Reddit"
+          img={svgDiscord}
+          text="Discord"
         />
       </AboutColumn>
       <AboutColumn title="Authors">
