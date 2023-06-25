@@ -21,6 +21,11 @@ export class MatchroomPlayer {
     return this._container;
   }
 
+  /* Get the matchroom player id. */
+  get id(): string {
+    return this.nickname?.toLowerCase() ?? '';
+  }
+
   /* Get the matchroom player nickname. */
   get nickname(): string | null | undefined {
     return (

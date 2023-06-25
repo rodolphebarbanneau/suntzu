@@ -1,6 +1,8 @@
 import type { MatchModel } from '../types';
-import type { MetricsRange } from './metrics';
+import type { Feature } from './feature';
+import { BROWSER } from '../browser';
 import { FACEIT_MATCHROOM_ROUTES } from '../settings';
+import { SuntzuRange } from '../ranges';
 import { Api } from './api';
 import { MatchroomPlayer } from './matchroom-player';
 import { MatchroomMap } from './matchroom-map';
@@ -18,11 +20,17 @@ import { Metrics } from './metrics';
  * @property {number} Finished - State after the match has concluded. The final scores, stats, and
  * other post-match data can be accessed in this state.
  */
-export enum MatchroomStates {
+export enum MatchroomState {
   Voting,
   Configuring,
   Ready,
   Finished,
+}
+
+export interface MatchroomOptions {
+  match: string;
+  player: string;
+  time: string;
 }
 
 /**
@@ -41,11 +49,20 @@ export class Matchroom {
   /* The application programming interface used to fetch data. */
   private readonly _api: Api;
 
-  /* The matchroom details. */
-  private _details: MatchModel | null | undefined;
+  /* The matchroom listeners. */
+  private readonly _listeners: { [ key: string]: (() => void)[] } = {};
+
+  /* The matchroom features. */
+  private readonly _features: { [key: string]: Feature } = {};
 
   /* The matchroom details. */
-  private _metrics: Metrics | undefined;
+  private _details: MatchModel | null = null;
+
+  /* The matchroom metrics. */
+  private _metrics: Metrics | null = null;
+
+  /* The matchroom metrics token (used to cancel the metrics promise). */
+  private _metricsToken: string | null = null;
 
   /**
    * Create a matchroom.
@@ -78,16 +95,31 @@ export class Matchroom {
     return this._api;
   }
 
+  /* Get the matchroom listeners. */
+  get listeners(): { [ key: string]: (() => void)[] } {
+    return this._listeners;
+  }
+
+  /* Get the matchroom features. */
+  get features(): { [key: string]: Feature } {
+    return this._features;
+  }
+
   /* Get the matchroom details. */
-  get details(): MatchModel | null | undefined {
+  get details(): MatchModel | null {
     return this._details;
+  }
+
+  /* Get the matchroom metrics. */
+  get metrics(): Metrics | null {
+    return this._metrics;
   }
 
   /**
    * Initialize matchroom.
-   * @returns A matchroom instance.
+   * @returns A promise that resolves with the matchroom instance.
    */
-  public static async initialize(): Promise<Matchroom> {
+  static async initialize(): Promise<Matchroom> {
     // create matchroom
     const matchroom = new Matchroom();
     // initialize
@@ -95,7 +127,63 @@ export class Matchroom {
       // eslint-disable-next-line no-underscore-dangle
       matchroom._details = await matchroom.api.fetchMatch(matchroom.id);
     }
+    // listen for storage changes
+    BROWSER.storage.local.onChanged.addListener(
+      (changes: { [range: string]: chrome.storage.StorageChange }) => {
+        Object.values(SuntzuRange).forEach((key) => {
+          if (key in changes) {
+            matchroom.buildMetrics();
+          }
+        });
+      },
+    );
+    // return matchroom
     return matchroom;
+  }
+
+  /**
+   * Add a feature to the matchroom.
+   * @param feature - The feature to add.
+   */
+  addFeature(feature: Feature): void {
+    this._features[feature.name] = feature;
+  }
+
+  /**
+   * Add a matchroom listener.
+   * @param type - The matchroom listener type.
+   * @param listener - The matchroom listener callback.
+   */
+  addListener(type: string, listener: () => void): void {
+    this._listeners[type].push(listener);
+  }
+
+  /**
+   * Remove a matchroom listener.
+   * @param type - The matchroom listener type.
+   * @param listener - The matchroom listener callback.
+   */
+  removeListener(type: string, listener: () => void): void {
+    // check if type listeners exists
+    if (!(type in this._listeners)) return;
+    // remove type listener
+    const index = this._listeners[type].indexOf(listener);
+    if (index > -1) {
+      this._listeners[type].splice(index, 1);
+    }
+    // delete type listeners if empty
+    if (this._listeners[type].length === 0) {
+      delete this._listeners[type];
+    }
+  }
+
+  /**
+   * Notify matchroom listeners.
+   * @param type - The matchroom listener type.
+   * @param listener - The matchroom listener callback.
+   */
+  notifyListeners(type: string): void {
+    this._listeners[type].forEach((listener) => listener());
   }
 
   /**
@@ -163,17 +251,17 @@ export class Matchroom {
    * Get the document matchroom state.
    * @returns The document matchroom state.
    */
-  getState(): MatchroomStates {
+  getState(): MatchroomState {
     const status = this._details?.status;
     switch (status) {
       case 'VOTING':
-        return MatchroomStates.Voting;
+        return MatchroomState.Voting;
       case 'CONFIGURING':
-        return MatchroomStates.Configuring;
+        return MatchroomState.Configuring;
       case 'READY':
-        return MatchroomStates.Ready;
+        return MatchroomState.Ready;
       default:
-        return MatchroomStates.Finished;
+        return MatchroomState.Finished;
     }
   }
 
@@ -232,7 +320,7 @@ export class Matchroom {
     const state = this.getState();
     const maps: MatchroomMap[] = [];
     // retrieve the list of map elements for the active state.
-    if (state === MatchroomStates.Voting) {
+    if (state === MatchroomState.Voting) {
       // voting state
       const container = wrapper?.children?.[2].children?.[0];
       container?.childNodes.forEach((map) => {
@@ -240,7 +328,7 @@ export class Matchroom {
           map.childNodes[0] as HTMLDivElement,
         ));
       });
-    } else if (state === MatchroomStates.Configuring) {
+    } else if (state === MatchroomState.Configuring) {
       // configuring state
       maps.push(new MatchroomMap(
         wrapper?.children?.[2]?.children?.[0]?.children?.[3]?.children?.[0] as HTMLDivElement,
@@ -255,25 +343,42 @@ export class Matchroom {
   }
 
   /**
-   * Get the matchroom metrics.
-   * @returns The matchroom metrics.
+   * Build the matchroom metrics.
    */
-  async getMetrics(range: MetricsRange): Promise<Metrics> {
-    // check if metrics are already initialized
-    if (!this._metrics) {
-      this._metrics = await Metrics.initialize(this.api, this.id, range);
-    }
-    // check if metrics need to be updated
-    if (Object.entries(range).some(([key, value]) => {
-      if (Object.prototype.hasOwnProperty.call(this._metrics?.range, key)) {
-        const check = key as keyof MetricsRange;
-        return this._metrics?.range[check] !== value;
-      }
-      return true;
-    })) {
-      this._metrics = await Metrics.initialize(this.api, this.id, range);
-    }
-    // return the metrics
-    return this._metrics;
+  async buildMetrics(): Promise<void> {
+    // build metrics token
+    const token = Math.random().toString(36).substring(2, 15);
+    // build metrics
+    this._metricsToken = token;
+    return new Promise<void>((resolve, reject) => {
+      BROWSER.storage.local.get(Object.values(SuntzuRange), async (result) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          try {
+            const metrics = await Metrics.initialize(
+              this.api,
+              this.id,
+              {
+                match: result[SuntzuRange.MatchRange],
+                player: result[SuntzuRange.PlayerRange],
+                time: result[SuntzuRange.TimeRange],
+              },
+            );
+            if (this._metricsToken !== token) {
+              reject(new Error('Operation cancelled!'));
+            } else {
+              // write metrics
+              this._metrics = metrics;
+              // notify listeners
+              this.notifyListeners('metrics');
+              resolve();
+            }
+          } catch (err) {
+            reject(err);
+          }
+        }
+      });
+    });
   }
 }

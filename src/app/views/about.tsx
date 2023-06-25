@@ -28,8 +28,8 @@ export const About = () => (
         <Link
           url="https://www.reddit.com/r/suntzugg"
           title="Suntzu Reddit"
-          img={svgDiscord}
           text="Discord"
+          children={svgDiscord}
         />
       </AboutColumn>
       <AboutColumn title="Authors">
@@ -38,26 +38,26 @@ export const About = () => (
             <Link
               url="https://www.faceit.com/en/players/erunosaurus"
               title="Creator's FACEIT account (ERU)"
-              img={svgFaceit}
               text="ERU"
+              children={svgFaceit}
             />
             <Link
               url="https://github.com/rodolphebarbanneau"
               title="Creator's GitHub account (ERU)"
-              img={svgGithub}
+              children={svgGithub}
             />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", gap: "5px" }}>
             <Link
               url="https://www.faceit.com/en/players/Skayzr"
               title="Creator's FACEIT account (Skayzr)"
-              img={svgFaceit}
               text="Skayzr"
+              children={svgFaceit}
             />
             <Link
               url="https://github.com/lbrbn"
               title="Creator's GitHub account (Skayzr)"
-              img={svgGithub}
+              children={svgGithub}
             />
           </div>
         </div>

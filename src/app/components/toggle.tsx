@@ -7,7 +7,7 @@ export const Toggle = (
   },
 ) => {
   return (
-    <label className={styles.toggle}>
+    <label className={styles['toggle']}>
       <input type="checkbox" checked={isToggled} onChange={onToggle} />
       <span />
     </label>

@@ -21,6 +21,11 @@ export class MatchroomMap {
     return this._container;
   }
 
+  /* Get the matchroom map id. */
+  get id(): string {
+    return this.name?.toLowerCase() ?? '';
+  }
+
   /* Get the matchroom map name. */
   get name(): string | null | undefined {
     return this._container.querySelector('div > span')?.textContent;

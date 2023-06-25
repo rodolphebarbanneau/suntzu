@@ -11,18 +11,16 @@ import type { Api } from './api';
 
 /**
  * Metrics range for a matchroom.
- *
  * It is used to define the range of metrics for a `Matchroom` source model. It includes ranges for
  * match, player, and time. These ranges are required to fetch data for the `Matchroom` source model
  * effectively.
- *
- * @property {MatchRange} match - Defines the range of matches.
- * @property {PlayerRange} player - Specifies the range of players.
- * @property {TimeRange} time - Represents the range of time.
  */
 export interface MetricsRange {
+  /* The matchroom match range. */
   match: MatchRange;
+  /* The matchroom player range. */
   player: PlayerRange;
+  /* The matchroom time range. */
   time: TimeRange;
 }
 
@@ -30,7 +28,7 @@ export interface MetricsRange {
  * Metrics for a matchroom.
  *
  * It is responsible for aggregating and managing metrics related to a specific matchroom, including
- * source data, map metrics, player metrics, and more. This class makes use of an API to fetch and
+ * source data, maps metrics, players metrics, and more. This class makes use of an API to fetch and
  * provide access to these metrics, with specific ranges determined by the instance's
  * `MetricsRange`.
  */
@@ -47,10 +45,10 @@ export class Metrics {
   /* The source data. */
   private _source?: SourceModel | null;
 
-  /* The map metrics. */
+  /* The maps metrics. */
   private _maps?: MapMetricsModel | null;
 
-  /* The player metrics. */
+  /* The players metrics. */
   private _players?: PlayerMetricsModel | null;
 
   /**
@@ -82,10 +80,10 @@ export class Metrics {
   /* Get the source data. */
   get source(): SourceModel | null { return this._source ?? null; }
 
-  /* Get the map metrics. */
+  /* Get the maps metrics. */
   get maps(): MapMetricsModel | null { return this._maps ?? null; }
 
-  /* Get the player metrics. */
+  /* Get the players metrics. */
   get players(): PlayerMetricsModel | null { return this._players ?? null; }
 
   /**
@@ -95,7 +93,7 @@ export class Metrics {
    * @param range - The matchroom metrics range.
    * @returns A matchroom metrics instance.
    */
-  public static async initialize(
+  static async initialize(
     api: Api,
     matchId: string,
     range: MetricsRange,
@@ -113,7 +111,7 @@ export class Metrics {
    * value and the second element is the limit value.
    * @returns The matchroom match metrics range.
    */
-  public getMatchRange(): [number, number] {
+  getMatchRange(): [number, number] {
     switch (this._range.match) {
       case '10':  return [0, 10];
       case '20':  return [0, 20];
@@ -129,7 +127,7 @@ export class Metrics {
    * timestamp.
    * @returns The matchroom metrics time range.
    */
-  public getTimeRange(): [number, number] {
+  getTimeRange(): [number, number] {
     const end = Math.floor(Date.now() / 1000);
     switch (this._range.time) {
       case '1W': return [end -   (7 * 24 * 60 * 60), end];
@@ -145,7 +143,7 @@ export class Metrics {
    * Get the source model.
    * @returns The source model.
    */
-  public async getSource(): Promise<SourceModel | null> {
+  async getSource(): Promise<SourceModel | null> {
     /* eslint-disable @typescript-eslint/naming-convention */
     // fetch matchroom
     const matchroom = await this._api.fetchMatch(this._matchId);
@@ -191,7 +189,7 @@ export class Metrics {
    * @param gameId - The game id.
    * @returns The player matches source model.
    */
-  public async getPlayerMatches(
+  async getPlayerMatches(
     playerId: string,
     gameId: string,
   ): Promise<MatchSourceModel[] | null> {
@@ -223,7 +221,7 @@ export class Metrics {
    * @param matchId - The match id.
    * @returns The player match source model.
    */
-  public async getPlayerMatch(
+  async getPlayerMatch(
     playerId: string,
     matchId: string,
   ): Promise<MatchSourceModel | null> {
@@ -267,7 +265,7 @@ export class Metrics {
    * @param matchId - The match id.
    * @returns The player stats source model.
    */
-  public async getPlayerMatchStats(
+  async getPlayerMatchStats(
     playerId: string,
     matchId: string,
   ): Promise<MatchStatsSourceModel | null> {
@@ -287,11 +285,11 @@ export class Metrics {
   }
 
   /**
-   * Get the map vetos source model for the specified match.
+   * Get the maps vetos source model for the specified match.
    * @param matchId - The match id.
-   * @returns The map vetos source model.
+   * @returns The maps vetos source model.
    */
-  public async getPlayerMatchVetos(
+  async getPlayerMatchVetos(
     matchId: string,
   ): Promise<MatchVetoSourceModel[] | null> {
     // fetch vetos

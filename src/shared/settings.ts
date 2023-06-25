@@ -19,6 +19,7 @@ export const FEATURE_DEFAULTS = new Map<SuntzuFeature, boolean>([
 ]);
 
 /* Ranges */
+//todo rename MATCHROOM_DEFAULTS
 export const RANGE_DEFAULTS = new Map<SuntzuRange, string>([
   [SuntzuRange.MatchRange, MatchRange.Maximum20],
   [SuntzuRange.PlayerRange, PlayerRange.Any],

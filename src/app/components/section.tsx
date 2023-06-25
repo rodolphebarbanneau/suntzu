@@ -8,7 +8,7 @@ import { Toggle } from './toggle';
 import styles from './section.module.scss';
 
 export const Section = ({ children }: { children: ReactNode | ReactNode[] }) => (
-  <section className={styles.section}>
+  <section className={styles['section']}>
     {children}
   </section>
 );

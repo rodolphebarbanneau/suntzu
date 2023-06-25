@@ -1,7 +1,12 @@
 /* Colors */
 @import '../../colors';
 
-/* Cell */
+/* Inlines  */
+@import '../../app/components/grid.module';
+@import '../../app/components/link.module';
+@import '../../app/components/tooltip.module';
+
+/* Map  */
 .sidebar {
   position: absolute;
   width: .2rem;
@@ -10,5 +15,4 @@
   left: 0;
   margin: 1px 0;
 	border-radius: 4px 0 0 4px;
-  background-color: $color-faceit-green;
 }

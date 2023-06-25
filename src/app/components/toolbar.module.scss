@@ -2,7 +2,7 @@
 @import '../../colors';
 
 /* Toolbar */
-* {
+.toolbar {
 	padding: 0;
 	margin: 0;
 	justify-content: left;
@@ -10,24 +10,24 @@
 	font-family: Play, sans-serif;
 }
 
-.header {
+.toolbar-header {
   display: flex;
   padding-bottom: .2rem;
 }
 
-.header > svg {
+.toolbar-header > svg {
   fill: $color-fg-900;
   min-height: 16px;
   height: 16px;
 }
 
-.header > h1 {
+.toolbar-header > h1 {
   color: $color-fg-900;
   font-size: .8rem;
   font-weight: normal;
 }
 
-.toolbar {
+.toolbar-body {
   display: flex;
   padding-bottom: 1rem;
   gap: .2rem;

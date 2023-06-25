@@ -1,5 +1,7 @@
 import { BROWSER } from './browser';
 
+//todo MatchroomOptions
+
 /* Suntzu ranges */
 export enum SuntzuRange {
   MatchRange = 'matchRange',

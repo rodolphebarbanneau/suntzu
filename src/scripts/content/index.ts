@@ -1,20 +1,24 @@
-import { isFeatureEnabled, SuntzuFeature } from 'src/shared/features';
+import { SuntzuFeature, isFeatureEnabled } from 'src/shared/features';
 import { Matchroom } from 'src/shared/helpers/matchroom';
-import { hasRoot } from 'src/shared/helpers/utils';
-import addMapFeature from './map-feature';
-import addPlayerFeature from './player-feature';
+import { hasMainContent } from 'src/shared/helpers/utils';
+import { MapFeature } from './map';
+import addPlayerFeature from './player';
+import addToolbar from './toolbar';
 
 //todo: retrieve/update metrics on range change
+
+// declare matchroom
+let matchroom: Matchroom;
 
 const handleMutation = async (
   mutations: MutationRecord[],
   observer: MutationObserver
 ) => {
-  // return if root element does not exist
-  if (!hasRoot()) return;
+  // return if main content container does not exist
+  if (!hasMainContent()) return;
 
   // initialize matchroom
-  const matchroom = await Matchroom.initialize();
+  if (!matchroom) matchroom = await Matchroom.initialize();
 
   // return if matchroom is invalid
   if (!matchroom.isValid()) return;
@@ -22,13 +26,23 @@ const handleMutation = async (
   // return if matchroom is not fully loaded
   if (!matchroom.hasContainer()) return;
 
-  // add map metrics
-  if (await isFeatureEnabled(SuntzuFeature.PlayerFeature)) {
+  // get feature flags
+  const isMapFeatureEnabled = await isFeatureEnabled(SuntzuFeature.MapFeature);
+  const isPlayerFeatureEnabled = await isFeatureEnabled(SuntzuFeature.PlayerFeature);
+
+  // add toolbar
+  if (isMapFeatureEnabled || isPlayerFeatureEnabled) {
+    addToolbar(matchroom);
+  }
+
+  // add map feature
+  if (isMapFeatureEnabled) {
+
     addMapFeature(matchroom);
   }
 
-  // add player metrics
-  if (await isFeatureEnabled(SuntzuFeature.MapFeature)) {
+  // add player feature
+  if (isPlayerFeatureEnabled) {
     addPlayerFeature(matchroom);
   }
 

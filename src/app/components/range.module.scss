@@ -1,8 +1,8 @@
 /* Colors */
 @import '../../colors';
 
-/* Selector */
-.selector-wrapper {
+/* Range */
+.range-wrapper {
   display: flex;
   position: relative;
   align-items: stretch;
@@ -12,17 +12,17 @@
 	font-size: .7rem;
 }
 
-.selector-wrapper > h2 {
+.range-wrapper > h2 {
   padding: .2rem .3rem;
 	font-size: .7rem;
   font-weight: normal;
 }
 
-.selector-wrapper > select {
+.range-wrapper > select {
   display: none; // hide original select element
 }
 
-.selector-wrapper > .selection {
+.range-wrapper > .selection {
   display: flex;
   position: relative;
   background-color: $color-bg-500;
@@ -31,7 +31,7 @@
 	border-radius: 0 .2rem .2rem 0;
 }
 
-.selector-wrapper > .selection:after {
+.range-wrapper > .selection:after {
   // point arrow downwards when the select element is closed
   content: '';
   margin-left: .2rem;
@@ -40,14 +40,14 @@
   transform: translateY(25%);
 }
 
-.selector-wrapper > .selecting:after {
+.range-wrapper > .selecting:after {
   // point arrow upwards when the select element is opened
   border-color: transparent transparent $color-fg-100 transparent;
   transform: translateY(-25%);
 }
 
-.selector-wrapper > .selection,
-.selector-wrapper > .selector-items > div {
+.range-wrapper > .selection,
+.range-wrapper > .range-items > div {
   cursor: pointer;
   user-select: none;
 	padding: .2rem .3rem;
@@ -55,7 +55,7 @@
   border-color: transparent transparent rgba(0, 0, 0, 0.2) transparent;
 }
 
-.selector-wrapper > .selector-items {
+.range-wrapper > .range-items {
   position: absolute;
   z-index: 99;
 	top: calc(100% + .2rem);
@@ -66,28 +66,28 @@
 	box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.2);
 }
 
-.selector-wrapper > .selector-items div:first-child {
+.range-wrapper > .range-items div:first-child {
   border-radius: .2rem .2rem 0 0;
 }
 
-.selector-wrapper > .selector-items div:last-child {
+.range-wrapper > .range-items div:last-child {
   border-radius: 0 0 .2rem .2rem;
 }
 
-.selector-wrapper > .selector-items div:nth-child(odd) {
+.range-wrapper > .range-items div:nth-child(odd) {
   background-color: $color-bg-700;
 }
 
-.selector-wrapper > .selector-items div:nth-child(even) {
+.range-wrapper > .range-items div:nth-child(even) {
   background-color: $color-bg-500;
 }
 
-.selector-wrapper > .selector-items.hide {
+.range-wrapper > .range-items.hide {
   display: none; // hide items when the select element is closed
 }
 
-.selector-wrapper > .selector-items > div:hover,
-.selector-wrapper > .selector-items > div.selected {
+.range-wrapper > .range-items > div:hover,
+.range-wrapper > .range-items > div.selected {
 	background-color: $color-bg-300;
   color: $color-fg-300;
 }

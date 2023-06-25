@@ -2,7 +2,7 @@
 @import '../../colors';
 
 /* Link */
-a {
+a.link {
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -14,26 +14,26 @@ a {
   cursor: pointer;
 }
 
-a:hover {
+a.link:hover {
   background-color: $color-bg-100;
 }
 
-a.sm {
-  padding: 2px 4px;
-}
-
-a.lg {
-  padding: 2px 9px;
-}
-
-a img {
+a.link img, a.link svg {
   width: 14px;
 }
 
-a.lg img {
-  margin-right: 6px;
+a.link p {
+  font-size: .75rem;
 }
 
-a p {
-  font-size: .75rem;
+a.link.small {
+  padding: 2px 4px;
+}
+
+a.link.large {
+  padding: 2px 9px;
+}
+
+a.link.large img, a.link.large svg {
+  margin-right: 6px;
 }

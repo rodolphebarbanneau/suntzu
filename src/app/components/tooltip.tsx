@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import styles from './tooltip.module.scss';
 
-export const Tooltip = ({ message }: { message: number }) => {
+export const Tooltip = ({ message }: { message: string }) => {
   const [hover, setHover] = useState(false);
   const [show, setShow] = useState(false);
 

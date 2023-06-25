@@ -14,19 +14,16 @@ export interface MetricsModel {
 
 /* Map metrics model (suntzu) */
 export type MapMetricsModel = {
-  [key: string]: {
-    relative_win_rate?: number;
-    teams: {
-      [key: string]: MetricsModel;
-    };
+  relative_win_rate?: number;
+  teams: {
+    [key: string]: MetricsModel;
   };
 };
 
 /* Player metrics model (suntzu) */
 export type PlayerMetricsModel = {
-  [key: string]: {
-    maps: {
-      [key: string]: MetricsModel;
-    };
+  overall: MetricsModel;
+  maps: {
+    [key: string]: MetricsModel;
   };
 };

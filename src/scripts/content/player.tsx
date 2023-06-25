@@ -1,3 +1,15 @@
+import { debounce } from 'lodash';
+
+import type { Matchroom } from 'src/shared/helpers/matchroom';
+
+export default debounce(async (matchroom: Matchroom) => {
+  console.log(matchroom.details?.status ?? 'matchroom is not live');
+}, 250);
+
+
+
+
+
 import type { ReactNode } from 'react';
 import { useState, useEffect } from 'react';
 import { default as ReactShadowRoot } from 'react-shadow';

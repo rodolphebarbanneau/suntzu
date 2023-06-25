@@ -21,13 +21,13 @@ import { getCookie } from './cookie';
 /**
  * A response wrapped data.
  * @typeParam T - The wrapped data payload type. Default to unknown.
- * @property code - The wrapped data code.
- * @property result - The wrapped data result.
- * @property payload - The wrapped data payload.
  */
 export interface WrappedData<T = unknown> {
+  /* The wrapped data code. */
   code?: string;
+  /* The wrapped data result. */
   result?: string;
+  /* The wrapped data payload. */
   payload: T;
 }
 

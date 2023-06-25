@@ -2,7 +2,7 @@
 @import '../../colors';
 
 /* Loading */
-.loading {
+.loading-wrapper {
   width: 45px;
   height: 20px;
   display: flex;
@@ -10,25 +10,25 @@
   align-items: center;
 }
 
-.loading .loadingdot {
+.loading-wrapper .loading-dot {
   width: 9px;
   height: 9px;
   border-radius: 50%;
   display: inline-block;
   background-color: $color-fg-300;
   transform: scale(0.4);
-  animation: loadingdot-animation 0.6s infinite;
+  animation: loading-dot-animation 0.6s infinite;
 }
 
-.loadingdot:nth-child(2) {
+.loadingd-dot:nth-child(2) {
   animation-delay: 0.3s;
 }
 
-.loadingdot:nth-child(4) {
+.loading-dot:nth-child(4) {
   animation-delay: 0.3s;
 }
 
-@keyframes loadingdot-animation {
+@keyframes loading-dot-animation {
   0%,
   100% {
     transform: scale(0.4);

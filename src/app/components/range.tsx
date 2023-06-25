@@ -3,19 +3,18 @@ import { useEffect, useState, useRef } from 'react';
 import { SuntzuRange, MatchRange, PlayerRange, TimeRange } from 'src/shared/ranges';
 import { useRange } from '../hooks/use-range';
 
-import styles from './selector.module.scss';
-import stylesheet from './selector.module.scss?inline';
+import styles from './range.module.scss';
 
-export const Selector = (
-  { title, range }: {
+export const Range = (
+  { title, type }: {
     title: string;
-    range: SuntzuRange;
+    type: SuntzuRange;
   },
 ) => {
-  const [option, setRange] = useRange(range);
+  const [option, setRange] = useRange(type);
   // retrieve options based on the provided range type
   const options: string[] = [];
-  switch (range) {
+  switch (type) {
     case SuntzuRange.MatchRange:
       options.push(...Object.values(MatchRange));
       break;
@@ -31,6 +30,7 @@ export const Selector = (
   const [isSelecting, setSelecting] = useState(false);
 
   const onClick = (value: string) => {
+    if (value === option) return;
     setRange(value)
     setSelecting(false);
   };
@@ -54,9 +54,7 @@ export const Selector = (
 
   return (
     <>
-      {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
-      <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-      <div className={styles['selector-wrapper']} ref={wrapper}>
+      <div className={styles['range-wrapper']} ref={wrapper}>
         <h2>{title}</h2>
         <div
           className={
@@ -66,7 +64,7 @@ export const Selector = (
         >
           {option}
         </div>
-        <div className={`${styles['selector-items']} ${isSelecting ? '' : styles.hide}`}>
+        <div className={`${styles['range-items']} ${isSelecting ? '' : styles.hide}`}>
           {options.map((value, index) => (
             <div
               key={index}
@@ -82,4 +80,4 @@ export const Selector = (
   );
 };
 
-export default Selector;
+export default Range;
