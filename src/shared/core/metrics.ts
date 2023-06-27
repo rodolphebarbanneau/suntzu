@@ -1,4 +1,4 @@
-import type { MatchRange, PlayerRange, TimeRange } from '../ranges';
+import type { MatchesOption, PlayersOption, TimeSpanOption } from '../types';
 import type {
   MapMetricsModel,
   PlayerMetricsModel,
@@ -10,96 +10,94 @@ import type {
 import type { Api } from './api';
 
 /**
- * Metrics range for a matchroom.
- * It is used to define the range of metrics for a `Matchroom` source model. It includes ranges for
- * match, player, and time. These ranges are required to fetch data for the `Matchroom` source model
- * effectively.
+ * Match metrics options.
+ * It is used to define the metrics options for a match source model. It includes options for
+ * matches, players, and time span. These options are required to fetch data for the match source
+ * model effectively.
  */
-export interface MetricsRange {
-  /* The matchroom match range. */
-  match: MatchRange;
-  /* The matchroom player range. */
-  player: PlayerRange;
-  /* The matchroom time range. */
-  time: TimeRange;
+export interface MetricsOptions {
+  /* The metrics matches option */
+  matches: MatchesOption;
+  /* The metrics players option */
+  players: PlayersOption;
+  /* The metrics time span option */
+  timeSpan: TimeSpanOption;
 }
 
 /**
- * Metrics for a matchroom.
- *
- * It is responsible for aggregating and managing metrics related to a specific matchroom, including
+ * Match metrics.
+ * It is responsible for aggregating and managing metrics related to a specific match, including
  * source data, maps metrics, players metrics, and more. This class makes use of an API to fetch and
- * provide access to these metrics, with specific ranges determined by the instance's
- * `MetricsRange`.
+ * provide access to these metrics, with specific options.
  */
 export class Metrics {
-  /* The application programming interface used to fetch data. */
+  /* The application programming interface used to fetch data */
   private readonly _api: Api;
 
-  /* The matchroom id. */
+  /* The match id */
   private readonly _matchId: string;
 
-  /* The matchroom metrics range. */
-  private readonly _range: MetricsRange;
+  /* The match metrics options */
+  private readonly _options: MetricsOptions;
 
-  /* The source data. */
+  /* The source data */
   private _source?: SourceModel | null;
 
-  /* The maps metrics. */
+  /* The maps metrics */
   private _maps?: MapMetricsModel | null;
 
-  /* The players metrics. */
+  /* The players metrics */
   private _players?: PlayerMetricsModel | null;
 
   /**
-   * Create matchroom metrics.
+   * Create match metrics.
    * @param api - The application programming interface used to fetch data.
-   * @param matchId - The matchroom id.
-   * @param range - The matchroom metrics range.
+   * @param matchId - The match id.
+   * @param options - The match metrics options.
    */
   private constructor(
     api: Api,
     matchId: string,
-    range: MetricsRange,
+    options: MetricsOptions,
   ) {
     // initialize
     this._api = api;
     this._matchId = matchId;
-    this._range = range;
+    this._options = options;
   }
 
   /* Get the application programming interface used to fetch data. */
   get api(): Api { return this._api; }
 
-  /* Get the matchroom id. */
+  /* Get the match id */
   get matchId(): string { return this._matchId; }
 
-  /* Get the matchroom metrics range. */
-  get range(): MetricsRange { return this._range; }
+  /* Get the match metrics options. */
+  get options(): MetricsOptions { return this._options; }
 
-  /* Get the source data. */
+  /* Get the source data */
   get source(): SourceModel | null { return this._source ?? null; }
 
-  /* Get the maps metrics. */
+  /* Get the maps metrics */
   get maps(): MapMetricsModel | null { return this._maps ?? null; }
 
-  /* Get the players metrics. */
+  /* Get the players metrics */
   get players(): PlayerMetricsModel | null { return this._players ?? null; }
 
   /**
-   * Initialize matchroom metrics.
+   * Initialize match metrics.
    * @param api - The application programming interface used to fetch data.
-   * @param matchId - The matchroom id.
-   * @param range - The matchroom metrics range.
-   * @returns A matchroom metrics instance.
+   * @param matchId - The match id.
+   * @param options - The match metrics options.
+   * @returns A match metrics instance.
    */
   static async initialize(
     api: Api,
     matchId: string,
-    range: MetricsRange,
+    options: MetricsOptions,
   ): Promise<Metrics> {
     // create metrics
-    const metrics = new Metrics(api, matchId, range);
+    const metrics = new Metrics(api, matchId, options);
     // initialize
     // eslint-disable-next-line no-underscore-dangle
     metrics._source = await metrics.getSource();
@@ -107,12 +105,12 @@ export class Metrics {
   }
 
   /**
-   * Get the matchroom metrics match range as a tuple of 2 numbers. The first element is the offset
+   * Get the match metrics matches option as a tuple of 2 numbers. The first element is the offset
    * value and the second element is the limit value.
-   * @returns The matchroom match metrics range.
+   * @returns The match metrics matches option.
    */
-  getMatchRange(): [number, number] {
-    switch (this._range.match) {
+  getMatchesOption(): [number, number] {
+    switch (this._options.matches) {
       case '10':  return [0, 10];
       case '20':  return [0, 20];
       case '50':  return [0, 50];
@@ -122,14 +120,14 @@ export class Metrics {
   }
 
   /**
-   * Get the matchroom metrics time range as a tuple of 2 number. The first element is the start
+   * Get the match metrics time span option as a tuple of 2 number. The first element is the start
    * of the time interval and the second element is the end of the time interval specified as a Unix
    * timestamp.
-   * @returns The matchroom metrics time range.
+   * @returns The match metrics time span options.
    */
-  getTimeRange(): [number, number] {
+  getTimeSpanOption(): [number, number] {
     const end = Math.floor(Date.now() / 1000);
-    switch (this._range.time) {
+    switch (this._options.timeSpan) {
       case '1W': return [end -   (7 * 24 * 60 * 60), end];
       case '2W': return [end -  (14 * 24 * 60 * 60), end];
       case '1M': return [end -  (30 * 24 * 60 * 60), end];
@@ -145,17 +143,17 @@ export class Metrics {
    */
   async getSource(): Promise<SourceModel | null> {
     /* eslint-disable @typescript-eslint/naming-convention */
-    // fetch matchroom
-    const matchroom = await this._api.fetchMatch(this._matchId);
-    // check matchroom
-    if (!matchroom) return null;
+    // fetch match
+    const match = await this._api.fetchMatch(this._matchId);
+    // check match
+    if (!match) return null;
     // fetch teams
     const teams = await Promise.all(
-      Object.entries(matchroom.teams ?? {}).map(async ([faction, team]) => {
+      Object.entries(match.teams ?? {}).map(async ([faction, team]) => {
         // fetch roster
         const roster = await Promise.all(team.roster.map(async (player) => {
           // fetch matches
-          const matches = await this.getPlayerMatches(player.player_id, matchroom.game);
+          const matches = await this.getPlayerMatches(player.player_id, match.game);
           // return player matches
           return {
             player_id: player.player_id,
@@ -177,7 +175,7 @@ export class Metrics {
     );
     // return teams
     return {
-      match_id: matchroom.match_id,
+      match_id: match.match_id,
       teams: Object.fromEntries(teams ?? []),
     };
     /* eslint-enable @typescript-eslint/naming-convention */
@@ -193,17 +191,17 @@ export class Metrics {
     playerId: string,
     gameId: string,
   ): Promise<MatchSourceModel[] | null> {
-    // retrieve ranges
-    const matchRange = this.getMatchRange();
-    const timeRange = this.getTimeRange();
+    // retrieve options
+    const matchesOption = this.getMatchesOption();
+    const timeSpanOption = this.getTimeSpanOption();
     // fetch matches
     const matches = await this._api.fetchPlayerMatches(
       playerId,
       gameId,
-      timeRange[0],
-      timeRange[1],
-      matchRange[0],
-      matchRange[1],
+      timeSpanOption[0],
+      timeSpanOption[1],
+      matchesOption[0],
+      matchesOption[1],
     );
     // check matches
     if (!matches) return null;

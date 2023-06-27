@@ -16,18 +16,18 @@ import {
   FACEIT_OPEN_BASE_URL,
   FACEIT_API_BASE_URL,
 } from '../settings';
-import { getCookie } from './cookie';
+import { getCookie } from '../helpers';
 
 /**
  * A response wrapped data.
  * @typeParam T - The wrapped data payload type. Default to unknown.
  */
 export interface WrappedData<T = unknown> {
-  /* The wrapped data code. */
+  /* The wrapped data code */
   code?: string;
-  /* The wrapped data result. */
+  /* The wrapped data result */
   result?: string;
-  /* The wrapped data payload. */
+  /* The wrapped data payload */
   payload: T;
 }
 
@@ -39,7 +39,7 @@ export interface WrappedData<T = unknown> {
  * the settings to minimize unnecessary network usage.
  */
 export class Api {
-  /** The api token. */
+  /** The api token */
   private readonly _token: string | null;
 
   /**

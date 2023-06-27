@@ -1,4 +1,4 @@
-/* Faceit */
+/* Faceit types */
 export { MatchModel } from './match';
 export { MatchStatsModel } from './match-stats';
 export { MatchVetosModel } from './match-veto';
@@ -7,14 +7,21 @@ export { PlayerMatchesModel } from './player-matches';
 export { PlayerStatsModel } from './player-stats';
 export { UserModel } from './user';
 
-/* Metrics */
+/* Options types */
+export {
+  MatchesOption,
+  PlayersOption,
+  TimeSpanOption,
+} from './options';
+
+/* Metrics types */
 export {
   MetricsModel,
   MapMetricsModel,
   PlayerMetricsModel,
 } from './metrics';
 
-/* Source */
+/* Source types */
 export {
   SourceModel,
   TeamSourceModel,

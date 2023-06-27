@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Source model (suntzu) */
+/* Source model (extension) */
 export interface SourceModel {
   match_id: string;
   teams: {
@@ -8,7 +8,7 @@ export interface SourceModel {
   };
 };
 
-/* Team source model (suntzu) */
+/* Team source model (extension) */
 export interface TeamSourceModel {
   faction_id: string;
   name: string;
@@ -16,14 +16,14 @@ export interface TeamSourceModel {
   roster: PlayerSourceModel[];
 };
 
-/* Player source model (suntzu) */
+/* Player source model (extension) */
 export interface PlayerSourceModel {
   player_id: string;
   nickname: string;
   matches: MatchSourceModel[];
 };
 
-/* Match source model (suntzu) */
+/* Match source model (extension) */
 export interface MatchSourceModel {
   match_id: string;
   timestamp: number;
@@ -38,12 +38,12 @@ export interface MatchSourceModel {
   vetos: MatchVetoSourceModel[];
 };
 
-/* Match stats source model (suntzu) */
+/* Match stats source model (extension) */
 export interface MatchStatsSourceModel {
   [key: string]: string;
 };
 
-/* Match veto source model (suntzu) */
+/* Match veto source model (extension) */
 export interface MatchVetoSourceModel {
   guid: string;
   status: string;

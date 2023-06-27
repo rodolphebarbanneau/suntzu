@@ -1,37 +1,27 @@
 import { debounce } from 'lodash';
 
 import type { Component } from './component';
-import type { Matchroom } from './matchroom';
 
 /**
  * A feature.
  */
 export abstract class Feature {
-  /* The feature matchroom. */
-  private readonly _matchroom: Matchroom;
-
-  /* The feature name. */
+  /* The feature name */
   private readonly _name: string;
 
-  /* The feature components. */
-  private readonly _components: { [key: string]: Component } = {};
+  /* The feature components */
+  private readonly _components: Set<Component>;
 
   /**
    * Create a feature.
-   * @param matchroom - The feature matchroom.
    * @param name - The feature name.
    */
-  constructor(matchroom: Matchroom, name: string) {
+  constructor(name: string) {
     // initialize
-    this._matchroom = matchroom;
     this._name = name;
+    this._components = new Set();
     // debounce render
     this.render = () => debounce(async () => { this.render(); }, 250);
-  }
-
-  /* Get the feature matchroom. */
-  get matchroom(): Matchroom {
-    return this._matchroom;
   }
 
   /* Get the feature name. */
@@ -40,18 +30,52 @@ export abstract class Feature {
   }
 
   /* Get the feature components. */
-  get components(): { [key: string]: Component } {
+  get components(): Set<Component> {
     return this._components;
   }
 
   /**
    * Add a component to the feature.
    * @param component - The component to add.
+   * @returns The feature.
    */
-  addComponent(component: Component): void {
-    this._components[component.name] = component;
+  add(component: Component): Component {
+    // return if component already exists
+    if (this._components.has(component)) return component;
+    // add component
+    this._components.add(component);
+    return component;
   }
 
-  /* The render method. */
+  /**
+   * Add multiple components to the feature.
+   * @param components - The components to add.
+   * @returns The feature.
+   */
+  extend(...components: Component[]): Feature {
+    components.forEach((component) => {
+      if (this._components.has(component)) return;
+      this._components.add(component);
+    });
+    return this;
+  }
+
+  /**
+   * Remove multiple components from the feature.
+   * @param components - The components to remove.
+   */
+  remove(...components: Component[]): Feature {
+    components.forEach((component) => {
+      if (!this._components.has(component)) return;
+      this._components.delete(component);
+      component.remove();
+    });
+    return this;
+  }
+
+  /**
+   * Render the feature.
+   * This method must be overridden.
+   */
   abstract render(): void;
 }

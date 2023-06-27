@@ -10,16 +10,16 @@ import { EXTENSION_NAME } from '../settings';
  * into the document. Each component is attached to a container element in the document.
  */
 export class Component {
-  /* The component id. */
+  /* The component id */
   private readonly _id: string
 
-  /* The component name. */
+  /* The component name */
   private readonly _name: string
 
-  /* The component container. */
+  /* The component container */
   private readonly _container: HTMLDivElement;
 
-  /* The component root. */
+  /* The component root */
   private readonly _root: Root;
 
   /**
@@ -42,22 +42,22 @@ export class Component {
     this._root = createRoot(this._container, options);
   }
 
-  /* Get the component id. */
+  /* Get the component id */
   get id(): string {
     return this._id;
   }
 
-  /* Get the component name. */
+  /* Get the component name */
   get name(): string {
     return this._name;
   }
 
-  /* Get the component container. */
+  /* Get the component container */
   get container(): HTMLDivElement {
     return this._container;
   }
 
-  /* Get the component root. */
+  /* Get the component root */
   get root(): Root {
     return this._root;
   }
@@ -79,6 +79,15 @@ export class Component {
    */
   prependTo(element: HTMLDivElement): Component {
     element.prepend(this._container);
+    return this;
+  }
+
+  /**
+   * Remove the component.
+   * @returns The component.
+   */
+  remove(): Component {
+    this._container.remove();
     return this;
   }
 

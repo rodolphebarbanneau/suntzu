@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Metrics model (suntzu) */
+/* Metrics model (extension) */
 export interface MetricsModel {
   matches?: number;
   win_rate?: number;
@@ -12,7 +12,7 @@ export interface MetricsModel {
   drop_rate?: number;
 }
 
-/* Map metrics model (suntzu) */
+/* Map metrics model (extension) */
 export type MapMetricsModel = {
   relative_win_rate?: number;
   teams: {
@@ -20,7 +20,7 @@ export type MapMetricsModel = {
   };
 };
 
-/* Player metrics model (suntzu) */
+/* Player metrics model (extension) */
 export type PlayerMetricsModel = {
   overall: MetricsModel;
   maps: {
