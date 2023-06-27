@@ -35,7 +35,13 @@
         /* Disallow the use of console. */
         "no-console": "warn",
         /* Disallows reassignment of function parameters. */
-        "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["req", "res"] }],
+        "no-param-reassign": [
+          "error",
+          {
+            "props": true,
+            "ignorePropertyModificationsFor": ["obj", "req", "res"]
+          }
+        ],
         /* Disallow dangling underscores in identifiers. */
         "no-underscore-dangle": ["error", { "allowAfterThis": true, "allowAfterSuper": true }],
         /* Enforces consistent spacing after the `//` or `/*` in a comment. */
