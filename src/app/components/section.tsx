@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { SuntzuFeature } from 'src/shared/features';
+import type { Settings } from 'src/shared/features';
 import { useFeature } from '../hooks/use-feature';
 import { Loading } from './loading';
 import { Toggle } from './toggle';
@@ -16,7 +16,7 @@ export const Section = ({ children }: { children: ReactNode | ReactNode[] }) => 
 export const SectionHeader = (
   { title, feature }: {
     title: string;
-    feature?: SuntzuFeature;
+    feature?: Settings;
   },
 ) => {
   const [option, setFeature] = useFeature(feature);
