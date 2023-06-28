@@ -74,22 +74,3 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
     });
   },
 );
-
-
-// //todo
-// map.container.style.backgroundColor = `hsl(${h},${s}%,${l}%)`;
-// maps.forEach((map) => {
-//   const mapContainer = document.createElement('div');
-//   mapContainer.id = `${EXTENSION_NAME}-map-metrics`;
-//   map.container.append(mapContainer)
-//   const mapRoot = createRoot(mapContainer);
-//   mapRoot.render(
-//     <DropCell value={100} />
-//   );
-//   const h = 120, // Hue for green // 60 yellow, 0 red
-//         s = 15, // Saturation
-//         l = 15; // Lightness - reduce by darkness factor
-//   map.container.style.backgroundColor = `hsl(${h},${s}%,${l}%)`;
-//   //map.container.style.opacity = '0.1';
-//
-// });
