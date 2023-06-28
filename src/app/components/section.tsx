@@ -1,31 +1,34 @@
 import type { ReactNode } from 'react';
 
-import type { Settings } from 'src/shared/features';
-import { useFeature } from '../hooks/use-feature';
+import { FEATURES } from 'src/shared/settings';
+
+import { useStorage } from '../hooks/use-storage';
 import { Loading } from './loading';
 import { Toggle } from './toggle';
 
 import styles from './section.module.scss';
 
+/* Section */
 export const Section = ({ children }: { children: ReactNode | ReactNode[] }) => (
   <section className={styles['section']}>
     {children}
   </section>
 );
 
-export const SectionHeader = (
-  { title, feature }: {
+/* Section header */
+export const SectionHeader = <K extends keyof Awaited<typeof FEATURES>>(
+  { title, key }: {
     title: string;
-    feature?: Settings;
+    key?: K;
   },
 ) => {
-  const [option, setFeature] = useFeature(feature);
+  const [option, setFeature] = useStorage(FEATURES, key);
 
   return (
     <header>
       <h2>{title}</h2>
       {
-        feature !== undefined ?
+        key !== undefined ?
           (option === null
             ? <Loading />
             : <Toggle isToggled={option} onToggle={() => setFeature(!option)} />
@@ -36,8 +39,7 @@ export const SectionHeader = (
   );
 };
 
+/* Section body */
 export const SectionBody = ({ description }: { description: string }) => (
   <p>{description}</p>
 );
-
-export default Section;

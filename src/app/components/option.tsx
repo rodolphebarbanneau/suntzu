@@ -1,40 +1,48 @@
 import { useEffect, useState, useRef } from 'react';
 
-import { SuntzuRange, MatchRange, PlayerRange, TimeRange } from 'src/shared/ranges';
-import { useRange } from '../hooks/use-range';
+import type { Matchroom, MatchroomOptions } from 'src/shared/core';
+import { MatchesOption, PlayersOption, TimeSpanOption } from 'src/shared/types';
 
-import styles from './range.module.scss';
+import { useStorage } from '../hooks/use-storage';
 
-export const Option = (
-  { title, type }: {
+import styles from './option.module.scss';
+
+/* Option */
+export const Option = <K extends keyof MatchroomOptions>(
+  { title, matchroom, key }: {
     title: string;
-    type: SuntzuRange;
+    matchroom: Matchroom;
+    key?: K;
   },
 ) => {
-  const [option, setRange] = useRange(type);
-  // retrieve options based on the provided range type
+  const wrapper = useRef<HTMLDivElement>(null);
+  const [option, setOption] = useStorage(matchroom.options, key);
+
+  // retrieve options based on the provided option key
   const options: string[] = [];
-  switch (type) {
-    case SuntzuRange.MatchRange:
-      options.push(...Object.values(MatchRange));
+  switch (key) {
+    case 'matches':
+      options.push(...Object.values(MatchesOption));
       break;
-    case SuntzuRange.PlayerRange:
-      options.push(...Object.values(PlayerRange));
+    case 'players':
+      options.push(...Object.values(PlayersOption));
       break;
-    case SuntzuRange.TimeRange:
-      options.push(...Object.values(TimeRange));
+    case 'timeSpan':
+      options.push(...Object.values(TimeSpanOption));
       break;
   }
 
-  const wrapper = useRef<HTMLDivElement>(null);
+  // state to determine if the option items should be shown
   const [isSelecting, setSelecting] = useState(false);
 
-  const onClick = (value: string) => {
+  // handle clicking on an option item
+  const onClick = (value: MatchroomOptions[K]) => {
     if (value === option) return;
-    setRange(value)
+    setOption(value)
     setSelecting(false);
   };
 
+  // handle clicking outside of the wrapper
   const onClickOutside = (event: Event) => {
     // check if clicking outside of the wrapper
     if (wrapper.current && !event.composedPath().includes(wrapper.current)) {
@@ -42,6 +50,7 @@ export const Option = (
     }
   };
 
+  // add event listeners
   useEffect(() => {
     // add event listener to detect clicking outside of the wrapper
     document.addEventListener('mousedown', onClickOutside);
@@ -54,7 +63,7 @@ export const Option = (
 
   return (
     <>
-      <div className={styles['range-wrapper']} ref={wrapper}>
+      <div className={styles['option-wrapper']} ref={wrapper}>
         <h2>{title}</h2>
         <div
           className={
@@ -64,11 +73,11 @@ export const Option = (
         >
           {option}
         </div>
-        <div className={`${styles['range-items']} ${isSelecting ? '' : styles.hide}`}>
+        <div className={`${styles['option-items']} ${isSelecting ? '' : styles.hide}`}>
           {options.map((value, index) => (
             <div
               key={index}
-              onMouseUp={() => onClick(value)}
+              onMouseUp={() => onClick(value as MatchroomOptions[K])}
               className={value === option ? styles.selected : ''}
             >
               {value}
@@ -80,4 +89,4 @@ export const Option = (
   );
 };
 
-export default Range;
+export default Option;
