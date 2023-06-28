@@ -1,5 +1,6 @@
 import { Matchroom } from 'src/shared/core';
 import { StorageFeature, getFeatureFlag } from 'src/shared/helpers';
+
 import { MapFeature } from './matchroom/map';
 import addPlayerFeature from './matchroom/player';
 import addToolbar from './matchroom/toolbar';
