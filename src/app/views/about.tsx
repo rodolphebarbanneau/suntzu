@@ -7,6 +7,7 @@ import svgDiscord from 'src/assets/discord.svg';
 import svgFaceit from 'src/assets/faceit.svg';
 import svgGithub from 'src/assets/github.svg';
 
+/* About column */
 const AboutColumn = (
   { title, children }: {
     title: string;
@@ -19,6 +20,7 @@ const AboutColumn = (
   </div>
 );
 
+/* About */
 export const About = () => (
   <Section>
     <SectionHeader title="About" />

@@ -5,10 +5,12 @@ import { App } from './app/app';
 
 import './styles.scss';
 
+/* Root */
 const root = createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+/* Render */
 root.render(
   <StrictMode>
     <App />

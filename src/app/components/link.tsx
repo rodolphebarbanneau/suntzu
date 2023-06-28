@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
 import styles from './link.module.scss';
-import React from 'react';
 
+/* Link */
 export const Link = (
   { url, title, text, children }: {
     url: string;

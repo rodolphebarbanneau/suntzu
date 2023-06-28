@@ -1,5 +1,6 @@
 import styles from './toggle.module.scss';
 
+/* Toggle */
 export const Toggle = (
   { isToggled, onToggle }: {
     isToggled: boolean;

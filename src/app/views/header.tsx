@@ -1,5 +1,6 @@
 import svgSuntzu from 'src/assets/suntzu.svg';
 
+/* Header */
 export const Header = () => (
   <header>
     <img src={svgSuntzu} alt="Suntzu (logo)" />
