@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { FEATURES } from 'src/shared/settings';
+import { CONFIG } from 'src/shared/settings';
 
 import { useStorage } from '../hooks/use-storage';
 import { Loading } from './loading';
@@ -16,13 +16,13 @@ export const Section = ({ children }: { children: ReactNode | ReactNode[] }) => 
 );
 
 /* Section header */
-export const SectionHeader = <K extends keyof Awaited<typeof FEATURES>>(
+export const SectionHeader = <K extends keyof Awaited<typeof CONFIG>>(
   { title, key }: {
     title: string;
     key?: K;
   },
 ) => {
-  const [option, setFeature] = useStorage(FEATURES, key);
+  const [option, setFeature] = useStorage(CONFIG, key);
 
   return (
     <header>
