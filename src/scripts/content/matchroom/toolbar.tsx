@@ -9,14 +9,15 @@ import { Tooltip } from 'src/app/components/tooltip';
 
 import stylesheet from './toolbar.module.scss?inline';
 
-/* Toolbar feature. */
+/* Toolbar feature */
 export const ToolbarFeature = (matchroom: Matchroom) => new Feature('toolbar',
   (feature) => {
     // retrieve matchroom information
     const info = matchroom.getInformation();
     // do nothing if matchroom information is not available
     if (!info) return;
-    // create components
+
+    // create component
     feature.add(
       <ReactShadowRoot.Div>
         {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
