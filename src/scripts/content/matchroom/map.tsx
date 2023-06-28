@@ -1,16 +1,36 @@
 import { default as ReactShadowRoot } from 'react-shadow';
 
-import type { Matchroom } from 'src/shared/helpers/matchroom';
-import { Feature } from 'src/shared/helpers/feature';
-import { getColorScale } from 'src/shared/helpers/colors';
-import { createComponent } from 'src/shared/helpers/component';
-import { hasExtension } from 'src/shared/helpers/utils';
+import type { Matchroom } from 'src/shared/core';
+import { Feature } from 'src/shared/core';
+import { getColorScale } from 'src/shared/helpers';
 
 import { Cell, Column, Grid } from 'src/app/components/grid';
 import { Tooltip } from 'src/app/components/tooltip';
 
 import styles from './map.module.scss';
 import stylesheet from './map.module.scss?inline';
+
+
+// initialize background color scale
+const backgroundColor = getColorScale(
+  [-0.05, +0.05],
+  {
+    hue: [7, 113],
+    saturation: [15, 15],
+    lightness: [15, 15],
+  },
+);
+// initialize foreground color scale
+const foregroundColor = getColorScale(
+  [-0.05, +0.05],
+  {
+    hue: [7, 113],
+    saturation: [80, 80],
+    lightness: [50, 50],
+  },
+);
+
+
 
 export class MapFeature extends Feature {
   /* The background color scale. */
@@ -25,24 +45,6 @@ export class MapFeature extends Feature {
    */
   constructor(matchroom: Matchroom) {
     super(matchroom, 'map');
-    // initialize background color scale
-    this._backgroundColor = getColorScale(
-      [-0.05, +0.05],
-      {
-        hue: [7, 113],
-        saturation: [15, 15],
-        lightness: [15, 15],
-      },
-    );
-    // initialize foreground color scale
-    this._foregroundColor = getColorScale(
-      [-0.05, +0.05],
-      {
-        hue: [7, 113],
-        saturation: [80, 80],
-        lightness: [50, 50],
-      },
-    );
   }
 
   /**

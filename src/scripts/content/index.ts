@@ -1,24 +1,21 @@
+import type { Feature } from 'src/shared/core';
 import { Matchroom } from 'src/shared/core';
-import { StorageFeature, getFeatureFlag } from 'src/shared/helpers';
 
 import { MapFeature } from './matchroom/map';
-import addPlayerFeature from './matchroom/player';
-import addToolbar from './matchroom/toolbar';
+import { PlayerFeature } from './matchroom/player';
+import { ToolbarFeature } from './matchroom/toolbar';
 
-//todo: retrieve/update metrics on range change
+/* Declare globals */
+const matchroom = Matchroom.initialize();
+const features = new Set<Feature>();
 
-// declare matchroom
-let matchroom: Matchroom | null = null;
-
+/* Handle mutations */
 const handleMutation = async (
   mutations: MutationRecord[],
   observer: MutationObserver
 ) => {
-  // initialize matchroom
-  matchroom = await Matchroom.initialize();
-
   // return if matchroom is invalid
-  if (!matchroom) return;
+  if (!await matchroom) return;
 
   // return if matchroom is not ready
   if (!matchroom.isReady()) return;
@@ -38,6 +35,12 @@ const handleMutation = async (
     addMapFeature(matchroom);
   }
 
+
+
+
+
+
+
   // add player feature
   if (isPlayerFeatureEnabled) {
     addPlayerFeature(matchroom);
@@ -56,5 +59,6 @@ const handleMutation = async (
   });
 };
 
+/* Observe mutations */
 const observer = new MutationObserver(handleMutation);
 observer.observe(document.body, { childList: true, subtree: true });
