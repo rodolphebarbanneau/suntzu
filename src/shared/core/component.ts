@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { Root, RootOptions } from 'react-dom/client';
 import { createRoot } from 'react-dom/client';
 
+import type { Feature } from './feature';
 import { EXTENSION_NAME } from '../settings';
 
 /**
@@ -10,36 +11,51 @@ import { EXTENSION_NAME } from '../settings';
  * into the document. Each component is attached to a container element in the document.
  */
 export class Component {
+  /* The component feature */
+  private readonly _feature: Feature;
+
   /* The component id */
   private readonly _id: string
-
-  /* The component name */
-  private readonly _name: string
 
   /* The component container */
   private readonly _container: HTMLDivElement;
 
-  /* The component root */
+  /* The component react root */
   private readonly _root: Root;
+
+  /* The component react node */
+  private readonly _node: ReactNode;
 
   /**
    * Create a component.
-   * @param name - The extension component name.
-   * @param options - The extension component root options (optional).
+   * @param feature - The component feature.
+   * @param node - The component react node.
+   * @param options - The component react root options (optional).
    */
-  constructor(name: string, options?: RootOptions) {
-    // initialize id (random string)
-    this._id =(
-      Math.random().toString(36).substring(2, 15)
-      + Math.random().toString(36).substring(2, 15)
-    );
-    // initialize name (extension name + component name)
-    this._name = `${EXTENSION_NAME.toLowerCase().trim().replace(/\s+/g, '-')}-${name}`;
-    // initialize container and root
+  constructor(
+    feature: Feature,
+    node: ReactNode,
+    options?: RootOptions,
+  ) {
+    // initialize feature
+    this._feature = feature;
+    // initialize id (extension name + random string)
+    const random = Math.random().toString(36).substring(2, 15);
+    this._id = `${EXTENSION_NAME.toLowerCase().trim().replace(/\s+/g, '-')}-${random}`;
+    // initialize container
     this._container = document.createElement('div');
     this._container.setAttribute('id', this._id);
-    this._container.setAttribute('name', this._name);
+    this._container.setAttribute('name', this._id);
+    // initialize react root and node
     this._root = createRoot(this._container, options);
+    this._node = node;
+    // add component to feature
+    this._feature.extend(this);
+  }
+
+  /* Get the component feature */
+  get feature(): Feature {
+    return this._feature;
   }
 
   /* Get the component id */
@@ -47,23 +63,23 @@ export class Component {
     return this._id;
   }
 
-  /* Get the component name */
-  get name(): string {
-    return this._name;
-  }
-
   /* Get the component container */
   get container(): HTMLDivElement {
     return this._container;
   }
 
-  /* Get the component root */
+  /* Get the component react root */
   get root(): Root {
     return this._root;
   }
 
+  /* Get the component react node */
+  get node(): ReactNode {
+    return this._node;
+  }
+
   /**
-   * Append the component.
+   * Append the component container.
    * @param element - The element to append the component to.
    * @returns The component.
    */
@@ -73,7 +89,7 @@ export class Component {
   }
 
   /**
-   * Prepend the component.
+   * Prepend the component container.
    * @param element - The element to prepend the component to.
    * @returns The component.
    */
@@ -83,7 +99,7 @@ export class Component {
   }
 
   /**
-   * Remove the component.
+   * Remove the component container.
    * @returns The component.
    */
   remove(): Component {
@@ -92,34 +108,20 @@ export class Component {
   }
 
   /**
-   * Mount the component.
-   * @param children - The component react children.
+   * Render the component node into the root attached to the container.
    * @returns The component.
    */
-  render(children: ReactNode): Component {
-    this._root.render(children);
+  render(): Component {
+    this._root.render(this._node);
     return this;
   }
 
   /**
-   * Unmount the component.
+   * Unmount the component node from the root.
    * @returns The component.
    */
   unmount(): Component {
     this._root.unmount();
     return this;
   }
-}
-
-/**
- * Create a component.
- * @param name - The extension component name.
- * @param options - The extension component root options (optional).
- * @returns The created extension component.
- */
-export function createComponent(
-  name: string,
-  options?: RootOptions,
-): Component {
-  return new Component(name, options);
 }
