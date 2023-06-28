@@ -173,10 +173,7 @@ export class Matchroom {
     matchroom._details = await matchroom.api.fetchMatch(matchroom.id);
     /* eslint-enable no-underscore-dangle */
     // listen for storage changes
-    Storage.addListener({
-      namespace: matchroom.options,
-      callback: () => matchroom.buildMetrics(),
-    });
+    Storage.addListener([matchroom.options, () => matchroom.buildMetrics()]);
     // return matchroom
     return matchroom;
   }

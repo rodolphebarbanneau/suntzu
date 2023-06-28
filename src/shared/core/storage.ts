@@ -7,26 +7,16 @@ const OPTIONS_KEY = Symbol('options');  // eslint-disable-line @typescript-eslin
 const RECORDS_KEY = Symbol('records');  // eslint-disable-line @typescript-eslint/naming-convention
 
 /* Storage types */
-type StorageChanges = { [key: string]: chrome.storage.StorageChange };
-type StorageRecords = { [key: string]: unknown };
-
-/**
- * A listener for a storage namespace.
- * It is used to listen to changes in the storage namespace.
- */
-interface StorageListener {
-  /* The storage namespace to listen for changes. */
-  namespace: StorageNamespace;
-  /* The callback to execute when a change occurs in the storage. */
-  callback: (changes: StorageChanges) => void;
-};
+export type StorageChanges = { [key: string]: chrome.storage.StorageChange };
+export type StorageRecords = { [key: string]: unknown };
+export type StorageListener = [StorageNamespace, (changes: StorageChanges) => void];
 
 /**
  * Options for a storage namespace.
  * It is used to define the storage namespace and synchroneous flag. If the storage is synchroneous,
  * the records will be updated automatically when the browser local storage changes.
  */
-interface StorageOptions {
+export interface StorageOptions {
   /* The storage namespace (defaults to an empty string) */
   name?: string;
   /* The storage synchroneous flag with the browser locals (defaults to false) */
@@ -115,24 +105,25 @@ export class Storage {
     if (this._listeners.has(listener)) return;
 
     // helper function
+    const [namespace, callback] = listener;
     const helper = (changes: StorageChanges, areaName: string) => {
       // do nothing if the area name is not local
       if (areaName !== 'local') return;
       // get storage namespace records keys
       const keys: string[] = Reflect.getMetadata(
         RECORDS_KEY,
-        listener.namespace.constructor.prototype,
+        namespace.constructor.prototype,
       ) || [];
       // filter storage namespace records changes
       const result = Object.keys(changes).reduce((obj: StorageChanges, key) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if (key in keys && (listener.namespace as any)[key] !== changes[key].newValue) {
+        if (key in keys && (namespace as any)[key] !== changes[key].newValue) {
           obj[key] = changes[key];
         }
         return obj;
       }, {});
       // execute callback if namespace records changes
-      if (Object.keys(result).length !== 0) listener.callback(result);
+      if (Object.keys(result).length !== 0) callback(result);
     };
 
     // register the listener
@@ -166,7 +157,7 @@ export class Storage {
 export abstract class StorageNamespace {
   /* Async initialization */
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  public constructor() { /* do not use, use initialize instead */ }
+  public constructor() { /* do not call, use initialize instead */ }
 
   /**
    * A factory method for creating and initializing an instance of a storage namespace subclass.
@@ -217,10 +208,10 @@ export abstract class StorageNamespace {
       }
       // handle storage changes if sync
       if (sync) {
-        Storage.addListener({
-          namespace: instance,
-          callback: (changes: StorageChanges) => setter(changes[data.key].newValue),
-        });
+        Storage.addListener([
+          instance,
+          (changes: StorageChanges) => setter(changes[data.key].newValue),
+        ]);
       }
     }
 

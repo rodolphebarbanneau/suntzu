@@ -10,7 +10,11 @@ export {
 export { Metrics, MetricsOptions } from './metrics';
 export {
   Storage,
+  StorageOptions,
   StorageNamespace,
+  StorageChanges,
+  StorageRecords,
+  StorageListener,
   storageOptions,
   storageRecord,
 } from './storage';
