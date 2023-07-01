@@ -5,8 +5,9 @@ export const EXTENSION_NAME = 'suntzu';
 export const EXTENSION_VERSION = '0.1.0';
 
 /* Configuration */
-export const CACHE_TIME = 3600000; // 60 minutes
 export const CONFIG = Configuration.initialize();
+export const CACHE_TIME = 3600000; // 60 minutes
+export const DEBOUNCE_DELAY = 250; // 250 milliseconds
 
 /* Faceit */
 export const FACEIT_OPEN_API_KEY = 'cf4f0a93-1fcc-43b8-b77e-e1b3895ac70d';
