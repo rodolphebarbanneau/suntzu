@@ -389,7 +389,7 @@ export class Matchroom {
       this.options,
     );
     // discard metrics if token has changed
-    if (this._metricsToken !== token) throw new Error('Operation cancelled!');
+    if (this._metricsToken !== token) throw new Error('Operation cancelled');
     // write metrics and notify
     this._metrics = metrics;
     this.notifyListeners('metrics');

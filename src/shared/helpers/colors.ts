@@ -25,7 +25,7 @@ export function getColorScale(
   // check thresholds ordering
   thresholds.reduce((prev, curr) => {
     if (curr <= prev) {
-      throw new Error('Threshold elements must be ordered ascendingely.');
+      throw new Error('Threshold elements must be ordered ascendingely');
     }
     return curr;
   });
@@ -36,13 +36,13 @@ export function getColorScale(
   const lightness = range?.lightness || [15, 15];
   // check color range
   if (hue.some((h) => h < 0 || h > 360)) {
-    throw new Error('Hue values must be between 0 and 360.');
+    throw new Error('Hue values must be between 0 and 360');
   }
   if (saturation.some((s) => s < 0 || s > 100)) {
-    throw new Error('Saturation must be between 0 and 100.');
+    throw new Error('Saturation must be between 0 and 100');
   }
   if (lightness.some((l) => l < 0 || l > 100)) {
-    throw new Error('Lightness must be between 0 and 100.');
+    throw new Error('Lightness must be between 0 and 100');
   }
 
   // compute gradient

@@ -112,7 +112,7 @@ export class Api {
       );
       // check network error
       if (!response.ok) throw new Error(
-        'Data fetch operation failed. Received an invalid response.'
+        'Data fetch operation failed (received an invalid response)'
       );
       // unwrap response data
       if (unwrap) {
@@ -122,7 +122,7 @@ export class Api {
         if ((code && code.toUpperCase() !== 'OPERATION-OK')
           || (result && result.toUpperCase() !== 'OK')
         ) throw new Error(
-          'Data fetch operation failed. Received an invalid response.'
+          'Data fetch operation failed (received an invalid response)'
         );
         return payload;
       }
