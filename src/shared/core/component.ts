@@ -50,7 +50,7 @@ export class Component {
     this._root = createRoot(this._container, options);
     this._node = node;
     // add component to feature
-    this._feature.extend(this);
+    this._feature.extendComponents(this);
   }
 
   /* Get the component feature */
@@ -103,25 +103,22 @@ export class Component {
    * @returns The component.
    */
   remove(): Component {
+    this._root.unmount();
     this._container.remove();
     return this;
   }
 
   /**
    * Render the component node into the root attached to the container.
-   * @returns The component.
    */
-  render(): Component {
+  render(): void {
     this._root.render(this._node);
-    return this;
   }
 
   /**
    * Unmount the component node from the root.
-   * @returns The component.
    */
-  unmount(): Component {
+  unmount(): void {
     this._root.unmount();
-    return this;
   }
 }

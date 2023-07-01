@@ -18,7 +18,7 @@ export const ToolbarFeature = (matchroom: Matchroom) => new Feature('toolbar',
     if (!info) return;
 
     // create component
-    feature.add(
+    feature.addComponent(
       <ReactShadowRoot.Div>
         {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
         <style dangerouslySetInnerHTML={{ __html: stylesheet }} />

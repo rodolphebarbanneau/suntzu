@@ -36,10 +36,10 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
     // retrieve matchroom maps
     const maps = matchroom.getMaps();
 
-    // create components for each map
+    // create components and actions for each map
     maps.forEach((map) => {
       // sidebar component
-      feature.add(
+      feature.addComponent(
         <ReactShadowRoot.Div>
           {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
@@ -48,7 +48,7 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
       ).prependTo(map.container);
 
       // summary component
-      feature.add(
+      feature.addComponent(
         <ReactShadowRoot.Div>
           {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
@@ -58,7 +58,7 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
       ).appendTo(map.container);
 
       // stats component
-      feature.add(
+      feature.addComponent(
         <ReactShadowRoot.Div>
           {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
@@ -71,6 +71,12 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
           </Grid>
         </ReactShadowRoot.Div>
       ).appendTo(map.container);
+
+      // container
+      feature.addAction({
+        render: () => { map.container.style.backgroundColor = backgroundColor(1); },
+        unmount: () => { map.container.style.backgroundColor = ''; },
+      });
     });
   },
 );
