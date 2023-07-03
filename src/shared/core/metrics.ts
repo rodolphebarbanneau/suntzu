@@ -99,8 +99,7 @@ export class Metrics {
     // create metrics
     const metrics = new Metrics(api, matchId, options);
     // initialize
-    // eslint-disable-next-line no-underscore-dangle
-    metrics._source = await metrics.getSource();
+    if (!await metrics.buildSource()) throw new Error('Failed to build source');
     return metrics;
   }
 
@@ -116,6 +115,23 @@ export class Metrics {
       case '50':  return [0, 50];
       case '100': return [0, 100];
       default:    return [0, 100];
+    }
+  }
+
+  /**
+   * Get the match metrics players option as a tuple of 2 numbers. Those elements are respectively
+   * the minimum and maximum number of team players that must be present in a match to be considered
+   * for the metrics.
+   * @returns The match metrics players option.
+   */
+  getPlayersOption(): [number, number] {
+    switch (this._options.players) {
+      case 'ANY':   return [1, 5];
+      case 'MIN:2': return [2, 5];
+      case 'MIN:3': return [3, 5];
+      case 'MIN:4': return [4, 5];
+      case 'ALL':   return [5, 5];
+      default:      return [1, 5];
     }
   }
 
@@ -138,15 +154,15 @@ export class Metrics {
   }
 
   /**
-   * Get the source model.
+   * Build the source model.
    * @returns The source model.
    */
-  async getSource(): Promise<SourceModel | null> {
+  async buildSource(): Promise<boolean> {
     /* eslint-disable @typescript-eslint/naming-convention */
     // fetch match
     const match = await this._api.fetchMatch(this._matchId);
     // check match
-    if (!match) return null;
+    if (!match) return false;
     // fetch teams
     const teams = await Promise.all(
       Object.entries(match.teams ?? {}).map(async ([faction, team]) => {
@@ -173,16 +189,17 @@ export class Metrics {
         ];
       }),
     );
-    // return teams
-    return {
+    // build source
+    this._source = {
       match_id: match.match_id,
       teams: Object.fromEntries(teams ?? []),
     };
+    return true;
     /* eslint-enable @typescript-eslint/naming-convention */
   }
 
   /**
-   * Get the player matches source model for the specified player.
+   * Get the player matches source model for the specified player and game.
    * @param playerId - The player id.
    * @param gameId - The game id.
    * @returns The player matches source model.
@@ -214,7 +231,7 @@ export class Metrics {
   }
 
   /**
-   * Get the player match source model for the specified match.
+   * Get the player match source model for the specified player and match.
    * @param playerId - The player id.
    * @param matchId - The match id.
    * @returns The player match source model.
@@ -258,7 +275,7 @@ export class Metrics {
   }
 
   /**
-   * Get the player stats source model for the specified match.
+   * Get the player match stats source model for the specified player and match.
    * @param playerId - The player id.
    * @param matchId - The match id.
    * @returns The player stats source model.
@@ -283,9 +300,9 @@ export class Metrics {
   }
 
   /**
-   * Get the maps vetos source model for the specified match.
+   * Get the map vetos source model for the specified match.
    * @param matchId - The match id.
-   * @returns The maps vetos source model.
+   * @returns The map vetos source model.
    */
   async getPlayerMatchVetos(
     matchId: string,
