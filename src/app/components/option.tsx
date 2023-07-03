@@ -1,42 +1,28 @@
 import { useEffect, useState, useRef } from 'react';
 
-import type { Matchroom, MatchroomOptions } from 'src/shared/core';
-import { MatchesOption, PlayersOption, TimeSpanOption } from 'src/shared/types';
+import type { StorageNamespace } from 'src/shared/core';
 
 import { useStorage } from '../hooks/use-storage';
 
 import styles from './option.module.scss';
 
 /* Option */
-export const Option = <K extends keyof MatchroomOptions>(
-  { title, matchroom, key }: {
+export const Option = <T extends StorageNamespace, K extends keyof T>(
+  { title, namespace, key, options }: {
     title: string;
-    matchroom: Matchroom;
-    key?: K;
+    namespace: T | Promise<T>,
+    key: K;
+    options: T[K][],
   },
 ) => {
   const wrapper = useRef<HTMLDivElement>(null);
-  const [option, setOption] = useStorage(matchroom.options, key);
-
-  // retrieve options based on the provided option key
-  const options: string[] = [];
-  switch (key) {
-    case 'matches':
-      options.push(...Object.values(MatchesOption));
-      break;
-    case 'players':
-      options.push(...Object.values(PlayersOption));
-      break;
-    case 'timeSpan':
-      options.push(...Object.values(TimeSpanOption));
-      break;
-  }
+  const [option, setOption] = useStorage(namespace, key);
 
   // state to determine if the option items should be shown
   const [isSelecting, setSelecting] = useState(false);
 
   // handle clicking on an option item
-  const onClick = (value: MatchroomOptions[K]) => {
+  const onClick = (value: T[K]) => {
     if (value === option) return;
     setOption(value)
     setSelecting(false);
@@ -77,7 +63,7 @@ export const Option = <K extends keyof MatchroomOptions>(
           {options.map((value, index) => (
             <div
               key={index}
-              onMouseUp={() => onClick(value as MatchroomOptions[K])}
+              onMouseUp={() => onClick(value as T[K])}
               className={value === option ? styles.selected : ''}
             >
               {value}

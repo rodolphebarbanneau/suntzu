@@ -28,12 +28,12 @@ export const SectionHeader = <K extends keyof Awaited<typeof CONFIG>>(
     <header>
       <h2>{title}</h2>
       {
-        key !== undefined ?
-          (option === null
+        key !== undefined
+          ? (option === null
             ? <Loading />
             : <Toggle isToggled={option} onToggle={() => setFeature(!option)} />
           )
-        : null
+          : null
       }
     </header>
   );

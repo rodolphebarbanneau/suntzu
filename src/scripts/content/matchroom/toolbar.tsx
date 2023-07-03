@@ -2,6 +2,7 @@ import { default as ReactShadowRoot } from 'react-shadow';
 
 import type { Matchroom } from 'src/shared/core';
 import { Feature } from 'src/shared/core';
+import { MatchesOption, PlayersOption, TimeSpanOption } from 'src/shared/types';
 
 import { Option } from 'src/app/components/option';
 import { Toolbar, ToolbarHeader, ToolbarBody } from 'src/app/components/toolbar';
@@ -41,9 +42,24 @@ export const ToolbarFeature = (matchroom: Matchroom) => new Feature('toolbar',
             <Tooltip message={'test'} />
           </ToolbarHeader>
           <ToolbarBody>
-            <Option title="Match" matchroom={matchroom} key="matches" />
-            <Option title="Time" matchroom={matchroom} key="timeSpan" />
-            <Option title="Player" matchroom={matchroom} key="players" />
+            <Option
+              title="Match"
+              namespace={matchroom.options}
+              key="matches"
+              options={Object.values(MatchesOption)}
+            />
+            <Option
+              title="Time"
+              namespace={matchroom.options}
+              key="timeSpan"
+              options={Object.values(TimeSpanOption)}
+            />
+            <Option
+              title="Player"
+              namespace={matchroom.options}
+              key="players"
+              options={Object.values(PlayersOption)}
+            />
           </ToolbarBody>
         </Toolbar>
       </ReactShadowRoot.Div>

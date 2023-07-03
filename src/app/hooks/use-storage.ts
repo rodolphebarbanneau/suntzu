@@ -12,15 +12,15 @@ import {
  * The custom storage React hook function deals with storage values. It handles both synchronous and
  * asynchronous (promise-based) storage instances.
  *
- * @template T - This extends the storage namespace (i.e. the type of the storage instance).
- * @param instance - The storage instance to be managed, which can be a synchronous instance of `T`
- * or a Promise that resolves with an instance of `T`.
- * @param key - (optional) The key of the item within the storage instance to be managed.
+ * @template T - It extends the storage namespace.
+ * @param namespace - The storage namespace to be managed, which can be a synchronous instance of
+ * `T` or a Promise that resolves with an instance of `T`.
+ * @param key - The key of the item within the storage instance to be managed.
  * @returns A React hook tuple where the first element is the current value of the storage item and
  * the second element is a function to update that value.
  */
 export const useStorage = <T extends StorageNamespace, K extends keyof T>(
-  instance: T | Promise<T>,
+  namespace: T | Promise<T>,
   key?: K,
 ): [T[K] | null, Dispatch<SetStateAction<T[K] | null>>] => {
   const [option, setStorage] = useState<T[K] | null>(null);
@@ -32,34 +32,34 @@ export const useStorage = <T extends StorageNamespace, K extends keyof T>(
    */
   useEffect(() => {
     if (!key) return;
-    if (instance instanceof Promise) {
-      instance.then((records) => {
+    if (namespace instanceof Promise) {
+      namespace.then((records) => {
         storage.current = true;
         setStorage(records[key]);
       });
     } else {
       storage.current = true;
-      setStorage(instance[key]);
+      setStorage(namespace[key]);
     }
-  }, [key, instance]);
+  }, [key, namespace]);
 
   /**
    * Effect to update the storage value when the local state updates.
-   * If instance is a promise, it is resolved first before updating the storage value. It is also
-   * skipped if the option is null, the key is undefined or the storage hasn't been initialized.
+   * If the namespace is a promise, it is resolved first before updating the storage value. It is
+   * also skipped if the option is null or the storage hasn't been initialized.
    */
   useEffect(() => {
     if (!key) return;
     if (!storage.current) return;
     if (option === null) return;
-    if (instance instanceof Promise) {
-      instance.then((records) => {
+    if (namespace instanceof Promise) {
+      namespace.then((records) => {
         records[key] = option;
       });
     } else {
-      instance[key] = option;
+      namespace[key] = option;
     }
-  }, [option, key, instance]);
+  }, [option, key, namespace]);
 
   /**
    * Effect to listen for storage changes and update the local state accordingly.
@@ -73,11 +73,11 @@ export const useStorage = <T extends StorageNamespace, K extends keyof T>(
         setStorage(changes[key as string].newValue);
       }
     };
-    Storage.addListener([instance, onChange]);
+    Storage.addListener([namespace, onChange]);
     return () => {
-      Storage.removeListener([instance, onChange]);
+      Storage.removeListener([namespace, onChange]);
     };
-  }, [key, instance]);
+  }, [key, namespace]);
 
   return [option, setStorage];
 };
