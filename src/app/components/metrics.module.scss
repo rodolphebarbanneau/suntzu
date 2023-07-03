@@ -1,0 +1,40 @@
+/* Colors */
+@import '../../colors';
+
+/* Metrics */
+table {
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  border-style: hidden;
+  color: $color-fg-500;
+}
+
+caption {
+  padding: .25rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+tbody {
+  font-size: .8rem;
+}
+
+tr {
+  text-align: left;
+}
+
+th, td {
+  padding: .2rem .3rem;
+  border: 2px solid;
+  border-top: none;
+  border-bottom: none;
+}
+
+.map th, td {
+  border-color: $color-bg-900;
+}
+
+.player th, td {
+  border-color: $color-fg-500;
+}

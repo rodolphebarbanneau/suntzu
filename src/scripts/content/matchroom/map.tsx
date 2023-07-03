@@ -4,7 +4,7 @@ import type { Matchroom } from 'src/shared/core';
 import { Feature } from 'src/shared/core';
 import { getColorScale } from 'src/shared/helpers';
 
-import { Cell, Column, Grid } from 'src/app/components/grid';
+import { Metrics } from 'src/app/components/metrics';
 import { Tooltip } from 'src/app/components/tooltip';
 
 import styles from './map.module.scss';
@@ -52,8 +52,10 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
         <ReactShadowRoot.Div>
           {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Cell>{'100'}</Cell>
-          <Tooltip message={'Relative win rate'} />
+          <div className={styles['kpi']}>
+            <p style={{ color: foregroundColor(0.15) }}>+15%</p>
+            <Tooltip message={'Relative win rate'} />
+          </div>
         </ReactShadowRoot.Div>
       ).appendTo(map.container);
 
@@ -62,13 +64,10 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
         <ReactShadowRoot.Div>
           {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Grid>
-            <Column width="">
-              <Cell>{'->'}</Cell>
-              <Cell/>
-              <Cell>{'<-'}</Cell>
-            </Column>
-          </Grid>
+          <Metrics
+            feature="map"
+            data={[]}
+          />
         </ReactShadowRoot.Div>
       ).appendTo(map.container);
 

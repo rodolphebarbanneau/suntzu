@@ -1,12 +1,24 @@
 /* Colors */
-@import '../../colors';
+@import '../../../colors';
 
 /* Inlines  */
-@import '../../app/components/grid.module';
-@import '../../app/components/link.module';
-@import '../../app/components/tooltip.module';
+@import '../../../app/components/link.module';
+@import '../../../app/components/metrics.module';
+@import '../../../app/components/tooltip.module';
 
 /* Map  */
+.kpi {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.kpi p {
+  font-size: .7rem;
+  font-weight: bold;
+}
+
 .sidebar {
   position: absolute;
   width: .2rem;
