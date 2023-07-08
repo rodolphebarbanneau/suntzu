@@ -145,7 +145,11 @@
           {
             // default
             "selector": "default",
-            "format": ["camelCase"]
+            "format": ["camelCase"],
+            "filter": {
+              "regex": "^_$",
+              "match": false
+            }
           },
           {
             // protected members
