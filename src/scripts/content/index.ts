@@ -1,60 +1,59 @@
 import type { Feature } from 'src/shared/core';
 import { CONFIG } from 'src/shared/settings';
-import { Matchroom } from 'src/shared/core';
+import { Storage, Matchroom } from 'src/shared/core';
 
+import { InfoFeature } from './matchroom/info';
 import { MapFeature } from './matchroom/map';
 import { PlayerFeature } from './matchroom/player';
-import { ToolbarFeature } from './matchroom/toolbar';
 
 /* Declare globals */
-const matchroom = Matchroom.initialize();
-const features: Record<string, Feature>() = {};
+export const MATCHROOM = Matchroom.initialize();
+export const FEATURES: Record<string, Feature> = {};
+
+const render = async (config: any) => {
+
+  if (config.showMap || config.showPlayer) {
+    FEATURES['info'].render();
+  } else {
+    FEATURES['info'].unmount();
+  }
+
+  if (config.showMap) {
+    FEATURES['map'].render();
+  }
+
+  if (config.showPlayer) {
+    FEATURES['player'].render();
+  }
+};
 
 /* Handle mutations */
 const handleMutation = async (
   mutations: MutationRecord[],
   observer: MutationObserver
 ) => {
+  const config = await CONFIG;
   // return if config is invalid
-  if (!(await CONFIG)) return;
+  if (!config) return;
+
+  const matchroom = await MATCHROOM;
 
   // return if matchroom is invalid
-  if (!(await matchroom)) return;
-
+  if (!matchroom) return;
   // return if matchroom is not ready
   if (!matchroom.isReady()) return;
 
-  // add features
-  if (!features.size) {
-    features.add(MapFeature(matchroom));
-    features.add(PlayerFeature(matchroom));
-    features.add(ToolbarFeature(matchroom));
-  }
-
-  // get feature flags
-  const isMapFeatureEnabled = await getFeatureFlag(StorageFeature.map);
-  const isPlayerFeatureEnabled = await getFeatureFlag(StorageFeature.player);
-
-  // add toolbar
-  if (CONFIG.showMap || CONFIG.showPlayer) {
-    addToolbar(matchroom);
-  }
-
-  // add map feature
-  if (isMapFeatureEnabled) {
-
-    addMapFeature(matchroom);
-  }
+  // initialize features
+  if (Object.keys(FEATURES).length === 0) {
+    FEATURES['map'] = MapFeature(matchroom);
+    FEATURES['player'] = PlayerFeature(matchroom);
+    FEATURES['info'] = InfoFeature(matchroom);
+    render(config);
 
 
-
-
-
-
-
-  // add player feature
-  if (isPlayerFeatureEnabled) {
-    addPlayerFeature(matchroom);
+    Storage.addListener([config, async () => {
+      render(config);
+    }]);
   }
 
   mutations.forEach((mutation) => {
