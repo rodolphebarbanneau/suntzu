@@ -7,8 +7,13 @@ import { getColorScale } from 'src/shared/helpers';
 import { Metrics } from 'src/app/components/metrics';
 import { Tooltip } from 'src/app/components/tooltip';
 
-import styles from './map.module.scss';
+import stylesheetLink from 'src/app/components/link.module.scss?inline';
+import stylesheetMetrics from 'src/app/components/metrics.module.scss?inline';
+import stylesheetTooltip from 'src/app/components/tooltip.module.scss?inline';
+
 import stylesheet from './map.module.scss?inline';
+import styles from './map.module.scss';
+import { match } from 'assert';
 
 /* Background color scale */
 const backgroundColor = getColorScale(
@@ -36,14 +41,21 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
     // retrieve matchroom maps
     const maps = matchroom.getMaps();
 
+    const metrics = matchroom.metrics?.teams ?? {};
+    const faction = metrics['faction1'] ?? {};
+    console.log(faction); //todo
+
     // create components and actions for each map
     maps.forEach((map) => {
       // sidebar component
       feature.addComponent(
         <ReactShadowRoot.Div>
           {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
+          <style dangerouslySetInnerHTML={{ __html: stylesheetLink }} />
+          <style dangerouslySetInnerHTML={{ __html: stylesheetMetrics }} />
+          <style dangerouslySetInnerHTML={{ __html: stylesheetTooltip }} />
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <div className={styles['sidebar']}></div>
+          <div className={styles['sidebar']} style={{ backgroundColor: foregroundColor(0.15) }}></div>
         </ReactShadowRoot.Div>
       ).prependTo(map.container);
 
@@ -51,6 +63,9 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
       feature.addComponent(
         <ReactShadowRoot.Div>
           {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
+          <style dangerouslySetInnerHTML={{ __html: stylesheetLink }} />
+          <style dangerouslySetInnerHTML={{ __html: stylesheetMetrics }} />
+          <style dangerouslySetInnerHTML={{ __html: stylesheetTooltip }} />
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <div className={styles['kpi']}>
             <p style={{ color: foregroundColor(0.15) }}>+15%</p>
@@ -63,6 +78,9 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
       feature.addComponent(
         <ReactShadowRoot.Div>
           {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
+          <style dangerouslySetInnerHTML={{ __html: stylesheetLink }} />
+          <style dangerouslySetInnerHTML={{ __html: stylesheetMetrics }} />
+          <style dangerouslySetInnerHTML={{ __html: stylesheetTooltip }} />
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <Metrics
             feature="map"
@@ -77,5 +95,8 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
         unmount: () => { map.container.style.backgroundColor = ''; },
       });
     });
+
+    // listen for metrics changes
+    matchroom.addListener(feature.render);
   },
 );

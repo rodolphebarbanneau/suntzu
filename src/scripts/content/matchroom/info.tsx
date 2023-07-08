@@ -8,10 +8,14 @@ import { Option } from 'src/app/components/option';
 import { Toolbar, ToolbarHeader, ToolbarBody } from 'src/app/components/toolbar';
 import { Tooltip } from 'src/app/components/tooltip';
 
-import stylesheet from './toolbar.module.scss?inline';
+import stylesheetOption from 'src/app/components/option.module.scss?inline';
+import stylesheetToolbar from 'src/app/components/toolbar.module.scss?inline';
+import stylesheetTooltip from 'src/app/components/tooltip.module.scss?inline';
 
-/* Toolbar feature */
-export const ToolbarFeature = (matchroom: Matchroom) => new Feature('toolbar',
+import stylesheet from './info.module.scss?inline';
+
+/* Info feature */
+export const InfoFeature = (matchroom: Matchroom) => new Feature('info',
   (feature) => {
     // retrieve matchroom information
     const info = matchroom.getInformation();
@@ -22,6 +26,9 @@ export const ToolbarFeature = (matchroom: Matchroom) => new Feature('toolbar',
     feature.addComponent(
       <ReactShadowRoot.Div>
         {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
+        <style dangerouslySetInnerHTML={{ __html: stylesheetOption }} />
+        <style dangerouslySetInnerHTML={{ __html: stylesheetToolbar }} />
+        <style dangerouslySetInnerHTML={{ __html: stylesheetTooltip }} />
         <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
         <Toolbar>
           <ToolbarHeader>

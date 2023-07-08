@@ -17,21 +17,21 @@ export const Section = ({ children }: { children: ReactNode | ReactNode[] }) => 
 
 /* Section header */
 export const SectionHeader = <K extends keyof Awaited<typeof CONFIG>>(
-  { title, key }: {
+  { title, storageKey }: {
     title: string;
-    key?: K;
+    storageKey?: K;
   },
 ) => {
-  const [option, setFeature] = useStorage(CONFIG, key);
+  const [option, setOption] = useStorage(CONFIG, storageKey);
 
   return (
     <header>
       <h2>{title}</h2>
       {
-        key !== undefined
-          ? (option === null
+        storageKey !== undefined
+          ? (option === undefined
             ? <Loading />
-            : <Toggle isToggled={option} onToggle={() => setFeature(!option)} />
+            : <Toggle isToggled={!!option} onToggle={() => setOption(!option)} />
           )
           : null
       }
