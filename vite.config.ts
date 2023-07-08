@@ -5,7 +5,7 @@ import fsExtra from 'fs-extra';
 import path from 'path';
 
 import type { Plugin } from 'vite';
-import { build, defineConfig } from 'vite';
+import { build, defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
@@ -64,7 +64,12 @@ async function createExtension(
 ): Promise<void> {
   // build commonjs scripts for the browser extension
   await Promise.all(scripts.map((script) => build({
+    cacheDir: './node_modules/.vite/suntzu',
     configFile: false,
+
+    define: {
+      'process.env': process.env,
+    },
 
     plugins: [
       react(),
@@ -74,6 +79,7 @@ async function createExtension(
     ],
 
     build: {
+      sourcemap: true,
       emptyOutDir: false,
       rollupOptions: {
         input: {
@@ -179,6 +185,9 @@ function createBundle(
  * @returns The Vite configuration object.
  */
 export default defineConfig(async ({ command, mode }) => {
+  // load environment variables
+  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
+
   // retrieve output directory
   const outDir = getArgValue('outDir') || env.outDir;
   const emptyOutDir = getArgValue('emptyOutDir') ?? true;
@@ -212,6 +221,10 @@ export default defineConfig(async ({ command, mode }) => {
   return {
     cacheDir: './node_modules/.vite/suntzu',
 
+    define: {
+      'process.env': process.env,
+    },
+
     server: {
       port: 4200,
       host: 'localhost',
@@ -234,6 +247,7 @@ export default defineConfig(async ({ command, mode }) => {
     ],
 
     build: {
+      sourcemap: true,
       emptyOutDir: false,
       rollupOptions: {
         input: {
