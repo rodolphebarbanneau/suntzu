@@ -9,11 +9,13 @@
 			"type": "chrome",
 			"request": "launch",
 			"url": "https://www.faceit.com/en/csgo/room/1-37221dc2-7b10-4bcf-a6a8-581f3d4e9dec",
-      "userDataDir": "${workspaceRoot}/.vscode/chrome",
+      "userDataDir": "${workspaceFolder}/.vscode/chrome",
+      "sourceMaps": true,
+			"webRoot": "${workspaceFolder}/dist/chrome",
 			"runtimeArgs": [
         "--auto-open-devtools-for-tabs",
 				"--enable-unsafe-es3-apis",
-        "--load-extension=${workspaceRoot}/dist/chrome"
+        "--load-extension=${workspaceFolder}/dist/chrome"
 			]
 		}
 	]
