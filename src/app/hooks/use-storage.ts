@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Storage,
   StorageNamespace,
-  StorageChanges,
+  StorageRecords,
+  StorageListener,
 } from 'src/shared/core';
 
 /**
@@ -22,8 +23,8 @@ import {
 export const useStorage = <T extends StorageNamespace, K extends keyof T>(
   namespace: T | Promise<T>,
   key?: K,
-): [T[K] | null, Dispatch<SetStateAction<T[K] | null>>] => {
-  const [option, setStorage] = useState<T[K] | null>(null);
+): [T[K] | undefined, Dispatch<SetStateAction<T[K] | undefined>>] => {
+  const [option, setOption] = useState<T[K] | undefined>(undefined);
   const storage = useRef(false);
 
   /**
@@ -35,11 +36,11 @@ export const useStorage = <T extends StorageNamespace, K extends keyof T>(
     if (namespace instanceof Promise) {
       namespace.then((records) => {
         storage.current = true;
-        setStorage(records[key]);
+        setOption(records[key]);
       });
     } else {
       storage.current = true;
-      setStorage(namespace[key]);
+      setOption(namespace[key]);
     }
   }, [key, namespace]);
 
@@ -51,7 +52,7 @@ export const useStorage = <T extends StorageNamespace, K extends keyof T>(
   useEffect(() => {
     if (!key) return;
     if (!storage.current) return;
-    if (option === null) return;
+    if (option === undefined) return;
     if (namespace instanceof Promise) {
       namespace.then((records) => {
         records[key] = option;
@@ -68,16 +69,18 @@ export const useStorage = <T extends StorageNamespace, K extends keyof T>(
    */
   useEffect(() => {
     if (!key) return;
-    const onChange = (changes: StorageChanges) => {
-      if (key in changes) {
-        setStorage(changes[key as string].newValue);
+    const onChange = (records: StorageRecords) => {
+      if (key in records) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setOption(records[key as any] as any);
       }
     };
-    Storage.addListener([namespace, onChange]);
+    const listener: StorageListener = [namespace, onChange];
+    Storage.addListener(listener);
     return () => {
-      Storage.removeListener([namespace, onChange]);
+      Storage.removeListener(listener);
     };
   }, [key, namespace]);
 
-  return [option, setStorage];
+  return [option, setOption];
 };
