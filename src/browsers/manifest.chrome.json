@@ -3,12 +3,8 @@
   "name": "Suntzu (FACEIT matchmaking insights)",
   "description": "Enhancing FACEIT experience with detailed matchmaking insights such as opponent's map related statistics and drop probability.",
   "version": "{{version}}",
-  "permissions": ["storage"],
-  "host_permissions": [
-    "https://api.faceit.com/*",
-    "https://open.faceit.com/*",
-    "https://www.faceit.com/*"
-  ],
+	"permissions": ["cookies", "storage"],
+  "host_permissions": ["https://*.faceit.com/*"],
   "background": {
     "service_worker": "{{service}}"
   },
