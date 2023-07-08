@@ -1,7 +1,132 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Match model (faceit response) */
-export interface MatchModel {
+/* Match (faceit api response) */
+export type MatchApiResponse = {
+	id: string;
+	type: string;
+	game: string;
+	region: string;
+	organizerId: string;
+	entity: {
+		type: string;
+		id: string;
+		name: string;
+	};
+	allowOngoingJoin: boolean;
+	anticheatRequired: boolean;
+	anticheatMode: string;
+	calculateElo: boolean;
+	skillFeedback: boolean;
+	afkAction: string;
+	fbiManagement: boolean;
+	adminTool: boolean;
+	checkIn: {
+		time: number;
+		totalCheckedIn: number;
+		totalPlayers: number;
+		endTime: string;
+		checkedIn: boolean;
+	};
+	state: string;
+	status: string;
+	states: string[];
+	teams: {
+		[key: string]: {
+			id: string;
+			type: string;
+			name: string;
+			avatar: string;
+			leader: string;
+			roster: {
+				id: string;
+				nickname: string;
+				avatar: string;
+				gameId: string;
+				gameName: string;
+				gameSkillLevel: number;
+				elo: number;
+				acReq: boolean;
+				partyId: string;
+				membership: string[];
+			}[];
+			stats: {
+				winProbability: number;
+				skillLevel: {
+					average: number;
+					range: {
+						min: number;
+						max: number;
+					};
+				};
+				rating: number;
+			};
+			substituted: boolean;
+		};
+	};
+	spectators: string[];
+	voting: {
+		voted_entity_types: string[];
+		location: {
+			entities: {
+				class_name: string;
+				game_location_id: string;
+				guid: string;
+				image_lg: string;
+				image_sm: string;
+				name: string;
+			}[];
+			pick: string[];
+		};
+		map: {
+			entities: {
+				class_name: string;
+				game_map_id: string;
+				guid: string;
+				image_lg: string;
+				image_sm: string;
+				name: string;
+			}[];
+			pick: string[];
+		};
+	};
+	summaryResults: {
+		ascScore: boolean;
+		winner: string;
+		leavers: string[];
+		afk: string[];
+		factions: {
+			[key: string]: {
+				score: number;
+			};
+		};
+	};
+	results: {
+		ascScore: boolean;
+		winner: string;
+		leavers: string[];
+		afk: string[];
+		factions: {
+			[key: string]: {
+				score: number;
+			};
+		};
+	}[];
+	demoURLs: string[];
+	startedAt: string;
+	configuredAt: string;
+	finishedAt: string;
+	timeToConnect: number;
+	version: number;
+	createdAt: string;
+	lastModified: string;
+	parties: {
+		partyId: string;
+		users: string[];
+	}[];
+};
+
+/* Match (faceit open api response) */
+export type MatchOpenResponse = {
   best_of: number;
   broadcast_start_time: number;
   broadcast_start_time_label: string;
@@ -75,4 +200,4 @@ export interface MatchModel {
     };
     voted_entity_types: string[];
   };
-}
+};

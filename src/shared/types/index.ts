@@ -1,11 +1,15 @@
 /* Faceit types */
-export { MatchModel } from './match';
-export { MatchStatsModel } from './match-stats';
-export { MatchVetosModel } from './match-veto';
-export { PlayerModel } from './player';
-export { PlayerMatchesModel } from './player-matches';
-export { PlayerStatsModel } from './player-stats';
-export { UserModel } from './user';
+export { MatchApiResponse, MatchOpenResponse } from './match';
+export { MatchStatsApiResponse, MatchStatsOpenResponse } from './match-stats';
+export { MatchVotingApiResponse } from './match-voting';
+export { PlayerApiResponse, PlayerOpenResponse } from './player';
+export { PlayerMatchesApiResponse, PlayerMatchesOpenResponse } from './player-matches';
+export {
+  PlayerMatchesStatsApiResponse,
+  PlayerStatsApiResponse,
+  PlayerStatsOpenResponse
+} from './player-stats';
+export { StatsKey } from './stats';
 
 /* Options types */
 export {
@@ -14,19 +18,20 @@ export {
   TimeSpanOption,
 } from './options';
 
-/* Metrics types */
+/* Metrics model types */
 export {
   MetricsModel,
-  MapMetricsModel,
-  PlayerMetricsModel,
+  SkillMetricsModel,
+  OtherMetricsModel,
+  DropMetricsModel,
 } from './metrics';
 
-/* Source types */
+/* Source model types */
 export {
   SourceModel,
   TeamSourceModel,
   PlayerSourceModel,
   MatchSourceModel,
   MatchStatsSourceModel,
-  MatchVetoSourceModel,
+  MatchVotingSourceModel,
 } from './source';

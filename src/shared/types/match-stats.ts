@@ -1,7 +1,34 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Match stats model (faceit response) */
-export interface MatchStatsModel {
+/* Match stats (faceit api response) */
+export type MatchStatsApiResponse = {
+  _id: string;
+  created_at: number;
+  updated_at: number;
+  bestOf: string;
+  competitionId: string;
+  date: number;
+  game: string;
+  gameMode: string;
+  matchId: string;
+  matchRound: string;
+  played: string;
+  teams: {
+    teamId: string;
+    premade: boolean;
+    players: {
+      playerId: string;
+      nickname: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      [key: string]: any;
+    }[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+  }[];
+}[];
+
+/* Match stats (faceit open api response) */
+export type MatchStatsOpenResponse = {
   rounds: {
     best_of: string;
     game_id: string;
@@ -27,4 +54,4 @@ export interface MatchStatsModel {
       };
     }[];
   }[];
-}
+};

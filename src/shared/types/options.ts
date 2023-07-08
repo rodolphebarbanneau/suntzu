@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 /* Matches options */
 export enum MatchesOption {
   Maximum10 = '10',

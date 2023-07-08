@@ -1,29 +1,29 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 /* Metrics model (extension) */
 export interface MetricsModel {
-  matches?: number;
-  win_rate?: number;
-  avg_kills?: number;
-  avg_deaths?: number;
-  avg_headshots?: number;
-  avg_kd?: number;
-  avg_kr?: number;
-  drop_rate?: number;
+  overall: Partial<SkillMetricsModel>;
+  maps: {
+    [key: string]: Partial<SkillMetricsModel & OtherMetricsModel>;
+  };
 }
 
-/* Map metrics model (extension) */
-export type MapMetricsModel = {
-  relative_win_rate?: number;
-  teams: {
-    [key: string]: MetricsModel;
-  };
-};
+/* Skill metrics model (extension) */
+export interface SkillMetricsModel extends Record<string, number> {
+  matches: number;
+  winRate: number;
+  avgKills: number;
+  avgDeaths: number;
+  avgHeadshots: number;
+  avgKd: number;
+  avgKr: number;
+}
 
-/* Player metrics model (extension) */
-export type PlayerMetricsModel = {
-  overall: MetricsModel;
-  maps: {
-    [key: string]: MetricsModel;
-  };
-};
+/* Other metrics model (extension) */
+export interface OtherMetricsModel extends Record<string, number> {
+  pickRate: number;
+}
+
+/* Drop metrics model (extension) */
+export interface DropMetricsModel extends Record<string, number> {
+  dropMatches: number;
+  dropRate: number;
+}

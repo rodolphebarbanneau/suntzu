@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-/* Match veto model (faceit response) */
-export interface MatchVetosModel {
+/* Match voting (faceit api response) */
+export type MatchVotingApiResponse = {
   match_id: string;
   tickets: {
     entities: {
@@ -14,4 +14,4 @@ export interface MatchVetosModel {
     entity_type: string;
     vote_type: string;
   }[];
-}
+};

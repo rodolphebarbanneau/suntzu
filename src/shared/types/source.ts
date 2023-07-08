@@ -1,53 +1,53 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 /* Source model (extension) */
 export interface SourceModel {
-  match_id: string;
+  matchId: string;
   teams: {
     [key: string]: TeamSourceModel;
   };
-};
+}
 
 /* Team source model (extension) */
 export interface TeamSourceModel {
-  faction_id: string;
+  factionId: string;
   name: string;
   leader: string;
   roster: PlayerSourceModel[];
-};
+}
 
 /* Player source model (extension) */
 export interface PlayerSourceModel {
-  player_id: string;
+  playerId: string;
   nickname: string;
   matches: MatchSourceModel[];
-};
+}
 
 /* Match source model (extension) */
 export interface MatchSourceModel {
-  match_id: string;
+  matchId: string;
   timestamp: number;
-  map_pick: string;
-  is_winner: boolean;
-  is_leader: boolean;
+  mapPick: string;
+  isWinner: boolean;
+  isLeader: boolean;
+  faction: string;
   roster: {
-    player_id: string;
+    playerId: string;
     nickname: string;
   }[];
   stats: MatchStatsSourceModel;
-  vetos: MatchVetoSourceModel[];
-};
+  voting?: MatchVotingSourceModel[];
+}
 
 /* Match stats source model (extension) */
 export interface MatchStatsSourceModel {
-  [key: string]: string;
-};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
 
-/* Match veto source model (extension) */
-export interface MatchVetoSourceModel {
+/* Match voting source model (extension) */
+export interface MatchVotingSourceModel {
   guid: string;
   status: string;
   random: boolean;
   round: number;
-  selected_by: string;
-};
+  selectedBy: string;
+}
