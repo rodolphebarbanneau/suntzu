@@ -1,5 +1,4 @@
 /* Helpers */
-export { BROWSER } from './browser';
 export { getColorScale } from './colors';
-export { getCookie } from './cookie';
+export { formatTimestamp, getTimestamp } from './timestamp';
 export { hasExtension } from './utils';

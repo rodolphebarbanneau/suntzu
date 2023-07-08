@@ -1,28 +1,62 @@
-import mem from 'mem';
-import pRetry, { AbortError } from 'p-retry';
+import browser from 'webextension-polyfill';
+import { memDecorator } from 'mem';
 
 import type {
-  MatchModel,
-  MatchStatsModel,
-  MatchVetosModel,
-  PlayerModel,
-  PlayerMatchesModel,
-  PlayerStatsModel,
-  UserModel,
+  MatchApiResponse,
+  MatchOpenResponse,
+  MatchStatsApiResponse,
+  MatchStatsOpenResponse,
+  MatchVotingApiResponse,
+  PlayerApiResponse,
+  PlayerOpenResponse,
+  PlayerMatchesApiResponse,
+  PlayerMatchesOpenResponse,
+  PlayerMatchesStatsApiResponse,
+  PlayerStatsApiResponse,
+  PlayerStatsOpenResponse,
 } from '../types';
 import {
-  CACHE_TIME,
-  FACEIT_OPEN_API_KEY,
-  FACEIT_OPEN_BASE_URL,
   FACEIT_API_BASE_URL,
+  FACEIT_API_TOKEN,
+  FACEIT_OPEN_BASE_URL,
+  FACEIT_OPEN_TOKEN,
 } from '../settings';
-import { getCookie } from '../helpers';
+import { formatTimestamp } from '../helpers';
+
+/* The application programming interface cache */
+export const API_CACHE = new Map();
+export const API_CACHE_TIME = 3600000; // 60 minutes
+
+/**
+ * An application programming interface request.
+ */
+export interface ApiRequest {
+  /* The request method */
+  method: 'GET';
+  /* The request endpoint */
+  endpoint: URL;
+  /* The request headers */
+  headers: Record<string, string>;
+}
+
+/**
+ * An application programming interface response.
+ * @typeParam T - The response data type.
+ */
+export interface ApiResponse<T> {
+  /* The response status */
+  status: number;
+  /* The response data */
+  data?: T;
+  /* The response error */
+  error?: string;
+}
 
 /**
  * A response wrapped data.
- * @typeParam T - The wrapped data payload type. Default to unknown.
+ * @typeParam T - The wrapped data payload type.
  */
-export interface WrappedData<T = unknown> {
+export interface WrappedData<T> {
   /* The wrapped data code */
   code?: string;
   /* The wrapped data result */
@@ -39,30 +73,32 @@ export interface WrappedData<T = unknown> {
  * the settings to minimize unnecessary network usage.
  */
 export class Api {
-  /** The api token */
-  private readonly _token: string | null;
+  /** The api tokens */
+  private readonly _tokens: Map<string, string>;
 
   /**
    * Create an application programming interface.
-   * @param token - The api token.
+   * @param tokens - The api tokens.
    */
-  constructor(token?: string) {
-    // initialize token
-    this._token = token ?? Api.getLocalToken();
-
-    // initialize memoized
-    this.fetch = mem(this.fetch, {
-      maxAge: CACHE_TIME,
-      cacheKey: (args) => JSON.stringify(args),
-    });
+  constructor(tokens?: Map<string, string>) {
+    // initialize default api tokens
+    const defaults = new Map<string, string>();
+    if (FACEIT_API_TOKEN) defaults.set(FACEIT_API_BASE_URL, FACEIT_API_TOKEN);
+    if (FACEIT_OPEN_TOKEN) defaults.set(FACEIT_OPEN_BASE_URL, FACEIT_OPEN_TOKEN);
+    // initialize api tokens
+    this._tokens = new Map([...defaults, ...(tokens || [])]);
   }
 
   /**
    * Get the api token.
    * @returns The api token.
    */
-  static getLocalToken(): string | null {
-    return getCookie('t') || localStorage.getItem('token');
+  static async getLocalToken(): Promise<string | null> {
+    const cookie = await browser?.cookies.get({
+      name: 't',
+      url: 'https://faceit.com',
+    });
+    return cookie?.value || localStorage.getItem('token');
   }
 
   /**
@@ -70,139 +106,214 @@ export class Api {
    * @param url - The pathname url to fetch data from.
    * @param options - The url options.
    * @param options.base - The base url to fetch data from.
+   * @param options.token - The api token to use for authentication.
    * @param options.searchParams - The url search parameters.
+   * @param options.unwrap - Whether to unwrap the response data.
    * @returns A response promise or null if error.
    */
+  @memDecorator({
+    cache: API_CACHE,
+    maxAge: API_CACHE_TIME,
+    cacheKey: (args) => {
+      const key = JSON.stringify(args);
+      return key;
+    },
+  })
   async fetch<T>(
     options: {
       url: string;
-      base?: string;
+      base: string;
+      token?: string;
       searchParams?: Record<string, string>;
       unwrap?: boolean;
     },
   ): Promise<T | null> {
-    // initialize options
+    // retrieve options
     const url = options.url;
-    const base = options.base ?? FACEIT_OPEN_BASE_URL;
+    const base = options.base;
+    const token = options.token ?? this._tokens.get(base) ?? await Api.getLocalToken();
     const searchParams = options.searchParams ?? {};
-    const unwrap = options.unwrap ?? true;
-    // build headers
-    const bearer = base === FACEIT_OPEN_BASE_URL ? FACEIT_OPEN_API_KEY : this._token;
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${bearer}`,
-    };
+    const unwrap = options.unwrap ?? false;
+
     // build endpoint
     const endpoint = new URL(url, base);
     Object.entries(searchParams).forEach(([name, value]) => {
       endpoint.searchParams.append(name, value);
     });
+    // build headers
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
+    // build request
+    const request: ApiRequest = {
+      method: 'GET',
+      headers,
+      endpoint,
+    }
 
-    // fetch json data from url
+    // fetch data
     try {
-      const response = await pRetry(
-        async () => {
-          const res = await fetch(endpoint, { method: 'GET', headers });
-          if (res.status === 404) {
-            throw new AbortError(res.statusText);
-          }
-          return res;
-        },
-        { retries: 3 }
-      );
+      const response: ApiResponse<T | WrappedData<T>> = await browser.runtime?.sendMessage(request);
       // check network error
-      if (!response.ok) throw new Error(
-        'Data fetch operation failed (received an invalid response)'
-      );
+      if (!response || response.error) {
+        throw new Error(
+          `Data fetch operation failed (received an invalid response): ${response.error}}`
+        );
+      }
       // unwrap response data
       if (unwrap) {
-        const data: WrappedData<T> = await response.json();
-        const { code, result, payload } = data;
+        const { code, result, payload } = response.data as WrappedData<T>;
+        // check if unwrapped data is valid
+        if (payload === undefined) {
+          throw new Error(
+            'Unwrapped data is invalid (missing "code", "result" or "payload")'
+          );
+        }
         // check for response errors
         if ((code && code.toUpperCase() !== 'OPERATION-OK')
           || (result && result.toUpperCase() !== 'OK')
-        ) throw new Error(
-          'Data fetch operation failed (received an invalid response)'
-        );
+        ) {
+          throw new Error(
+            'Data fetch operation failed (received an invalid response)'
+          );
+        }
         return payload;
       }
-      return await response.json() as T;
-    } catch (err) {
+      return response.data as T;
+    } catch (error) {
       // log and return null if error
-      // eslint-disable-next-line no-console
-      console.error(err)
+      console.error(error)  // eslint-disable-line no-console
       return null;
     }
   }
 
   /**
-   * Fetch the current user.
-   * @returns The current user data model.
+   * Fetch the current player from faceit api.
+   * @returns The current player api response.
    */
-  async fetchMe(): Promise<UserModel | null> {
-    return this.fetch({
+  async fetchMe(): Promise<PlayerApiResponse | null> {
+    return this.fetch<PlayerApiResponse>({
       url: '/users/v1/sessions/me',
       base: FACEIT_API_BASE_URL,
+      unwrap: true,
     });
   }
 
   /**
-   * Fetch match by match id.
+   * Fetch match by match id from faceit api.
    * @param matchId - The match id.
-   * @returns The match data model.
+   * @returns The match api response.
    */
   async fetchMatch(
     matchId: string,
-  ): Promise<MatchModel | null> {
-    return this.fetch({
-      url: `/data/v4/matches/${matchId}`,
+  ): Promise<MatchApiResponse | null> {
+    return this.fetch<MatchApiResponse>({
+      url: `/match/v2/match/${matchId}`,
+      base: FACEIT_API_BASE_URL,
+      unwrap: true,
     });
   }
 
   /**
-   * Fetch match stats by match id.
+   * Fetch match by match id from faceit open api.
    * @param matchId - The match id.
-   * @returns The match stats data model.
+   * @returns The match open api response.
+   */
+  async fetchMatchFromOpen(
+    matchId: string,
+  ): Promise<MatchOpenResponse | null> {
+    return this.fetch<MatchOpenResponse>({
+      url: `/data/v4/matches/${matchId}`,
+      base: FACEIT_OPEN_BASE_URL,
+      unwrap: false,
+    });
+  }
+
+  /**
+   * Fetch match stats by match id from faceit api.
+   * @param matchId - The match id.
+   * @returns The match stats api response.
    */
   async fetchMatchStats(
     matchId: string,
-  ): Promise<MatchStatsModel | null> {
-    return this.fetch({
-      url: `/data/v4/matches/${matchId}/stats`,
+  ): Promise<MatchStatsApiResponse | null> {
+    return this.fetch<MatchStatsApiResponse>({
+      url: `/stats/v1/stats/matches/${matchId}`,
+      base: FACEIT_API_BASE_URL,
+      unwrap: false,
     });
   }
 
   /**
-   * Fetch match vetos by match id.
+   * Fetch match stats by match id from faceit open api.
    * @param matchId - The match id.
-   * @returns The match vetos data model.
+   * @returns The match stats open api response.
    */
-  async fetchMatchVetos(
+  async fetchMatchStatsFromOpen(
     matchId: string,
-  ): Promise<MatchVetosModel | null> {
-    return this.fetch({
+  ): Promise<MatchStatsOpenResponse | null> {
+    return this.fetch<MatchStatsOpenResponse>({
+      url: `/data/v4/matches/${matchId}/stats`,
+      base: FACEIT_OPEN_BASE_URL,
+      unwrap: false,
+    });
+  }
+
+  /**
+   * Fetch match voting by match id from faceit api.
+   * @param matchId - The match id.
+   * @returns The match voting api response.
+   */
+  async fetchMatchVoting(
+    matchId: string,
+  ): Promise<MatchVotingApiResponse | null> {
+    return this.fetch<MatchVotingApiResponse>({
       url: `/democracy/v1/${matchId}/history`,
       base: FACEIT_API_BASE_URL,
+      unwrap: true,
     });
   }
 
   /**
-   * Fetch player by player id.
+   * Fetch player by player id from faceit api.
    * @param playerId - The player id.
-   * @returns The player data model.
+   * @returns The player api response.
    */
   async fetchPlayer(
     playerId: string,
-  ): Promise<PlayerModel | null> {
-    return this.fetch({
-      url: `/data/v4/players/${playerId}`,
+  ): Promise<PlayerApiResponse | null> {
+    return this.fetch<PlayerApiResponse>({
+      url: `/users/v1/users/${playerId}`,
+      base: FACEIT_API_BASE_URL,
+      unwrap: true,
     });
   }
 
   /**
-   * Fetch player matches by player id.
+   * Fetch player by player id from faceit open api.
    * @param playerId - The player id.
-   * @returns The player matches data model.
+   * @returns The player open api response.
+   */
+  async fetchPlayerFromOpen(
+    playerId: string,
+  ): Promise<PlayerOpenResponse | null> {
+    return this.fetch<PlayerOpenResponse>({
+      url: `/data/v4/players/${playerId}`,
+      base: FACEIT_OPEN_BASE_URL,
+      unwrap: false,
+    });
+  }
+
+  /**
+   * Fetch player matches by player id from faceit api.
+   * @param playerId - The player id.
+   * @param game - The game.
+   * @param from - The start timestamp.
+   * @param to - The end timestamp.
+   * @param offset - The offset.
+   * @param limit - The limit.
+   * @returns The player matches api response.
    */
   async fetchPlayerMatches(
     playerId: string,
@@ -211,24 +322,92 @@ export class Api {
     to = Math.floor(Date.now() / 1000),
     offset = 0,
     limit = 20,
-  ): Promise<PlayerMatchesModel | null> {
-    return this.fetch({
+  ): Promise<PlayerMatchesApiResponse | null> {
+    return this.fetch<PlayerMatchesApiResponse>({
+      url: `/match-history/v5/players/${playerId}/history/`
+        + `?page=0&from=${formatTimestamp(from, true)}&to=${formatTimestamp(to, true)}`
+        + `&offset=${offset}&size=${limit}`,
+      base: FACEIT_API_BASE_URL,
+      unwrap: true,
+    }).then((data) => data?.filter((match) => match.game === game) ?? null);
+  }
+
+  /**
+   * Fetch player matches by player id from faceit open api.
+   * @param playerId - The player id.
+   * @param game - The game.
+   * @param from - The start timestamp.
+   * @param to - The end timestamp.
+   * @param offset - The offset.
+   * @param limit - The limit.
+   * @returns The player matches open api response.
+   */
+  async fetchPlayerMatchesFromOpen(
+    playerId: string,
+    game: string,
+    from = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60),
+    to = Math.floor(Date.now() / 1000),
+    offset = 0,
+    limit = 20,
+  ): Promise<PlayerMatchesOpenResponse | null> {
+    return this.fetch<PlayerMatchesOpenResponse>({
       url: `/data/v4/players/${playerId}/history`
         + `/?game=${game}&from=${from}&to=${to}&offset=${offset}&limit=${limit}`,
+      base: FACEIT_OPEN_BASE_URL,
+      unwrap: false,
     });
   }
 
   /**
-   * Fetch player stats by player id.
+   * Fetch player matches stats by player id and game id from faceit api.
    * @param playerId - The player id.
-   * @returns The player stats data model.
+   * @param gameId - The game id.
+   * @param size - The request size.
+   * @returns The player stats api response.
+   */
+  async fetchPlayerMatchesStats(
+    playerId: string,
+    gameId: string,
+    size: number = 20,
+  ): Promise<PlayerMatchesStatsApiResponse | null> {
+    return this.fetch<PlayerMatchesStatsApiResponse>({
+      url: `/stats/v1/stats/time/users/${playerId}/games/${gameId}?size=${size}`,
+      base: FACEIT_API_BASE_URL,
+      unwrap: false,
+    });
+  }
+
+  /**
+   * Fetch player stats by player id and game id from faceit api.
+   * @param playerId - The player id.
+   * @param gameId - The game id.
+   * @returns The player stats api response.
    */
   async fetchPlayerStats(
     playerId: string,
     gameId: string,
-  ): Promise<PlayerStatsModel | null> {
-    return this.fetch({
+  ): Promise<PlayerStatsApiResponse | null> {
+    return this.fetch<PlayerStatsApiResponse>({
+      url: `/stats/v1/stats/users/${playerId}/games/${gameId}`,
+      base: FACEIT_API_BASE_URL,
+      unwrap: false,
+    });
+  }
+
+  /**
+   * Fetch player stats by player id and game id from faceit open api.
+   * @param playerId - The player id.
+   * @param gameId - The game id.
+   * @returns The player stats open api response.
+   */
+  async fetchPlayerStatsFromOpen(
+    playerId: string,
+    gameId: string,
+  ): Promise<PlayerStatsOpenResponse | null> {
+    return this.fetch<PlayerStatsOpenResponse>({
       url: `/data/v4/players/${playerId}/stats/${gameId}`,
+      base: FACEIT_OPEN_BASE_URL,
+      unwrap: false,
     });
   }
 }

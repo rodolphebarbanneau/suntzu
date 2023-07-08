@@ -1,5 +1,5 @@
 /* Core */
-export { Api } from './api';
+export { Api, ApiRequest, ApiResponse } from './api';
 export { Component } from './component';
 export { Feature } from './feature';
 export {

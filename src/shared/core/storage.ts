@@ -1,15 +1,14 @@
 import 'reflect-metadata';
-
-import { BROWSER } from '../helpers';
+import browser from 'webextension-polyfill';
 
 /* Storage symbols */
 const OPTIONS_KEY = Symbol('options');  // eslint-disable-line @typescript-eslint/naming-convention
 const RECORDS_KEY = Symbol('records');  // eslint-disable-line @typescript-eslint/naming-convention
 
 /* Storage types */
-export type StorageChanges = { [key: string]: chrome.storage.StorageChange };
+export type StorageChanges = { [key: string]: browser.Storage.StorageChange };
 export type StorageRecords = { [key: string]: unknown };
-export type StorageListener = [StorageNamespace, (changes: StorageChanges) => void];
+export type StorageListener = [StorageNamespace, (records: StorageRecords) => void];
 
 /**
  * Options for a storage namespace.
@@ -29,10 +28,7 @@ export interface StorageOptions {
  */
 export class Storage {
   /* The storage namespace listeners */
-  private static _listeners: Map<
-    StorageListener,
-    (changes: StorageChanges, areaName: string) => void
-  > = new Map();
+  private static _listeners: Set<StorageListener> = new Set();
 
   /* Static class */
   private constructor() { /* noop */ }
@@ -43,21 +39,22 @@ export class Storage {
    * @returns A promise that resolves when the namespace records are updated.
    */
   static async load<T extends StorageNamespace>(namespace: T): Promise<void> {
-    // get storage namespace record keys
-    const keys: string[] = Reflect.getMetadata(
-      RECORDS_KEY,
-      namespace.constructor.prototype,
-    ) || [];
+    // get storage namespace options and record keys metadata
+    const [metadata, keys]: [StorageOptions, string[]] = this._getMetadata(namespace);
 
     // update storage namespace records
     return new Promise((resolve, reject) => {
-      BROWSER.storage.local.get(keys, (result) => {
-        if (BROWSER.runtime.lastError) {
-          reject(BROWSER.runtime.lastError);
+      const storageKeys = keys.map((key) => this._generateKey(key, metadata.name));
+      browser.storage.local.get(storageKeys).then((result) => {
+        if (browser.runtime.lastError) {
+          reject(browser.runtime.lastError);
         } else {
           keys.forEach((key) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-param-reassign
-            (namespace as any)[key] = result[key];
+            const storageKey = this._generateKey(key, metadata.name);
+            if (result[storageKey] !== undefined) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-param-reassign
+              (namespace as any)[key] = result[storageKey];
+            }
           });
           resolve();
         }
@@ -71,25 +68,26 @@ export class Storage {
    * @returns A Promise that resolves when the namespace records are save.
    */
   static async save<T extends StorageNamespace>(namespace: T): Promise<void> {
-    // get storage namespace records keys
-    const keys: string[] = Reflect.getMetadata(
-      RECORDS_KEY,
-      namespace.constructor.prototype,
-    ) || [];
+    // get storage namespace options and record keys metadata
+    const [metadata, keys]: [StorageOptions, string[]] = this._getMetadata(namespace);
 
-    // retrieve storage namespace records data
-    const data = keys.reduce((obj: StorageRecords, key) => {
+    // retrieve storage namespace records
+    const records = keys.reduce((obj: StorageRecords, key) => {
+      const storageKey = this._generateKey(key, metadata.name);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      obj[key] = (namespace as any)[key];
+      obj[storageKey] = (namespace as any)[key];
       return obj;
     }, {});
 
     // save storage namespace records
     return new Promise((resolve, reject) => {
-      BROWSER.storage.local.set(data, () => {
-        if (BROWSER.runtime.lastError) {
-          reject(BROWSER.runtime.lastError);
+      browser.storage.local.set(records).then(() => {
+        if (browser.runtime.lastError) {
+          reject(browser.runtime.lastError);
         } else {
+          this._listeners.forEach(([ns, callback]) => {
+            if (ns === namespace) callback(records);
+          });
           resolve();
         }
       });
@@ -101,34 +99,8 @@ export class Storage {
    * @param listener - The listener to be added.
    */
   static addListener(listener: StorageListener): void {
-    // do nothing if the listener is already registered
     if (this._listeners.has(listener)) return;
-
-    // helper function
-    const [namespace, callback] = listener;
-    const helper = (changes: StorageChanges, areaName: string) => {
-      // do nothing if the area name is not local
-      if (areaName !== 'local') return;
-      // get storage namespace records keys
-      const keys: string[] = Reflect.getMetadata(
-        RECORDS_KEY,
-        namespace.constructor.prototype,
-      ) || [];
-      // filter storage namespace records changes
-      const result = Object.keys(changes).reduce((obj: StorageChanges, key) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if (key in keys && (namespace as any)[key] !== changes[key].newValue) {
-          obj[key] = changes[key];
-        }
-        return obj;
-      }, {});
-      // execute callback if namespace records changes
-      if (Object.keys(result).length !== 0) callback(result);
-    };
-
-    // register the listener
-    BROWSER.storage.onChanged.addListener(helper);
-    this._listeners.set(listener, helper);
+    this._listeners.add(listener);
   }
 
   /**
@@ -136,14 +108,37 @@ export class Storage {
    * @param listener - The listener to be removed.
    */
   static removeListener(listener: StorageListener): void {
-    // helper function
-    const helper = this._listeners.get(listener);
+    this._listeners.delete(listener);
+  }
 
-    // unregister the listener
-    if (helper) {
-      BROWSER.storage.onChanged.removeListener(helper);
-      this._listeners.delete(listener);
-    }
+  /**
+   * Get the storage namespace metadata and records keys.
+   * @param namespace - The storage namespace.
+   * @returns The storage namespace metadata and records keys.
+   */
+  private static _getMetadata(namespace: StorageNamespace): [StorageOptions, string[]] {
+    // get storage namespace options metadata
+    const metadata: StorageOptions = Reflect.getMetadata(
+      OPTIONS_KEY,
+      namespace.constructor,
+    ) || {};
+    // get storage namespace records keys
+    const keys: string[] = Reflect.getMetadata(
+      RECORDS_KEY,
+      namespace.constructor.prototype,
+    ) || [];
+    // return metadata and keys
+    return [metadata, keys];
+  }
+
+  /**
+   * Generate a storage namespace record key.
+   * @param key - The storage record key.
+   * @param name - The storage namespace name.
+   * @returns The storage namespace record key.
+   */
+  private static _generateKey(key: string, name?: string): string {
+    return `${name ? `${name}.` : ''}${key}`;
   }
 }
 
@@ -167,33 +162,27 @@ export abstract class StorageNamespace {
     // create instance
     const instance = new this();
 
-    // fetch storage namespace options
+    // get storage namespace options metadata
     const metadata: StorageOptions = Reflect.getMetadata(
       OPTIONS_KEY,
       instance.constructor,
     ) || {};
-    const name = metadata.name ?? '';
-    const sync = metadata.sync ?? false;
 
-    // fetch storage namespace records
-    const records: string[] = Reflect.getMetadata(
+    // get storage namespace records keys
+    const keys: string[] = Reflect.getMetadata(
       RECORDS_KEY,
       instance.constructor.prototype,
     ) || [];
 
     // initialize storage namespace records
-    for (const key of records) {
-      // initialize data
-      const data = {
-        key: `${name ? `${name}.` : ''}${key}`,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        value: (instance as any)[key],
-      };
+    for (const key of keys) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let value = (instance as any)[key];
       // update getter and setter
-      const getter = () => { return data.value; };
+      const getter = () => { return value; };
       const setter = (next: unknown) => {
-        if (data.value === next) return;
-        data.value = next;
+        if (value === next) return;
+        value = next;
         Storage.save(instance);
       };
       // define record
@@ -206,13 +195,25 @@ export abstract class StorageNamespace {
           configurable: true,
         });
       }
-      // handle storage changes if sync
-      if (sync) {
-        Storage.addListener([
-          instance,
-          (changes: StorageChanges) => setter(changes[data.key].newValue),
-        ]);
-      }
+    }
+
+    // handle storage changes if sync
+    if (metadata.sync) {
+      // listener callback
+      const listener = (changes: StorageChanges, areaName: string) => {
+        // do nothing if the area name is not local
+        if (areaName !== 'local') return;
+        // apply changes
+        for (const key of keys) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if (key in changes && (instance as any)[key] !== changes[key].newValue) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (instance as any)[key] = changes[key].newValue;
+          }
+        }
+      };
+      // register the listener
+      browser.storage.onChanged.addListener(listener);
     }
 
     // load storage namespace records from the local storage
