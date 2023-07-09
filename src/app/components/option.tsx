@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { StorageNamespace } from 'src/shared/core';
 
@@ -8,15 +8,15 @@ import styles from './option.module.scss';
 
 /* Option */
 export const Option = <T extends StorageNamespace, K extends keyof T>(
-  { title, namespace, key, options }: {
+  { title, namespace, namespaceKey, options }: {
     title: string;
     namespace: T | Promise<T>,
-    key: K;
+    namespaceKey: K;
     options: T[K][],
   },
 ) => {
   const wrapper = useRef<HTMLDivElement>(null);
-  const [option, setOption] = useStorage(namespace, key);
+  const [option, setOption] = useStorage(namespace, namespaceKey);
 
   // state to determine if the option items should be shown
   const [isSelecting, setSelecting] = useState(false);
@@ -57,7 +57,7 @@ export const Option = <T extends StorageNamespace, K extends keyof T>(
           }
           onMouseDown={() => setSelecting(!isSelecting)}
         >
-          {option}
+          {option as string}
         </div>
         <div className={`${styles['option-items']} ${isSelecting ? '' : styles.hide}`}>
           {options.map((value, index) => (
@@ -66,7 +66,7 @@ export const Option = <T extends StorageNamespace, K extends keyof T>(
               onMouseUp={() => onClick(value as T[K])}
               className={value === option ? styles.selected : ''}
             >
-              {value}
+              {value as string}
             </div>
           ))}
         </div>
