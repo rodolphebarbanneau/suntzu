@@ -52,19 +52,19 @@ export const InfoFeature = (matchroom: Matchroom) => new Feature('info',
             <Option
               title="Match"
               namespace={matchroom.options}
-              key="matches"
+              namespaceKey="matches"
               options={Object.values(MatchesOption)}
             />
             <Option
               title="Time"
               namespace={matchroom.options}
-              key="timeSpan"
+              namespaceKey="timeSpan"
               options={Object.values(TimeSpanOption)}
             />
             <Option
               title="Player"
               namespace={matchroom.options}
-              key="players"
+              namespaceKey="players"
               options={Object.values(PlayersOption)}
             />
           </ToolbarBody>
