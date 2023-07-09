@@ -362,16 +362,20 @@ export class Matchroom {
 
   /**
    * Get the list of teams in the matchroom document.
+   * @param sort - Whether to sort the teams with the matchroom user team first. Defaults to false.
    * @returns The list of teams in the matchroom document.
    */
-  getTeams(): MatchroomTeam[] {
+  getTeams(sort = false): MatchroomTeam[] {
+    // return raw matchroom teams if not sorted
+    if (!sort) return Object.keys(this._match?.teams ?? {}).map((key) => ({ id: key }));
+
     // retrieve teams sorted with matchroom user team first
     const teams = Object.entries(this._match?.teams ?? {}).sort((a, b) => {
       return (a[1].roster.some((player) => player.id === this._user?.id) ? 0 : 1)
         - (b[1].roster.some((player) => player.id === this._user?.id) ? 0 : 1);
     });
     // return matchroom teams
-    return teams.map(([id, _]) => ({ id: id }));
+    return teams.map(([key, _]) => ({ id: key }));
   }
 
   /**

@@ -1,9 +1,11 @@
 import { default as ReactShadowRoot } from 'react-shadow';
 
-import type { Matchroom } from 'src/shared/core';
+import type { Matchroom, MetricsData } from 'src/shared/core';
 import { Feature } from 'src/shared/core';
 import { getColorScale } from 'src/shared/helpers';
 
+import { MetricsProvider } from 'src/app/providers/metrics';
+import { useMetrics } from 'src/app/hooks/use-metrics';
 import { Metrics } from 'src/app/components/metrics';
 import { Tooltip } from 'src/app/components/tooltip';
 
@@ -13,7 +15,6 @@ import stylesheetTooltip from 'src/app/components/tooltip.module.scss?inline';
 
 import stylesheet from './map.module.scss?inline';
 import styles from './map.module.scss';
-import { match } from 'assert';
 
 /* Background color scale */
 const backgroundColor = getColorScale(
@@ -35,27 +36,46 @@ const foregroundColor = getColorScale(
   },
 );
 
+/* Relative win rate */
+const getRelativeWinRate = (metrics: MetricsData, teams: string[], map?: string): number => {
+  const winRates = (map === undefined)
+    ? teams.map((team) => metrics.teams[team].overall.winRate ?? 0)
+    : teams.map((team) => metrics.teams[team].maps[map]?.winRate ?? 0);
+  return winRates[0] - winRates[1];
+}
+
+
+
 /* Map feature */
 export const MapFeature = (matchroom: Matchroom) => new Feature('map',
   (feature) => {
+    // use matchroom metrics
+    console.log('======beforeUseMatchroom============================================')
+    console.log('======beforeUseMatchroom============================================')
+    const metrics = matchroom.metrics.data;
+    console.log('======afterUseMatchroom============================================')
+    console.log('======afterUseMatchroom============================================')
+    // retrieve matchroom teams
+    const teams = matchroom.getTeams().map((team) => team.id);
     // retrieve matchroom maps
     const maps = matchroom.getMaps();
 
-    const metrics = matchroom.metrics?.teams ?? {};
-    const faction = metrics['faction1'] ?? {};
-    console.log(faction); //todo
-
     // create components and actions for each map
     maps.forEach((map) => {
+      // metrics
+      const relativeWinRate = getRelativeWinRate(metrics, teams, map.id);
+
       // sidebar component
       feature.addComponent(
         <ReactShadowRoot.Div>
-          {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
-          <style dangerouslySetInnerHTML={{ __html: stylesheetLink }} />
-          <style dangerouslySetInnerHTML={{ __html: stylesheetMetrics }} />
-          <style dangerouslySetInnerHTML={{ __html: stylesheetTooltip }} />
-          <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <div className={styles['sidebar']} style={{ backgroundColor: foregroundColor(0.15) }}></div>
+          <MetricsProvider metrics={metrics}>
+            {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
+            <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
+            <div
+              className={styles['sidebar']}
+              style={{ backgroundColor: foregroundColor(relativeWinRate) }}
+            ></div>
+          </MetricsProvider>
         </ReactShadowRoot.Div>
       ).prependTo(map.container);
 
@@ -68,7 +88,9 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
           <style dangerouslySetInnerHTML={{ __html: stylesheetTooltip }} />
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <div className={styles['kpi']}>
-            <p style={{ color: foregroundColor(0.15) }}>+15%</p>
+            <p style={{ color: foregroundColor(relativeWinRate) }}>
+              {relativeWinRate.toFixed(0) + '%'}
+            </p>
             <Tooltip message={'Relative win rate'} />
           </div>
         </ReactShadowRoot.Div>

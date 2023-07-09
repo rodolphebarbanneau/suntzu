@@ -23,11 +23,11 @@ export class Feature {
   /* The feature name */
   private readonly _name: string;
 
-  /* The feature components */
-  private readonly _components: Set<Component>;
-
   /* The feature rendering and unmounting actions */
-  private readonly _actions: Set<FeatureAction>;
+  private readonly _actions = new Set<FeatureAction>();
+
+  /* The feature components */
+  private readonly _components = new Set<Component>();
 
   /**
    * Create a feature.
@@ -36,8 +36,6 @@ export class Feature {
   constructor(name: string, callback: (feature: Feature) => void) {
     // initialize
     this._name = name;
-    this._components = new Set();
-    this._actions = new Set();
     // debounce rendering
     //this.render = () => debounce(async () => { this.render(); }, DEBOUNCE_DELAY);
     //this.unmount = () => debounce(async () => { this.unmount(); }, DEBOUNCE_DELAY);
@@ -58,6 +56,42 @@ export class Feature {
   /* Get the feature rendering and unmounting actions */
   get actions(): Set<FeatureAction> {
     return this._actions;
+  }
+
+  /**
+   * Add an action to the feature.
+   * @param action - The action to add.
+   * @returns The created action.
+   */
+  addAction(action: FeatureAction): FeatureAction {
+    this._actions.add(action);
+    return action;
+  }
+
+  /**
+   * Add multiple actions to the feature.
+   * @param actions - The actions to add.
+   * @returns The feature.
+   */
+  extendActions(...actions: FeatureAction[]): Feature {
+    actions.forEach((action) => {
+      if (this._actions.has(action)) return;
+      this._actions.add(action);
+    });
+    return this;
+  }
+
+  /**
+   * Remove multiple actions from the feature.
+   * @param actions - The actions to remove.
+   * @returns The feature.
+   */
+  removeActions(...actions: FeatureAction[]): Feature {
+    actions.forEach((action) => {
+      if (!this._actions.has(action)) return;
+      this._actions.delete(action);
+    });
+    return this;
   }
 
   /**
@@ -106,50 +140,14 @@ export class Feature {
   }
 
   /**
-   * Add an action to the feature.
-   * @param action - The action to add.
-   * @returns The created action.
-   */
-  addAction(action: FeatureAction): FeatureAction {
-    this._actions.add(action);
-    return action;
-  }
-
-  /**
-   * Add multiple actions to the feature.
-   * @param actions - The actions to add.
-   * @returns The feature.
-   */
-  extendActions(...actions: FeatureAction[]): Feature {
-    actions.forEach((action) => {
-      if (this._actions.has(action)) return;
-      this._actions.add(action);
-    });
-    return this;
-  }
-
-  /**
-   * Remove multiple actions from the feature.
-   * @param actions - The actions to remove.
-   * @returns The feature.
-   */
-  removeActions(...actions: FeatureAction[]): Feature {
-    actions.forEach((action) => {
-      if (!this._actions.has(action)) return;
-      this._actions.delete(action);
-    });
-    return this;
-  }
-
-  /**
    * Render the feature.
    */
   render(): void {
-    this._components.forEach((component) => {
-      component.render();
-    });
     this._actions.forEach((action) => {
       action.render();
+    });
+    this._components.forEach((component) => {
+      component.render();
     });
   }
 
@@ -157,11 +155,11 @@ export class Feature {
    * Unmount the feature.
    */
   unmount(): void {
-    this._components.forEach((component) => {
-      component.unmount();
-    });
     this._actions.forEach((action) => {
       action.unmount();
+    });
+    this._components.forEach((component) => {
+      component.unmount();
     });
   }
 }

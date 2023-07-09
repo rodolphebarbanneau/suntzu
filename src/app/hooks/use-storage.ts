@@ -1,12 +1,12 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import {
-  Storage,
+import type {
   StorageNamespace,
-  StorageRecords,
+  StorageChanges,
   StorageListener,
 } from 'src/shared/core';
+import { Storage } from 'src/shared/core';
 
 /**
  * Use storage.
@@ -69,10 +69,10 @@ export const useStorage = <T extends StorageNamespace, K extends keyof T>(
    */
   useEffect(() => {
     if (!key) return;
-    const onChange = (records: StorageRecords) => {
-      if (key in records) {
+    const onChange = (changes: StorageChanges) => {
+      if (key in changes) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setOption(records[key as any] as any);
+        setOption(changes[key as any].newValue);
       }
     };
     const listener: StorageListener = [namespace, onChange];
@@ -84,3 +84,5 @@ export const useStorage = <T extends StorageNamespace, K extends keyof T>(
 
   return [option, setOption];
 };
+
+export default useStorage;

@@ -45,15 +45,12 @@ const handleMutation = async (
 
   // initialize features
   if (Object.keys(FEATURES).length === 0) {
+    FEATURES['info'] = InfoFeature(matchroom);
     FEATURES['map'] = MapFeature(matchroom);
     FEATURES['player'] = PlayerFeature(matchroom);
-    FEATURES['info'] = InfoFeature(matchroom);
     render(config);
 
-
-    Storage.addListener([config, async () => {
-      render(config);
-    }]);
+    Storage.addListener([config, async () => { render(config); }]);
   }
 
   mutations.forEach((mutation) => {
