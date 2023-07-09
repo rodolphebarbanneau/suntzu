@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import type { Configuration } from 'src/shared/features';
 import { CONFIG } from 'src/shared/settings';
 
 import { useStorage } from '../hooks/use-storage';
@@ -31,7 +32,10 @@ export const SectionHeader = <K extends keyof Awaited<typeof CONFIG>>(
         configKey !== undefined
           ? (option === undefined
             ? <Loading />
-            : <Toggle isToggled={!!option} onToggle={() => setOption(!option)} />
+            : <Toggle
+                isToggled={!!option}
+                onToggle={() => setOption(!option as Configuration[K])}
+              />
           )
           : null
       }
