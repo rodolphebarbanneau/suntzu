@@ -1,4 +1,5 @@
-import type { MetricsOptions } from './metrics';
+import type { MetricsOptions, MetricsData } from './metrics';
+import type { MatchApiResponse, PlayerApiResponse } from '../types';
 import { FACEIT_MATCHROOM_ROUTES, } from '../settings';
 import { MatchesOption, PlayersOption, TimeSpanOption } from '../types';
 import { Api } from './api';
@@ -35,6 +36,16 @@ interface MatchroomMap {
   readonly id: string;
   /* The matchroom map container */
   readonly container: HTMLDivElement;
+}
+
+
+/**
+ * A matchroom team.
+ * It represents a team in a matchroom. It contains details about the team such as the team's id.
+ */
+interface MatchroomTeam {
+  /* The matchroom team id */
+  readonly id: string;
 }
 
 /**
@@ -79,10 +90,16 @@ export class Matchroom {
   private readonly _url: string;
 
   /* The application programming interface used to fetch data */
-  private readonly _api: Api;
+  private readonly _api = new Api();
 
   /* The matchroom listeners */
-  private readonly _listeners: Set<() => void>;
+  private readonly _listeners = new Set<(metrics: MetricsData) => void>();
+
+  /* The matchroom user */
+  private _user: PlayerApiResponse | null = null;
+
+  /* The matchroom match */
+  private _match: MatchApiResponse | null = null;
 
   /* The matchroom state */
   private _state: MatchroomState | null = null;
@@ -96,10 +113,8 @@ export class Matchroom {
   /* Create a matchroom */
   private constructor() {
     // initialize
-    this._listeners = new Set();
     this._document = document;
     this._url = document.location.href;
-    this._api = new Api();
   }
 
   /* Get the matchroom document */
@@ -124,13 +139,26 @@ export class Matchroom {
   }
 
   /* Get the matchroom listeners */
-  get listeners(): Set<() => void> {
+  get listeners(): Set<(metrics: MetricsData) => void> {
     return this._listeners;
+  }
+
+  /* Get the matchroom user */
+  get user(): PlayerApiResponse {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this._user!;
+  }
+
+  /* Get the matchroom match */
+  get match(): MatchApiResponse {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this._match!;
   }
 
   /* Get the matchroom state */
   get state(): MatchroomState {
-    return this._state ?? MatchroomState.Finished;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this._state!;
   }
 
   /* Get the matchroom options */
@@ -140,8 +168,9 @@ export class Matchroom {
   }
 
   /* Get the matchroom metrics */
-  get metrics(): Metrics | null {
-    return this._metrics;
+  get metrics(): Metrics {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this._metrics!;
   }
 
   /**
@@ -160,8 +189,8 @@ export class Matchroom {
     /* eslint-enable no-underscore-dangle */
     // listen for storage changes
     Storage.addListener([matchroom.options, async () => {
-      await matchroom.metrics?.buildMetrics();
-      matchroom.notify();
+      await matchroom.metrics.buildMetrics();
+      matchroom.notifyListeners(matchroom.metrics.data);
     }]);
     // return matchroom
     return matchroom;
@@ -182,8 +211,12 @@ export class Matchroom {
    * @returns An empty promise that resolves when the matchroom details are updated.
    */
   async update(): Promise<void> {
+    // fetch user
+    const user = await this._api.fetchMe();
+    this._user = user;
     // fetch match
     const match = await this._api.fetchMatch(this.id);
+    this._match = match;
     // retrieve matchroom state
     switch (match?.state) {
       case 'VOTING':
@@ -213,7 +246,7 @@ export class Matchroom {
    * Add a matchroom listener.
    * @param listener - The matchroom callback listener.
    */
-  addListener(listener: () => void): void {
+  addListener(listener: (metrics: MetricsData) => void): void {
     if (this._listeners.has(listener)) return;
     this._listeners.add(listener);
   }
@@ -222,16 +255,17 @@ export class Matchroom {
    * Remove a matchroom listener.
    * @param listener - The matchroom callback listener.
    */
-  removeListener(listener: () => void): void {
+  removeListener(listener: (metrics: MetricsData) => void): void {
     this._listeners.delete(listener);
   }
 
   /**
-   * Notify the matchroom listeners with a specific event.
+   * Notify the matchroom listeners with the given metrics.
+   * @param metrics - The matchroom metrics data.
    */
-  notify(): void {
+  notifyListeners(metrics: MetricsData): void {
     this._listeners.forEach((listener) => {
-      listener();
+      listener(metrics);
     });
   }
 
@@ -324,6 +358,20 @@ export class Matchroom {
     ].map((roster) =>
       roster ? retrieve(roster as HTMLDivElement) : []
     ).flat();
+  }
+
+  /**
+   * Get the list of teams in the matchroom document.
+   * @returns The list of teams in the matchroom document.
+   */
+  getTeams(): MatchroomTeam[] {
+    // retrieve teams sorted with matchroom user team first
+    const teams = Object.entries(this._match?.teams ?? {}).sort((a, b) => {
+      return (a[1].roster.some((player) => player.id === this._user?.id) ? 0 : 1)
+        - (b[1].roster.some((player) => player.id === this._user?.id) ? 0 : 1);
+    });
+    // return matchroom teams
+    return teams.map(([id, _]) => ({ id: id }));
   }
 
   /**

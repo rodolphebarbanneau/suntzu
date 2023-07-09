@@ -31,6 +31,17 @@ export interface MetricsOptions {
 }
 
 /**
+ * Metrics data.
+ * It is used to define the metrics data for a match source. It includes data for players and teams.
+ */
+export interface MetricsData {
+  /* The players metrics data */
+  players: Record<string, MetricsModel>;
+  /* The teams metrics data */
+  teams: Record<string, MetricsModel>;
+}
+
+/**
  * Metrics.
  * It is responsible for aggregating and managing metrics related to a specific match, including
  * source data, maps metrics, players metrics, and more. This class makes use of an API to fetch and
@@ -92,17 +103,25 @@ export class Metrics {
 
   /* Get the source data */
   get source(): SourceModel | null {
-    return this._source ?? null;
+    return this._source;
   }
 
   /* Get the players metrics */
   get players(): Record<string, MetricsModel> | null {
-    return this._players ?? null;
+    return this._players;
   }
 
   /* Get the teams metrics */
   get teams(): Record<string, MetricsModel> | null {
-    return this._teams ?? null;
+    return this._teams;
+  }
+
+  /* Get the metrics data */
+  get data(): MetricsData {
+    return {
+      players: this._players ?? {},
+      teams: this._teams ?? {},
+    };
   }
 
   /**

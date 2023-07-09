@@ -7,7 +7,7 @@ export {
   MatchroomState,
   MatchroomOptions,
 } from './matchroom';
-export { Metrics, MetricsOptions } from './metrics';
+export { Metrics, MetricsOptions, MetricsData } from './metrics';
 export {
   Storage,
   StorageOptions,
