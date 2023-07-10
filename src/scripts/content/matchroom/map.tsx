@@ -5,9 +5,9 @@ import type { Matchroom, MetricsData } from 'src/shared/core';
 import { Feature } from 'src/shared/core';
 import { getColorScale } from 'src/shared/helpers';
 
+import { useMetrics } from 'src/app/hooks/use-metrics';
 import { FeaturesProvider } from 'src/app/providers/features';
 import { MetricsProvider } from 'src/app/providers/metrics';
-import { useMetrics } from 'src/app/hooks/use-metrics';
 import { Metrics } from 'src/app/components/metrics';
 import { Tooltip } from 'src/app/components/tooltip';
 

@@ -26,6 +26,9 @@ export class Component {
   /* The component react node */
   private readonly _node: ReactNode;
 
+  /* The component host container */
+  private _host: HTMLElement | null = null;
+
   /**
    * Create a component.
    * @param feature - The component feature.
@@ -78,13 +81,20 @@ export class Component {
     return this._node;
   }
 
+  /* Get the component host container */
+  get host(): HTMLElement | null {
+    return this._host;
+  }
+
   /**
    * Append the component container.
    * @param element - The element to append the component to.
    * @returns The component.
    */
   appendTo(element: HTMLDivElement): Component {
+    this._container.remove();
     element.append(this._container);
+    this._host = element;
     return this;
   }
 
@@ -94,7 +104,9 @@ export class Component {
    * @returns The component.
    */
   prependTo(element: HTMLDivElement): Component {
+    this._container.remove();
     element.prepend(this._container);
+    this._host = element;
     return this;
   }
 
@@ -105,6 +117,7 @@ export class Component {
   remove(): Component {
     this._root.unmount();
     this._container.remove();
+    this._host = null;
     return this;
   }
 

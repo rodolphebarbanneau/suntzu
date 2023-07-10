@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import type { RootOptions } from 'react-dom/client';
-//import { debounce } from 'lodash';
+//todo import { debounce } from 'lodash';
 
-//import { DEBOUNCE_DELAY } from '../settings';
+//todo import { DEBOUNCE_DELAY } from '../settings';
 import { Component } from './component';
 
 /**
@@ -37,8 +37,8 @@ export class Feature {
     // initialize
     this._name = name;
     // debounce rendering
-    //this.render = () => debounce(async () => { this.render(); }, DEBOUNCE_DELAY);
-    //this.unmount = () => debounce(async () => { this.unmount(); }, DEBOUNCE_DELAY);
+    //todo this.render = () => debounce(async () => { this.render(); }, DEBOUNCE_DELAY);
+    //todo this.unmount = () => debounce(async () => { this.unmount(); }, DEBOUNCE_DELAY);
     // callback
     callback(this);
   }
