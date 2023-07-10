@@ -10,7 +10,7 @@ import { MetricsContext } from '../providers/metrics';
  *
  * @returns A React hook element that is the current value of the metrics data.
  */
-export const useMetrics = (): MetricsData | null => {
+export const useMetrics = (): MetricsData => {
   const context = useContext(MetricsContext);
   if (context === undefined) {
     throw new Error('Metrics hook must be used within a metrics provider');

@@ -1,15 +1,16 @@
+import type { ReactNode } from 'react';
 import { default as ReactShadowRoot } from 'react-shadow';
 
 import type { Matchroom, MetricsData } from 'src/shared/core';
 import { Feature } from 'src/shared/core';
 import { getColorScale } from 'src/shared/helpers';
 
+import { FeaturesProvider } from 'src/app/providers/features';
 import { MetricsProvider } from 'src/app/providers/metrics';
 import { useMetrics } from 'src/app/hooks/use-metrics';
 import { Metrics } from 'src/app/components/metrics';
 import { Tooltip } from 'src/app/components/tooltip';
 
-import stylesheetLink from 'src/app/components/link.module.scss?inline';
 import stylesheetMetrics from 'src/app/components/metrics.module.scss?inline';
 import stylesheetTooltip from 'src/app/components/tooltip.module.scss?inline';
 
@@ -44,17 +45,101 @@ const getRelativeWinRate = (metrics: MetricsData, teams: string[], map?: string)
   return winRates[0] - winRates[1];
 }
 
+/* Map component */
+const MapComponent = (
+  { matchroom, stylesheet, children }: {
+    matchroom: Matchroom;
+    stylesheet: string[];
+    children: ReactNode | ReactNode[],
+  },
+) => {
+  return (
+    <ReactShadowRoot.Div>
+      <FeaturesProvider configKey={['showMap']} hideOnFalse={true}>
+        <MetricsProvider matchroom={matchroom}>
+          {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
+          {
+            stylesheet.map((style, index) =>
+              <style key={index} dangerouslySetInnerHTML={{ __html: style }} />
+            )
+          }
+          {children}
+        </MetricsProvider>
+      </FeaturesProvider>
+    </ReactShadowRoot.Div>
+  );
+};
 
+/* Sidebar component */
+const SidebarComponent = (
+  { matchroom, teams, map }: {
+    matchroom: Matchroom;
+    teams: string[];
+    map: string;
+  },
+) => {
+  const metrics = useMetrics();
+  const relativeWinRate = getRelativeWinRate(metrics, teams, map);
+  return (
+    <MapComponent matchroom={matchroom} stylesheet={[stylesheet]}>
+      <div
+        className={styles['sidebar']}
+        style={{ backgroundColor: foregroundColor(relativeWinRate) }}
+      ></div>
+    </MapComponent>
+  );
+};
+
+/* Summary component */
+const SummaryComponent = (
+  { matchroom, teams, map }: {
+    matchroom: Matchroom;
+    teams: string[];
+    map: string;
+  },
+) => {
+  const metrics = useMetrics();
+  const relativeWinRate = getRelativeWinRate(metrics, teams, map);
+  return (
+    <MapComponent
+      matchroom={matchroom}
+      stylesheet={[stylesheetTooltip, stylesheet]}
+    >
+      <div className={styles['kpi']}>
+        <p style={{ color: foregroundColor(relativeWinRate) }}>
+          {relativeWinRate.toFixed(0) + '%'}
+        </p>
+        <Tooltip message={'Relative win rate'} />
+      </div>
+    </MapComponent>
+  );
+}
+
+/* Metrics component */
+const MetricsComponent = (
+  { matchroom, teams, map }: {
+    matchroom: Matchroom;
+    teams: string[];
+    map: string;
+  },
+) => {
+  const metrics = useMetrics();
+  return (
+    <MapComponent
+      matchroom={matchroom}
+      stylesheet={[stylesheetMetrics]}
+    >
+      <Metrics
+        feature="map"
+        data={[]}
+      />
+    </MapComponent>
+  );
+}
 
 /* Map feature */
 export const MapFeature = (matchroom: Matchroom) => new Feature('map',
   (feature) => {
-    // use matchroom metrics
-    console.log('======beforeUseMatchroom============================================')
-    console.log('======beforeUseMatchroom============================================')
-    const metrics = matchroom.metrics.data;
-    console.log('======afterUseMatchroom============================================')
-    console.log('======afterUseMatchroom============================================')
     // retrieve matchroom teams
     const teams = matchroom.getTeams().map((team) => team.id);
     // retrieve matchroom maps
@@ -62,53 +147,20 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
 
     // create components and actions for each map
     maps.forEach((map) => {
-      // metrics
-      const relativeWinRate = getRelativeWinRate(metrics, teams, map.id);
 
       // sidebar component
       feature.addComponent(
-        <ReactShadowRoot.Div>
-          <MetricsProvider metrics={metrics}>
-            {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
-            <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-            <div
-              className={styles['sidebar']}
-              style={{ backgroundColor: foregroundColor(relativeWinRate) }}
-            ></div>
-          </MetricsProvider>
-        </ReactShadowRoot.Div>
+        <SidebarComponent matchroom={matchroom} teams={teams} map={map.id} />,
       ).prependTo(map.container);
 
       // summary component
       feature.addComponent(
-        <ReactShadowRoot.Div>
-          {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
-          <style dangerouslySetInnerHTML={{ __html: stylesheetLink }} />
-          <style dangerouslySetInnerHTML={{ __html: stylesheetMetrics }} />
-          <style dangerouslySetInnerHTML={{ __html: stylesheetTooltip }} />
-          <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <div className={styles['kpi']}>
-            <p style={{ color: foregroundColor(relativeWinRate) }}>
-              {relativeWinRate.toFixed(0) + '%'}
-            </p>
-            <Tooltip message={'Relative win rate'} />
-          </div>
-        </ReactShadowRoot.Div>
+        <SummaryComponent matchroom={matchroom} teams={teams} map={map.id} />
       ).appendTo(map.container);
 
-      // stats component
+      // metrics component
       feature.addComponent(
-        <ReactShadowRoot.Div>
-          {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
-          <style dangerouslySetInnerHTML={{ __html: stylesheetLink }} />
-          <style dangerouslySetInnerHTML={{ __html: stylesheetMetrics }} />
-          <style dangerouslySetInnerHTML={{ __html: stylesheetTooltip }} />
-          <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Metrics
-            feature="map"
-            data={[]}
-          />
-        </ReactShadowRoot.Div>
+        <MetricsComponent matchroom={matchroom} teams={teams} map={map.id} />
       ).appendTo(map.container);
 
       // container

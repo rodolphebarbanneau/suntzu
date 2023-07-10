@@ -1,6 +1,5 @@
 import type { Feature } from 'src/shared/core';
-import { CONFIG } from 'src/shared/settings';
-import { Storage, Matchroom } from 'src/shared/core';
+import { Matchroom } from 'src/shared/core';
 
 import { InfoFeature } from './matchroom/info';
 import { MapFeature } from './matchroom/map';
@@ -10,36 +9,17 @@ import { PlayerFeature } from './matchroom/player';
 export const MATCHROOM = Matchroom.initialize();
 export const FEATURES: Record<string, Feature> = {};
 
-const render = async (config: any) => {
-
-  if (config.showMap || config.showPlayer) {
-    FEATURES['info'].render();
-  } else {
-    FEATURES['info'].unmount();
-  }
-
-  if (config.showMap) {
-    FEATURES['map'].render();
-  }
-
-  if (config.showPlayer) {
-    FEATURES['player'].render();
-  }
-};
-
 /* Handle mutations */
 const handleMutation = async (
   mutations: MutationRecord[],
   observer: MutationObserver
 ) => {
-  const config = await CONFIG;
-  // return if config is invalid
-  if (!config) return;
-
+  // await matchroom
   const matchroom = await MATCHROOM;
 
   // return if matchroom is invalid
   if (!matchroom) return;
+
   // return if matchroom is not ready
   if (!matchroom.isReady()) return;
 
@@ -48,9 +28,11 @@ const handleMutation = async (
     FEATURES['info'] = InfoFeature(matchroom);
     FEATURES['map'] = MapFeature(matchroom);
     FEATURES['player'] = PlayerFeature(matchroom);
-    render(config);
 
-    Storage.addListener([config, async () => { render(config); }]);
+    //todo
+    FEATURES['info'].render();
+    FEATURES['map'].render();
+    FEATURES['player'].render();
   }
 
   mutations.forEach((mutation) => {

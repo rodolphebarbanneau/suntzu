@@ -17,7 +17,7 @@ export const Section = ({ children }: { children: ReactNode | ReactNode[] }) => 
 );
 
 /* Section header */
-export const SectionHeader = <K extends keyof Awaited<typeof CONFIG>>(
+export const SectionHeader = <K extends keyof Configuration>(
   { title, configKey }: {
     title: string;
     configKey?: K;
