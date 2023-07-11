@@ -1,8 +1,8 @@
 import type { ReactNode} from 'react';
-import { createContext, useEffect, useState } from 'react';
+import { createContext } from 'react';
 
-import type { Configuration } from 'src/shared/features';
-import { CONFIG } from 'src/shared/settings';
+import type { FeaturesConfiguration } from 'src/shared/features';
+import { FEATURES_CONFIG } from 'src/shared/features';
 
 import { useStorage } from '../hooks/use-storage';
 
@@ -17,7 +17,7 @@ export const FeaturesContext = createContext<boolean | undefined>(undefined);
  * @param children - The React children to be rendered.
  * @returns A React provider that manages the features configuration.
  */
-export const FeaturesProvider = <K extends keyof Configuration>(
+export const FeaturesProvider = <K extends keyof FeaturesConfiguration>(
   { configKey, hideOnFalse, children }: {
     configKey: K[];
     hideOnFalse?: boolean;
@@ -25,7 +25,7 @@ export const FeaturesProvider = <K extends keyof Configuration>(
   },
 ) => {
   const features = configKey.map((key) => {
-    const [feature, _] = useStorage(CONFIG, key);
+    const [feature, _] = useStorage(FEATURES_CONFIG, key);
     return feature as unknown as boolean
   })
 

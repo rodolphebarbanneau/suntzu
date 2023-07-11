@@ -1,12 +1,9 @@
-import { Configuration } from './features';
+/* Configuration */
+export const DEBOUNCE_DELAY = 250;  // milliseconds
 
 /* Extension */
 export const EXTENSION_NAME = 'suntzu';
 export const EXTENSION_VERSION = '0.1.0';
-
-/* Configuration */
-export const CONFIG = Configuration.initialize();
-export const DEBOUNCE_DELAY = 250;  // milliseconds
 
 /* Faceit */
 export const FACEIT_API_BASE_URL = 'https://api.faceit.com';

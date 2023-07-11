@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { Configuration } from 'src/shared/features';
-import { CONFIG } from 'src/shared/settings';
+import type { FeaturesConfiguration } from 'src/shared/features';
+import { FEATURES_CONFIG } from 'src/shared/features';
 
 import { useStorage } from '../hooks/use-storage';
 import { Loading } from './loading';
@@ -17,13 +17,13 @@ export const Section = ({ children }: { children: ReactNode | ReactNode[] }) => 
 );
 
 /* Section header */
-export const SectionHeader = <K extends keyof Configuration>(
+export const SectionHeader = <K extends keyof FeaturesConfiguration>(
   { title, configKey }: {
     title: string;
     configKey?: K;
   },
 ) => {
-  const [option, setOption] = useStorage(CONFIG, configKey);
+  const [option, setOption] = useStorage(FEATURES_CONFIG, configKey);
 
   return (
     <header>
@@ -34,7 +34,7 @@ export const SectionHeader = <K extends keyof Configuration>(
             ? <Loading />
             : <Toggle
                 isToggled={!!option}
-                onToggle={() => setOption(!option as Configuration[K])}
+                onToggle={() => setOption(!option as FeaturesConfiguration[K])}
               />
           )
           : null

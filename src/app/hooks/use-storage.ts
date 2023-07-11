@@ -24,43 +24,36 @@ export const useStorage = <T extends StorageNamespace, K extends keyof T>(
   namespace: T | Promise<T>,
   key?: K,
 ): [T[K] | undefined, Dispatch<SetStateAction<T[K] | undefined>>] => {
+  const [storage, setStorage] = useState<T | undefined>(undefined);
   const [option, setOption] = useState<T[K] | undefined>(undefined);
-  const storage = useRef(false);
 
   /**
-   * Initialize the state and ref with the provided storage value.
-   * If instance is a promise, it is resolved first before setting the value.
+   * Effect to initialize the storage with the provided namespace.
+   * If instance is a promise, it is resolved first before setting the storage.
    */
   useEffect(() => {
-    if (!key) return;
     if (namespace instanceof Promise) {
-      namespace.then((records) => {
-        storage.current = true;
-        setOption(records[key]);
-      });
+      namespace.then(setStorage);
     } else {
-      storage.current = true;
-      setOption(namespace[key]);
+      setStorage(namespace);
     }
-  }, [key, namespace]);
+  }, [namespace]);
+
+  /**
+   * Effect to initialize the option with the provided storage key value.
+   */
+  useEffect(() => {
+    if (!storage || !key) return;
+    setOption(storage[key]);
+  }, [key, storage]);
 
   /**
    * Effect to update the storage value when the local state updates.
-   * If the namespace is a promise, it is resolved first before updating the storage value. It is
-   * also skipped if the option is null or the storage hasn't been initialized.
    */
   useEffect(() => {
-    if (!key) return;
-    if (!storage.current) return;
-    if (option === undefined) return;
-    if (namespace instanceof Promise) {
-      namespace.then((records) => {
-        records[key] = option;
-      });
-    } else {
-      namespace[key] = option;
-    }
-  }, [option, key, namespace]);
+    if (!storage || !key || option === undefined) return;
+    storage[key] = option;
+  }, [option, key, storage]);
 
   /**
    * Effect to listen for storage changes and update the local state accordingly.
@@ -68,19 +61,19 @@ export const useStorage = <T extends StorageNamespace, K extends keyof T>(
    * dependencies change.
    */
   useEffect(() => {
-    if (!key) return;
+    if (!storage || !key) return;
     const onChange = (changes: StorageChanges) => {
       if (key in changes) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setOption(changes[key as any].newValue);
       }
     };
-    const listener: StorageListener = [namespace, onChange];
+    const listener: StorageListener = [storage, onChange];
     Storage.addListener(listener);
     return () => {
       Storage.removeListener(listener);
     };
-  }, [key, namespace]);
+  }, [key, storage]);
 
   return [option, setOption];
 };
