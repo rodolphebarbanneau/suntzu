@@ -17,6 +17,9 @@ export class Component {
   /* The component id */
   private readonly _id: string
 
+  /* The component name */
+  private readonly _name: string
+
   /* The component container */
   private readonly _container: HTMLDivElement;
 
@@ -32,19 +35,22 @@ export class Component {
   /**
    * Create a component.
    * @param feature - The component feature.
+   * @param name - The component name.
    * @param node - The component react node.
    * @param options - The component react root options (optional).
    */
   constructor(
     feature: Feature,
+    name: string,
     node: ReactNode,
     options?: RootOptions,
   ) {
     // initialize feature
     this._feature = feature;
-    // initialize id (extension name + random string)
+    // initialize id (extension name + random string) and name
     const random = Math.random().toString(36).substring(2, 15);
     this._id = `${EXTENSION_NAME.toLowerCase().trim().replace(/\s+/g, '-')}-${random}`;
+    this._name = name;
     // initialize container
     this._container = document.createElement('div');
     this._container.setAttribute('id', this._id);
@@ -64,6 +70,11 @@ export class Component {
   /* Get the component id */
   get id(): string {
     return this._id;
+  }
+
+  /* Get the component name */
+  get name(): string {
+    return this._name;
   }
 
   /* Get the component container */
@@ -123,15 +134,19 @@ export class Component {
 
   /**
    * Render the component node into the root attached to the container.
+   * @returns The component.
    */
-  render(): void {
+  render(): Component {
     this._root.render(this._node);
+    return this;
   }
 
   /**
    * Unmount the component node from the root.
+   * @returns The component.
    */
-  unmount(): void {
+  unmount(): Component {
     this._root.unmount();
+    return this;
   }
 }

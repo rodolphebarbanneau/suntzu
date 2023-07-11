@@ -4,8 +4,11 @@ export { Component } from './component';
 export { Feature } from './feature';
 export {
   Matchroom,
-  MatchroomState,
+  MatchroomMap,
   MatchroomOptions,
+  MatchroomPlayer,
+  MatchroomState,
+  MatchroomTeam,
 } from './matchroom';
 export { Metrics, MetricsOptions, MetricsData } from './metrics';
 export {

@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
 import { default as ReactShadowRoot } from 'react-shadow';
 
-import type { Matchroom, MetricsData } from 'src/shared/core';
+import type { Matchroom, MatchroomMap, MatchroomTeam, MetricsData } from 'src/shared/core';
 import { Feature } from 'src/shared/core';
 import { getColorScale } from 'src/shared/helpers';
 
 import { useMetrics } from 'src/app/hooks/use-metrics';
+import { useStyles } from 'src/app/hooks/use-styles';
 import { FeaturesProvider } from 'src/app/providers/features';
 import { MetricsProvider } from 'src/app/providers/metrics';
 import { Metrics } from 'src/app/components/metrics';
@@ -38,10 +39,14 @@ const foregroundColor = getColorScale(
 );
 
 /* Relative win rate */
-const getRelativeWinRate = (metrics: MetricsData, teams: string[], map?: string): number => {
+const getRelativeWinRate = (
+  metrics: MetricsData,
+  teams: MatchroomTeam[],
+  map?: MatchroomMap,
+): number => {
   const winRates = (map === undefined)
-    ? teams.map((team) => metrics.teams[team].overall.winRate ?? 0)
-    : teams.map((team) => metrics.teams[team].maps[map]?.winRate ?? 0);
+    ? teams.map((team) => metrics.teams[team.id].overall.winRate ?? 0)
+    : teams.map((team) => metrics.teams[team.id].maps[map.id]?.winRate ?? 0);
   return winRates[0] - winRates[1];
 }
 
@@ -74,12 +79,13 @@ const MapComponent = (
 const SidebarComponent = (
   { matchroom, teams, map }: {
     matchroom: Matchroom;
-    teams: string[];
-    map: string;
+    teams: MatchroomTeam[];
+    map: MatchroomMap;
   },
 ) => {
   const metrics = useMetrics();
   const relativeWinRate = getRelativeWinRate(metrics, teams, map);
+  useStyles(map.container, { backgroundColor: backgroundColor(relativeWinRate) });
   return (
     <MapComponent matchroom={matchroom} stylesheet={[stylesheet]}>
       <div
@@ -94,8 +100,8 @@ const SidebarComponent = (
 const SummaryComponent = (
   { matchroom, teams, map }: {
     matchroom: Matchroom;
-    teams: string[];
-    map: string;
+    teams: MatchroomTeam[];
+    map: MatchroomMap;
   },
 ) => {
   const metrics = useMetrics();
@@ -119,8 +125,8 @@ const SummaryComponent = (
 const MetricsComponent = (
   { matchroom, teams, map }: {
     matchroom: Matchroom;
-    teams: string[];
-    map: string;
+    teams: MatchroomTeam[];
+    map: MatchroomMap;
   },
 ) => {
   const metrics = useMetrics();
@@ -141,7 +147,7 @@ const MetricsComponent = (
 export const MapFeature = (matchroom: Matchroom) => new Feature('map',
   (feature) => {
     // retrieve matchroom teams
-    const teams = matchroom.getTeams().map((team) => team.id);
+    const teams = matchroom.getTeams();
     // retrieve matchroom maps
     const maps = matchroom.getMaps();
 
@@ -150,24 +156,21 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
 
       // sidebar component
       feature.addComponent(
-        <SidebarComponent matchroom={matchroom} teams={teams} map={map.id} />,
-      ).prependTo(map.container);
+        `sidebar-${map.id}`,
+        <SidebarComponent matchroom={matchroom} teams={teams} map={map} />,
+      )?.prependTo(map.container);
 
       // summary component
       feature.addComponent(
-        <SummaryComponent matchroom={matchroom} teams={teams} map={map.id} />
-      ).appendTo(map.container);
+        `summary-${map.id}`,
+        <SummaryComponent matchroom={matchroom} teams={teams} map={map} />
+      )?.appendTo(map.container);
 
       // metrics component
       feature.addComponent(
-        <MetricsComponent matchroom={matchroom} teams={teams} map={map.id} />
-      ).appendTo(map.container);
-
-      // container
-      feature.addAction({
-        render: () => { map.container.style.backgroundColor = backgroundColor(1); },
-        unmount: () => { map.container.style.backgroundColor = ''; },
-      });
+        `metrics-${map.id}`,
+        <MetricsComponent matchroom={matchroom} teams={teams} map={map} />
+      )?.appendTo(map.container);
     });
 
     // listen for metrics changes

@@ -6,16 +6,6 @@ import type { RootOptions } from 'react-dom/client';
 import { Component } from './component';
 
 /**
- * A feature action.
- * It is a general abstraction for creating and handling actions called by the feature rendering
- * and unmounting methods.
- */
-export interface FeatureAction {
-  render: () => void;
-  unmount: () => void;
-}
-
-/**
  * A feature.
  * It manages a collection of components that are added to the document.
  */
@@ -23,8 +13,8 @@ export class Feature {
   /* The feature name */
   private readonly _name: string;
 
-  /* The feature rendering and unmounting actions */
-  private readonly _actions = new Set<FeatureAction>();
+  /* The feature update function */
+  private readonly _update: () => Feature;
 
   /* The feature components */
   private readonly _components = new Set<Component>();
@@ -33,14 +23,13 @@ export class Feature {
    * Create a feature.
    * @param name - The feature name.
    */
-  constructor(name: string, callback: (feature: Feature) => void) {
+  constructor(name: string, update: (feature: Feature) => void) {
     // initialize
     this._name = name;
+    this._update = () => { update(this); return this; }
     // debounce rendering
     //todo this.render = () => debounce(async () => { this.render(); }, DEBOUNCE_DELAY);
     //todo this.unmount = () => debounce(async () => { this.unmount(); }, DEBOUNCE_DELAY);
-    // callback
-    callback(this);
   }
 
   /* Get the feature name */
@@ -48,63 +37,30 @@ export class Feature {
     return this._name;
   }
 
+  /* Get the feature update function */
+  get update(): () => Feature {
+    return this._update;
+  }
+
   /* Get the feature components */
   get components(): Set<Component> {
-    return this._components;
-  }
-
-  /* Get the feature rendering and unmounting actions */
-  get actions(): Set<FeatureAction> {
-    return this._actions;
-  }
-
-  /**
-   * Add an action to the feature.
-   * @param action - The action to add.
-   * @returns The created action.
-   */
-  addAction(action: FeatureAction): FeatureAction {
-    this._actions.add(action);
-    return action;
-  }
-
-  /**
-   * Add multiple actions to the feature.
-   * @param actions - The actions to add.
-   * @returns The feature.
-   */
-  extendActions(...actions: FeatureAction[]): Feature {
-    actions.forEach((action) => {
-      if (this._actions.has(action)) return;
-      this._actions.add(action);
-    });
-    return this;
-  }
-
-  /**
-   * Remove multiple actions from the feature.
-   * @param actions - The actions to remove.
-   * @returns The feature.
-   */
-  removeActions(...actions: FeatureAction[]): Feature {
-    actions.forEach((action) => {
-      if (!this._actions.has(action)) return;
-      this._actions.delete(action);
-    });
-    return this;
+    return new Set(this._components);
   }
 
   /**
    * Add a component to the feature.
+   * @param name - The component name (must be uniquer within the feature).
    * @param node - The component react node.
    * @param options - The component react root options (optional).
    * @returns The created component.
    */
   addComponent(
+    name: string,
     node: ReactNode,
     options?: RootOptions
-  ): Component {
-    const component = new Component(this, node, options);
+  ): Component | null {
+    if (Array.from(this._components).some((c) => c.name === name)) return null;
+    const component = new Component(this, name, node, options);
     this._components.add(component);
     return component;
   }
@@ -119,7 +75,7 @@ export class Feature {
       if (component.feature !== this) {
         throw new Error('Cannot extend component from another feature');
       }
-      if (this._components.has(component)) return;
+      if (Array.from(this._components).some((c) => c.name === component.name)) return;
       this._components.add(component);
     });
     return this;
@@ -141,25 +97,23 @@ export class Feature {
 
   /**
    * Render the feature.
+   * @returns The feature.
    */
-  render(): void {
-    this._actions.forEach((action) => {
-      action.render();
-    });
+  render(): Feature {
     this._components.forEach((component) => {
       component.render();
     });
+    return this;
   }
 
   /**
    * Unmount the feature.
+   * @returns The feature.
    */
-  unmount(): void {
-    this._actions.forEach((action) => {
-      action.unmount();
-    });
+  unmount(): Feature {
     this._components.forEach((component) => {
       component.unmount();
     });
+    return this;
   }
 }

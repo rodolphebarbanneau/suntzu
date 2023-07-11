@@ -24,7 +24,7 @@ export const InfoFeature = (matchroom: Matchroom) => new Feature('info',
     if (!info) return;
 
     // create component
-    feature.addComponent(
+    feature.addComponent('toolbar',
       <ReactShadowRoot.Div>
         {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
         <style dangerouslySetInnerHTML={{ __html: stylesheetOption }} />
@@ -73,6 +73,6 @@ export const InfoFeature = (matchroom: Matchroom) => new Feature('info',
           </FeaturesProvider>
         </Toolbar>
       </ReactShadowRoot.Div>
-    ).prependTo(info);
+    )?.prependTo(info);
   },
 );

@@ -31,7 +31,7 @@ export enum MatchroomState {
  * (lower case) and the container. The name is the identifier used for the map within the game, and
  * the container is the HTML element that encapsulates the map's information.
  */
-interface MatchroomMap {
+export interface MatchroomMap {
   /* The matchroom map id */
   readonly id: string;
   /* The matchroom map container */
@@ -43,7 +43,7 @@ interface MatchroomMap {
  * A matchroom team.
  * It represents a team in a matchroom. It contains details about the team such as the team's id.
  */
-interface MatchroomTeam {
+export interface MatchroomTeam {
   /* The matchroom team id */
   readonly id: string;
 }
@@ -54,7 +54,7 @@ interface MatchroomTeam {
  * player's id and container. The id is the in-game nickname used by the player (lower case), and
  * the container is the HTML element that encapsulates the player's information.
  */
-interface MatchroomPlayer {
+export interface MatchroomPlayer {
   /* The matchroom player id */
   readonly id: string;
   /* The matchroom player container */
