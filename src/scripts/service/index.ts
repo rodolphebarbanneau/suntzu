@@ -38,6 +38,12 @@ browser.runtime.onMessage.addListener(
           status: response.status,
           error: `Abort error: ${response.statusText}`,
         });
+      } else if (response.status === 429) {
+        // abort error
+        sendResponse({
+          status: response.status,
+          error: `Too many requests error: ${response.statusText}`,
+        });
       } else if (!response.ok) {
         // other error
         sendResponse({

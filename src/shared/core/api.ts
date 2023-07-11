@@ -94,7 +94,7 @@ export class Api {
    * @returns The api token.
    */
   static async getLocalToken(): Promise<string | null> {
-    const cookie = await browser?.cookies.get({
+    const cookie = await browser?.cookies?.get({
       name: 't',
       url: 'https://faceit.com',
     });
@@ -155,10 +155,19 @@ export class Api {
     // fetch data
     try {
       const response: ApiResponse<T | WrappedData<T>> = await browser.runtime?.sendMessage(request);
-      // check network error
-      if (!response || response.error) {
-        throw new Error(
-          `Data fetch operation failed (received an invalid response): ${response.error}}`
+      // check response error
+      if (!response || !response.data) {
+        throw new FetchError(
+          `Data fetch operation failed (received undefined): ${response.error ?? 'unknown'}`,
+          request,
+          response,
+        );
+      }
+      if (response.error) {
+        throw new FetchError(
+          `Data fetch operation failed (received invalid): ${response.error}`,
+          request,
+          response,
         );
       }
       // unwrap response data
@@ -166,16 +175,20 @@ export class Api {
         const { code, result, payload } = response.data as WrappedData<T>;
         // check if unwrapped data is valid
         if (payload === undefined) {
-          throw new Error(
-            'Unwrapped data is invalid (missing "code", "result" or "payload")'
+          throw new FetchError(
+            'Unwrapped data is invalid (missing payload)',
+            request,
+            response,
           );
         }
         // check for response errors
         if ((code && code.toUpperCase() !== 'OPERATION-OK')
           || (result && result.toUpperCase() !== 'OK')
         ) {
-          throw new Error(
-            'Data fetch operation failed (received an invalid response)'
+          throw new FetchError(
+            'Data fetch operation failed (received an invalid response)',
+            request,
+            response,
           );
         }
         return payload;
@@ -183,7 +196,14 @@ export class Api {
       return response.data as T;
     } catch (error) {
       // log and return null if error
-      console.error(error)  // eslint-disable-line no-console
+      if (error instanceof FetchError) {
+        // eslint-disable-next-line no-console
+        console.error(error.message, error.request, error.response)
+      }
+      else {
+        // eslint-disable-next-line no-console
+        console.error(error)
+      }
       return null;
     }
   }
@@ -409,5 +429,37 @@ export class Api {
       base: FACEIT_OPEN_BASE_URL,
       unwrap: false,
     });
+  }
+}
+
+/**
+ * An application programming interface fetch error.
+ *
+ * @typeParam T - The response data type.
+ * @param message - The error message.
+ * @param request - The request.
+ * @param response - The response.
+ * @returns A fetch error.
+ * @throws An error if the request or response is invalid.
+ */
+class FetchError<T> extends Error {
+  /* The request */
+  readonly request: ApiRequest;
+
+  /* The response */
+  readonly response: ApiResponse<unknown>;
+
+  /**
+   * Create an application programming interface fetch error.
+   * @param message - The error message.
+   * @param request - The request.
+   * @param response - The response.
+   */
+  constructor(message: string, request: ApiRequest, response: ApiResponse<T>) {
+    super(message);
+    // initialize error
+    this.name = "FetchError";
+    this.request = request;
+    this.response = response;
   }
 }
