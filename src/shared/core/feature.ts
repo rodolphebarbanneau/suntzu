@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import type { RootOptions } from 'react-dom/client';
-//todo import { debounce } from 'lodash';
+import { debounce } from 'lodash';
 
-//todo import { DEBOUNCE_DELAY } from '../settings';
+import { DEBOUNCE_DELAY } from '../settings';
 import { Component } from './component';
 
 /**
@@ -14,10 +14,10 @@ export class Feature {
   private readonly _name: string;
 
   /* The feature update function */
-  private readonly _update: () => Feature;
+  private readonly _update: () => void;
 
   /* The feature components */
-  private readonly _components = new Set<Component>();
+  private readonly _components = new Map<string, Component>();
 
   /**
    * Create a feature.
@@ -26,10 +26,19 @@ export class Feature {
   constructor(name: string, update: (feature: Feature) => void) {
     // initialize
     this._name = name;
-    this._update = () => { update(this); return this; }
-    // debounce rendering
-    //todo this.render = () => debounce(async () => { this.render(); }, DEBOUNCE_DELAY);
-    //todo this.unmount = () => debounce(async () => { this.unmount(); }, DEBOUNCE_DELAY);
+    this._update = () => update(this);
+    // debounce feature update
+    const originalUpdate = this.update.bind(this);
+    const debounceUpdate = debounce(originalUpdate, DEBOUNCE_DELAY, { leading: true, trailing: false });
+    this.update = () => { debounceUpdate(); return this; }
+    // debounce feature rendering
+    const originalRender = this.render.bind(this);
+    const debounceRender = debounce(originalRender, DEBOUNCE_DELAY, { leading: true, trailing: false });
+    this.render = () => { debounceRender(); return this; }
+    // debounce feature unmounting
+    const originalUnmount = this.unmount.bind(this);
+    const debounceUnmount = debounce(originalUnmount, DEBOUNCE_DELAY, { leading: true, trailing: false });
+    this.unmount = () => { debounceUnmount(); return this; }
   }
 
   /* Get the feature name */
@@ -37,14 +46,9 @@ export class Feature {
     return this._name;
   }
 
-  /* Get the feature update function */
-  get update(): () => Feature {
-    return this._update;
-  }
-
   /* Get the feature components */
-  get components(): Set<Component> {
-    return new Set(this._components);
+  get components(): Map<string, Component> {
+    return new Map(this._components);
   }
 
   /**
@@ -59,9 +63,9 @@ export class Feature {
     node: ReactNode,
     options?: RootOptions
   ): Component | null {
-    if (Array.from(this._components).some((c) => c.name === name)) return null;
+    if (this._components.has(name)) return null;
     const component = new Component(this, name, node, options);
-    this._components.add(component);
+    this._components.set(component.name, component);
     return component;
   }
 
@@ -75,8 +79,8 @@ export class Feature {
       if (component.feature !== this) {
         throw new Error('Cannot extend component from another feature');
       }
-      if (Array.from(this._components).some((c) => c.name === component.name)) return;
-      this._components.add(component);
+      if (this._components.has(component.name)) return;
+      this._components.set(component.name, component);
     });
     return this;
   }
@@ -88,16 +92,27 @@ export class Feature {
    */
   removeComponents(...components: Component[]): Feature {
     components.forEach((component) => {
-      if (!this._components.has(component)) return;
-      this._components.delete(component);
+      if (!this._components.has(component.name)) return;
+      this._components.delete(component.name);
       component.remove();
     });
     return this;
   }
 
   /**
+   * Update the feature.
+   * @returns The feature.
+   * @remarks This method is debounced.
+   */
+  update(): Feature {
+    this._update();
+    return this;
+  }
+
+  /**
    * Render the feature.
    * @returns The feature.
+   * @remarks This method is debounced.
    */
   render(): Feature {
     this._components.forEach((component) => {
@@ -109,6 +124,7 @@ export class Feature {
   /**
    * Unmount the feature.
    * @returns The feature.
+   * @remarks This method is debounced.
    */
   unmount(): Feature {
     this._components.forEach((component) => {
