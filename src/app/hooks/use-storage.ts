@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type {
   StorageNamespace,
@@ -10,8 +10,8 @@ import { Storage } from 'src/shared/core';
 
 /**
  * Use storage.
- * The custom storage React hook function deals with storage values. It handles both synchronous and
- * asynchronous (promise-based) storage instances.
+ * The custom storage React hook function that deals with storage values. It handles both
+ * synchronous and asynchronous (promise-based) storage instances.
  *
  * @template T - It extends the storage namespace.
  * @param namespace - The storage namespace to be managed, which can be a synchronous instance of

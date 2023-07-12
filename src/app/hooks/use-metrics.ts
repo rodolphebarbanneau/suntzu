@@ -1,21 +1,31 @@
-import { useContext } from 'react';
+import { useEffect, useState } from 'react';
 
-import type { MetricsData } from 'src/shared/core';
-
-import { MetricsContext } from '../providers/metrics';
+import type { Matchroom, MetricsData } from 'src/shared/core';
 
 /**
  * Use metrics.
  * The custom matchroom React hook function that deals with matchroom metrics data.
  *
- * @returns A React hook element that is the current value of the metrics data.
+ * @param matchroom - The matchroom instance to be managed.
+ * @returns The current value of the metrics data item.
  */
-export const useMetrics = (): MetricsData => {
-  const context = useContext(MetricsContext);
-  if (context === undefined) {
-    throw new Error('Metrics hook must be used within a metrics provider');
-  }
-  return context;
-};
+export const useMetrics = (
+  matchroom: Matchroom,
+): MetricsData => {
+  const [metrics, setMetrics] = useState(matchroom.metrics.data);
 
-export default useMetrics;
+  /**
+   * Effect to listen for matchroom metrics notifications and update the metrics data accordingly.
+   * It returns also a cleanup function to remove the listener when the component unmounts or the
+   * dependencies change.
+   */
+  useEffect(() => {
+    const listener = (changes: MetricsData) => { setMetrics(changes); };
+    matchroom.addListener(listener);
+    return () => {
+      matchroom.removeListener(listener);
+    };
+  }, [matchroom]);
+
+  return metrics;
+};

@@ -1,4 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+
+/* CSS string style declaration */
+type CSSStringStyleDeclaration = {
+  [K in keyof CSSStyleDeclaration as CSSStyleDeclaration[K] extends string ? K : never]: string;
+};
 
 /**
  * Use styles.
@@ -9,18 +14,30 @@ import { useEffect } from 'react';
  */
 export const useStyles = (
   container: HTMLElement,
-  styles: Partial<CSSStyleDeclaration>,
+  styles: Partial<CSSStringStyleDeclaration>,
 ): void => {
-  const original: CSSStyleDeclaration = {...container.style};
+  const original = useRef<Partial<CSSStringStyleDeclaration>>({});
+  if (Object.keys(original.current).length === 0) {
+    Object.entries(styles).forEach(([key, _]) => {
+      const prop = key as keyof CSSStringStyleDeclaration;
+      original.current[prop] = container.style[prop];
+    });
+  }
+
+  /**
+   * Effect to apply the styles to the HTML element container.
+   * It returns also a cleanup function to remove the styles when the component unmounts or the
+   * dependencies change.
+   */
   useEffect(() => {
     Object.entries(styles).forEach(([key, value]) => {
-      (container.style as any)[key] = value;
+      container.style.setProperty(key, value ?? '');
     });
     return () => {
-      Object.entries(original).forEach(([key, value]) => {
-        (container.style as any)[key] = value;
+      Object.entries(original.current).forEach(([key, value]) => {
+        container.style.setProperty(key, value ?? '');
       });
-    }
+    };
   }, [container, styles]);
 };
 

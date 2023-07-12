@@ -54,7 +54,7 @@ export class Component {
     // initialize container
     this._container = document.createElement('div');
     this._container.setAttribute('id', this._id);
-    this._container.setAttribute('name', this._id);
+    this._container.setAttribute('name', this._name);
     // initialize react root and node
     this._root = createRoot(this._container, options);
     this._node = node;
