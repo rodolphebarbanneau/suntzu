@@ -12,19 +12,24 @@
 
 .toolbar-header {
   display: flex;
+	align-items: center;
   padding-bottom: .2rem;
+  color: $color-fg-900;
 }
 
-.toolbar-header > svg {
+.toolbar-header h1 {
+  margin: 0;
+  padding: 0;
+  font-size: .8rem;
+  font-weight: normal;
+}
+
+.toolbar-header svg {
+  margin: 0;
+  padding: 0;
   fill: $color-fg-900;
   min-height: 16px;
   height: 16px;
-}
-
-.toolbar-header > h1 {
-  color: $color-fg-900;
-  font-size: .8rem;
-  font-weight: normal;
 }
 
 .toolbar-body {

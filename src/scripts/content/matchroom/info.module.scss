@@ -1,4 +1,19 @@
 /* Colors */
 @import '../../../colors';
 
-/* Toolbar  */
+/* Info  */
+.title {
+	display: flex;
+	align-items: center;
+  gap: .3rem;
+  margin-right: .7rem;
+  cursor: pointer;
+}
+
+.title:hover > svg {
+  fill: $color-faceit-red;
+}
+
+.title:hover > h1 {
+  color: $color-faceit-red;
+}
