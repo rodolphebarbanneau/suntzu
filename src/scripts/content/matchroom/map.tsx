@@ -2,13 +2,13 @@ import type { ReactNode } from 'react';
 import { default as ReactShadowRoot } from 'react-shadow';
 
 import type { Matchroom, MatchroomMap, MatchroomTeam, MetricsData } from 'src/shared/core';
+import { FEATURES_CONFIG } from 'src/shared/features';
 import { Feature } from 'src/shared/core';
 import { getColorScale } from 'src/shared/helpers';
 
 import { useMetrics } from 'src/app/hooks/use-metrics';
+import { useStorage } from 'src/app/hooks/use-storage';
 import { useStyles } from 'src/app/hooks/use-styles';
-import { FeaturesProvider } from 'src/app/providers/features';
-import { MetricsProvider } from 'src/app/providers/metrics';
 import { Metrics } from 'src/app/components/metrics';
 import { Tooltip } from 'src/app/components/tooltip';
 
@@ -52,25 +52,20 @@ const getRelativeWinRate = (
 
 /* Map component */
 const MapComponent = (
-  { matchroom, stylesheet, children }: {
-    matchroom: Matchroom;
+  { stylesheet, children }: {
     stylesheet: string[];
     children: ReactNode | ReactNode[],
   },
 ) => {
   return (
     <ReactShadowRoot.Div>
-      <FeaturesProvider configKey={['showMap']} hideOnFalse={true}>
-        <MetricsProvider matchroom={matchroom}>
-          {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
-          {
-            stylesheet.map((style, index) =>
-              <style key={index} dangerouslySetInnerHTML={{ __html: style }} />
-            )
-          }
-          {children}
-        </MetricsProvider>
-      </FeaturesProvider>
+      {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
+      {
+        stylesheet.map((style, index) =>
+          <style key={index} dangerouslySetInnerHTML={{ __html: style }} />
+        )
+      }
+      {children}
     </ReactShadowRoot.Div>
   );
 };
@@ -83,11 +78,16 @@ const SidebarComponent = (
     map: MatchroomMap;
   },
 ) => {
-  const metrics = useMetrics();
+  // retrieve features
+  const showMap = useStorage(FEATURES_CONFIG, 'showMap');
+  if (!showMap) return null;
+  // retrieve metrics
+  const metrics = useMetrics(matchroom);
   const relativeWinRate = getRelativeWinRate(metrics, teams, map);
+  // render
   useStyles(map.container, { backgroundColor: backgroundColor(relativeWinRate) });
   return (
-    <MapComponent matchroom={matchroom} stylesheet={[stylesheet]}>
+    <MapComponent stylesheet={[stylesheet]}>
       <div
         className={styles['sidebar']}
         style={{ backgroundColor: foregroundColor(relativeWinRate) }}
@@ -104,13 +104,15 @@ const SummaryComponent = (
     map: MatchroomMap;
   },
 ) => {
-  const metrics = useMetrics();
+  // retrieve features
+  const showMap = useStorage(FEATURES_CONFIG, 'showMap');
+  if (!showMap) return null;
+  // retrieve metrics
+  const metrics = useMetrics(matchroom);
   const relativeWinRate = getRelativeWinRate(metrics, teams, map);
+  // render
   return (
-    <MapComponent
-      matchroom={matchroom}
-      stylesheet={[stylesheetTooltip, stylesheet]}
-    >
+    <MapComponent stylesheet={[stylesheetTooltip, stylesheet]}>
       <div className={styles['kpi']}>
         <p style={{ color: foregroundColor(relativeWinRate) }}>
           {relativeWinRate.toFixed(0) + '%'}
@@ -129,12 +131,14 @@ const MetricsComponent = (
     map: MatchroomMap;
   },
 ) => {
-  const metrics = useMetrics();
+  // retrieve features
+  const showMap = useStorage(FEATURES_CONFIG, 'showMap');
+  if (!showMap) return null;
+  // retrieve metrics
+  const metrics = useMetrics(matchroom);
+  const relativeWinRate = getRelativeWinRate(metrics, teams, map);
   return (
-    <MapComponent
-      matchroom={matchroom}
-      stylesheet={[stylesheetMetrics]}
-    >
+    <MapComponent stylesheet={[stylesheetMetrics]}>
       <Metrics
         feature="map"
         data={[]}
@@ -172,8 +176,5 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
         <MetricsComponent matchroom={matchroom} teams={teams} map={map} />
       )?.appendTo(map.container);
     });
-
-    // listen for metrics changes
-    matchroom.addListener(feature.render);
   },
 );
