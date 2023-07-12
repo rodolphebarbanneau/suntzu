@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="uuid-11c7dfaa-5f87-4d90-ba77-403d60cb9206" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4000 4415">
-  <defs><style>.uuid-1169741d-5e2c-41f3-ab4c-8484949dfaf1{fill:#fff;}.uuid-60f5a953-b251-4880-a458-7693c5f4cefd{fill:#a0a0a0;}.uuid-e6e62de6-6926-4831-bb96-953b99865da6{opacity:.7;}.uuid-e6e62de6-6926-4831-bb96-953b99865da6,.uuid-e4cdb14a-2c91-4915-a5fe-1d97b77155d6,.uuid-179ffe92-f7d9-4adb-8d19-8e8314093daf,.uuid-03e4ed72-a85a-4724-98cb-1cbff72d1705{fill:none;}.uuid-4d52b873-5d0b-4c31-8484-e041a012d3a7{fill:#303030;}.uuid-f4ece198-42b0-4159-8dd3-fc1072cddb42{fill:#505050;}.uuid-6af81e32-5bb0-4e45-b60e-160dd957de9f{fill:#ff6309;}.uuid-e4cdb14a-2c91-4915-a5fe-1d97b77155d6{opacity:.55;}.uuid-fc11ab91-c0e1-4f98-9b21-f62554462d4c{fill:#161616;}.uuid-179ffe92-f7d9-4adb-8d19-8e8314093daf{opacity:.2;}.uuid-03e4ed72-a85a-4724-98cb-1cbff72d1705{opacity:.3;}.uuid-2ae20097-9210-4d2e-9e4a-15a6f40800ea{fill:#ddd7da;}.uuid-2a8c38ed-17cf-4f54-b24c-092cb30b0ed4{fill:#fe1f00;}.uuid-54ce95f1-19e3-49bb-a20b-cb1ba7cce3c0{fill:#f0eff4;}</style></defs>
+  <defs>
+    <style>
+      .uuid-1169741d-5e2c-41f3-ab4c-8484949dfaf1{fill:#fff;}
+      .uuid-60f5a953-b251-4880-a458-7693c5f4cefd{fill:#a0a0a0;}
+      .uuid-e6e62de6-6926-4831-bb96-953b99865da6{opacity:.7;}
+      .uuid-e6e62de6-6926-4831-bb96-953b99865da6,.uuid-e4cdb14a-2c91-4915-a5fe-1d97b77155d6,.uuid-179ffe92-f7d9-4adb-8d19-8e8314093daf,.uuid-03e4ed72-a85a-4724-98cb-1cbff72d1705{fill:none;}
+      .uuid-4d52b873-5d0b-4c31-8484-e041a012d3a7{fill:#303030;}
+      .uuid-f4ece198-42b0-4159-8dd3-fc1072cddb42{fill:#505050;}
+      .uuid-6af81e32-5bb0-4e45-b60e-160dd957de9f{fill:#ff6309;}
+      .uuid-e4cdb14a-2c91-4915-a5fe-1d97b77155d6{opacity:.55;}
+      .uuid-fc11ab91-c0e1-4f98-9b21-f62554462d4c{fill:#161616;}
+      .uuid-179ffe92-f7d9-4adb-8d19-8e8314093daf{opacity:.2;}
+      .uuid-03e4ed72-a85a-4724-98cb-1cbff72d1705{opacity:.3;}
+      .uuid-2ae20097-9210-4d2e-9e4a-15a6f40800ea{fill:#ddd7da;}
+      .uuid-2a8c38ed-17cf-4f54-b24c-092cb30b0ed4{fill:#fe1f00;}
+      .uuid-54ce95f1-19e3-49bb-a20b-cb1ba7cce3c0{fill:#f0eff4;}
+    </style>
+  </defs>
   <circle class="uuid-6af81e32-5bb0-4e45-b60e-160dd957de9f" cx="2000" cy="2000" r="1975"/>
   <circle class="uuid-2a8c38ed-17cf-4f54-b24c-092cb30b0ed4" cx="2000" cy="2000" r="1925"/>
   <path class="uuid-f4ece198-42b0-4159-8dd3-fc1072cddb42" d="m1986.44,2540.21c-536.94,0-972.21,361.78-972.21,808.05,0,166.89,60.88,321.95,165.17,450.71,249.92,114.31,527.82,178.03,820.6,178.03,276.07,0,538.91-56.65,777.53-158.95,114-132.38,181.11-294.57,181.11-469.79,0-446.28-435.27-808.05-972.21-808.05Z"/>
