@@ -9,7 +9,7 @@ const RECORDS_KEY = Symbol('records');  // eslint-disable-line @typescript-eslin
 export type StorageChanges = { [key: string]: browser.Storage.StorageChange };
 export type StorageRecords = { [key: string]: unknown };
 export type StorageListener = [
-  StorageNamespace | Promise<StorageNamespace>,
+  StorageNamespace,
   (changes: StorageChanges) => void,
 ];
 
@@ -58,7 +58,7 @@ export class Storage {
     // add namespace to loading namespaces
     this._loading.add(namespace);
     // get storage namespace options and record keys metadata
-    const [metadata, keys]: [StorageOptions, string[]] = this._getMetadata(namespace);
+    const [metadata, keys]: [StorageOptions, string[]] = Storage.getMetadata(namespace);
 
     // filter namespace keys
     const filteredKeys = keys.filter(
@@ -66,7 +66,7 @@ export class Storage {
     );
     // retrieve storage namespace keys
     const storageKeys = filteredKeys.map(
-      (key) => this._generateKey(key, metadata.name)
+      (key) => Storage.generateKey(key, metadata.name)
     );
 
     // update storage namespace records
@@ -78,7 +78,7 @@ export class Storage {
           // keep track of changes
           const changes: StorageChanges = {};
           filteredKeys.forEach((key) => {
-            const storageKey = this._generateKey(key, metadata.name);
+            const storageKey = Storage.generateKey(key, metadata.name);
             if (records[storageKey] !== undefined) {
               /* eslint-disable @typescript-eslint/no-explicit-any, no-param-reassign */
               changes[key] = {
@@ -110,7 +110,7 @@ export class Storage {
     namespaceKeys?: K[],
   ): Promise<void> {
     // get storage namespace options and record keys metadata
-    const [metadata, keys]: [StorageOptions, string[]] = this._getMetadata(namespace);
+    const [metadata, keys]: [StorageOptions, string[]] = Storage.getMetadata(namespace);
 
     // filter namespace keys
     const filteredKeys = keys.filter(
@@ -118,7 +118,7 @@ export class Storage {
     );
     // retrieve storage namespace records
     const records = filteredKeys.reduce((obj: StorageRecords, key) => {
-      const storageKey = this._generateKey(key, metadata.name);
+      const storageKey = Storage.generateKey(key, metadata.name);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       obj[storageKey] = (namespace as any)[key];
       return obj;
@@ -167,13 +167,14 @@ export class Storage {
     });
   }
 
-
   /**
    * Get the storage namespace metadata and records keys.
    * @param namespace - The storage namespace.
    * @returns The storage namespace metadata and records keys.
    */
-  private static _getMetadata(namespace: StorageNamespace): [StorageOptions, string[]] {
+  static getMetadata(
+    namespace: StorageNamespace,
+  ): [StorageOptions, string[]] {
     // get storage namespace options metadata
     const metadata: StorageOptions = Reflect.getMetadata(
       OPTIONS_KEY,
@@ -194,7 +195,7 @@ export class Storage {
    * @param name - The storage namespace name.
    * @returns The storage namespace record key.
    */
-  private static _generateKey(key: string, name?: string): string {
+  static generateKey(key: string, name?: string): string {
     return `${name ? `${name}.` : ''}${key}`;
   }
 }
@@ -222,17 +223,8 @@ export abstract class StorageNamespace {
     // create instance
     const instance = new this();
 
-    // get storage namespace options metadata
-    const metadata: StorageOptions = Reflect.getMetadata(
-      OPTIONS_KEY,
-      instance.constructor,
-    ) || {};
-
-    // get storage namespace records keys
-    const keys: string[] = Reflect.getMetadata(
-      RECORDS_KEY,
-      instance.constructor.prototype,
-    ) || [];
+    // get storage namespace options and record keys metadata
+    const [metadata, keys]: [StorageOptions, string[]] = Storage.getMetadata(instance);
 
     // initialize storage namespace records
     for (const key of keys) {
@@ -275,11 +267,8 @@ export abstract class StorageNamespace {
    * It adds a listener to the local storage changes and updates the records accordingly.
    */
   sync(): void {
-    // get storage namespace records keys
-    const keys: string[] = Reflect.getMetadata(
-      RECORDS_KEY,
-      this.constructor.prototype,
-    ) || [];
+    // get storage namespace options and record keys metadata
+    const [metadata, keys]: [StorageOptions, string[]] = Storage.getMetadata(this);
 
     // listener callback
     const listener = (changes: StorageChanges, areaName: string) => {
@@ -287,10 +276,11 @@ export abstract class StorageNamespace {
       if (areaName !== 'local') return;
       // apply changes
       for (const key of keys) {
+        const storageKey = Storage.generateKey(key, metadata.name);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if (key in changes && (this as any)[key] !== changes[key].newValue) {
+        if (storageKey in changes && (this as any)[key] !== changes[storageKey].newValue) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (this as any)[key] = changes[key].newValue;
+          (this as any)[key] = changes[storageKey].newValue;
         }
       }
     };
