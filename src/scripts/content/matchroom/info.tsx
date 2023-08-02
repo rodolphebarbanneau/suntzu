@@ -20,8 +20,8 @@ import styles from './info.module.scss';
 /* Info component */
 const InfoComponent = ({ matchroom }: { matchroom: Matchroom }) => {
   // retrieve features
-  const showMap = useStorage(FEATURES_CONFIG, 'showMap');
-  const showPlayer = useStorage(FEATURES_CONFIG, 'showPlayer');
+  const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
+  const [showPlayer] = useStorage(FEATURES_CONFIG, 'showPlayer');
   // handle logo click
   const handleLogoClick = () => {
     window.open('https://suntzu.gg', '_blank', 'noreferrer');
@@ -47,7 +47,7 @@ const InfoComponent = ({ matchroom }: { matchroom: Matchroom }) => {
           <Tooltip message={'test'} />
         </ToolbarHeader>
         {
-          (showMap && showPlayer) ? (
+          (showMap || showPlayer) ? (
             <ToolbarBody>
               <Option
                 title="Match"

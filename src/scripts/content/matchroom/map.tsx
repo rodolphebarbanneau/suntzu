@@ -79,7 +79,7 @@ const SidebarComponent = (
   },
 ) => {
   // retrieve features
-  const showMap = useStorage(FEATURES_CONFIG, 'showMap');
+  const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
   if (!showMap) return null;
   // retrieve metrics
   const metrics = useMetrics(matchroom);
@@ -105,7 +105,7 @@ const SummaryComponent = (
   },
 ) => {
   // retrieve features
-  const showMap = useStorage(FEATURES_CONFIG, 'showMap');
+  const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
   if (!showMap) return null;
   // retrieve metrics
   const metrics = useMetrics(matchroom);
@@ -132,7 +132,7 @@ const MetricsComponent = (
   },
 ) => {
   // retrieve features
-  const showMap = useStorage(FEATURES_CONFIG, 'showMap');
+  const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
   if (!showMap) return null;
   // retrieve metrics
   const metrics = useMetrics(matchroom);
