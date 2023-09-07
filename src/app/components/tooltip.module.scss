@@ -4,32 +4,58 @@
 
 /* Tooltip */
 .tooltip-button {
+  cursor: pointer;
   display: flex;
   position: relative;
   width: 10px;
   height: 10px;
+  padding: 1px;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: $color-bg-500;
-  color: $color-fg-900;
-  cursor: pointer;
+  background-color: $color-bg-300;
+  color: $color-fg-300;
+  font-size: .6rem;
+  font-weight: bold;
 }
 
 .tooltip-box {
+  z-index: 9999;
   display: flex;
   position: absolute;
   box-sizing: border-box;
-  width: 200px;
+  max-width: 250px;
   height: auto;
-  bottom: 100%;
-  left: 50%;
+  margin: 0;
+  padding: 5px;
   align-items: center;
   justify-content: center;
-  padding: 10px;
   border-radius: .2rem;
-  background-color: $color-bg-500;
-  color: $color-fg-900;
+  background-color: $color-bg-300;
+  color: $color-fg-300;
   border: 1px solid $color-bg-700;
-  transform: translateX(-50%);
+  font-size: .7rem;
+  font-weight: normal;
+}
+
+.tooltip-box-top {
+  top: auto;
+  bottom: 150%;
+}
+
+.tooltip-box-bottom {
+  top: 150%;
+  bottom: auto;
+}
+
+.tooltip-box-left {
+  top: -50%;
+  left: auto;
+  right: 150%;
+}
+
+.tooltip-box-right {
+  top: -50%;
+  left: 150%;
+  right: auto;
 }
