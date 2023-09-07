@@ -40,10 +40,12 @@ const foregroundColor = getColorScale(
 
 /* Relative win rate */
 const getRelativeWinRate = (
-  metrics: MetricsData,
   teams: MatchroomTeam[],
   map?: MatchroomMap,
-): number => {
+  metrics?: MetricsData,
+): number | undefined => {
+  console.log(teams, map, metrics); //todo: remove
+  if (metrics === undefined) return undefined;
   const winRates = (map === undefined)
     ? teams.map((team) => metrics.teams[team.id].overall.winRate ?? 0)
     : teams.map((team) => metrics.teams[team.id].maps[map.id]?.winRate ?? 0);
@@ -80,12 +82,15 @@ const SidebarComponent = (
 ) => {
   // retrieve features
   const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
-  if (!showMap) return null;
   // retrieve metrics
   const metrics = useMetrics(matchroom);
-  const relativeWinRate = getRelativeWinRate(metrics, teams, map);
+  const relativeWinRate = getRelativeWinRate(teams, map, metrics);
+  // retrieve styles
+  useStyles(map.container, {
+    backgroundColor: showMap ? backgroundColor(relativeWinRate) : undefined,
+  });
   // render
-  useStyles(map.container, { backgroundColor: backgroundColor(relativeWinRate) });
+  if (!showMap) return null;
   return (
     <MapComponent stylesheet={[stylesheet]}>
       <div
@@ -106,18 +111,21 @@ const SummaryComponent = (
 ) => {
   // retrieve features
   const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
-  if (!showMap) return null;
   // retrieve metrics
   const metrics = useMetrics(matchroom);
-  const relativeWinRate = getRelativeWinRate(metrics, teams, map);
+  const relativeWinRate = getRelativeWinRate(teams, map, metrics);
   // render
+  if (!showMap) return null;
   return (
     <MapComponent stylesheet={[stylesheetTooltip, stylesheet]}>
       <div className={styles['kpi']}>
         <p style={{ color: foregroundColor(relativeWinRate) }}>
-          {relativeWinRate.toFixed(0) + '%'}
+          {(relativeWinRate ?? 0).toFixed(0) + '%'}
         </p>
-        <Tooltip message={'Relative win rate'} />
+        <Tooltip
+          message={'Relative win rate between the two teams'}
+          position='left'
+        />
       </div>
     </MapComponent>
   );
@@ -133,10 +141,11 @@ const MetricsComponent = (
 ) => {
   // retrieve features
   const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
-  if (!showMap) return null;
   // retrieve metrics
   const metrics = useMetrics(matchroom);
-  const relativeWinRate = getRelativeWinRate(metrics, teams, map);
+  const relativeWinRate = getRelativeWinRate(teams, map, metrics);
+  // render
+  if (!showMap) return null;
   return (
     <MapComponent stylesheet={[stylesheetMetrics]}>
       <Metrics

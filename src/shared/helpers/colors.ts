@@ -21,7 +21,7 @@ export function getColorScale(
     hue?: [number, number];
     saturation?: [number, number];
     lightness?: [number, number];
-}): (value: number) => string {
+}): (value?: number) => string | undefined {
   // check thresholds ordering
   thresholds.reduce((prev, curr) => {
     if (curr <= prev) {
@@ -53,7 +53,8 @@ export function getColorScale(
   }
 
   // return color scale function
-  return (value: number) => {
+  return (value?: number) => {
+    if (value === undefined) return undefined;
     // lookup gradient steps
     let i = 0;
     while (i < thresholds.length && value > thresholds[i]) {

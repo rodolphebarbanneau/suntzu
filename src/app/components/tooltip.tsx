@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react';
 import styles from './tooltip.module.scss';
 
 /* Tooltip */
-export const Tooltip = ({ message }: { message: string }) => {
+export const Tooltip = ({ message, position }: {
+  message: string,
+  position?: 'top' | 'bottom' | 'left' | 'right',
+}) => {
   const [hover, setHover] = useState(false);
   const [show, setShow] = useState(false);
 
@@ -33,7 +36,13 @@ export const Tooltip = ({ message }: { message: string }) => {
       onMouseLeave={handleMouseLeave}
     >
       i
-      {hover && show && <div className={styles['tooltip-box']} >{message}</div>}
+      {
+        hover && show && <div
+          className={styles['tooltip-box'] + ' ' + styles[`tooltip-box-${position ?? 'top'}`]}
+        >
+          <span>{message}</span>
+        </div>
+      }
     </div>
   );
 };

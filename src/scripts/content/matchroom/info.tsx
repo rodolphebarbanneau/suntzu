@@ -44,7 +44,10 @@ const InfoComponent = ({ matchroom }: { matchroom: Matchroom }) => {
             </svg>
             <h1>Suntzu</h1>
           </div>
-          <Tooltip message={'test'} />
+          <Tooltip
+            message={'Beta version'}
+            position='right'
+          />
         </ToolbarHeader>
         {
           (showMap || showPlayer) ? (

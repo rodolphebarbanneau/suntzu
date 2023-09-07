@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 
+import { toKebabCase } from 'src/shared/helpers';
+
 /* CSS string style declaration */
 type CSSStringStyleDeclaration = {
   [K in keyof CSSStyleDeclaration as CSSStyleDeclaration[K] extends string ? K : never]: string;
@@ -31,11 +33,11 @@ export const useStyles = (
    */
   useEffect(() => {
     Object.entries(styles).forEach(([key, value]) => {
-      container.style.setProperty(key, value ?? '');
+      container.style.setProperty(toKebabCase(key), value ?? null);
     });
     return () => {
       Object.entries(original.current).forEach(([key, value]) => {
-        container.style.setProperty(key, value ?? '');
+        container.style.setProperty(toKebabCase(key), value ?? null);
       });
     };
   }, [container, styles]);
