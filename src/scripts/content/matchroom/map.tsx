@@ -44,7 +44,6 @@ const getRelativeWinRate = (
   map?: MatchroomMap,
   metrics?: MetricsData,
 ): number | undefined => {
-  console.log(teams, map, metrics); //todo: remove
   if (metrics === undefined) return undefined;
   const winRates = (map === undefined)
     ? teams.map((team) => metrics.teams[team.id].overall.winRate ?? 0)
@@ -120,7 +119,7 @@ const SummaryComponent = (
     <MapComponent stylesheet={[stylesheetTooltip, stylesheet]}>
       <div className={styles['kpi']}>
         <p style={{ color: foregroundColor(relativeWinRate) }}>
-          {(relativeWinRate ?? 0).toFixed(0) + '%'}
+          {(100 * (relativeWinRate ?? 0)).toFixed(0) + '%'}
         </p>
         <Tooltip
           message={'Relative win rate between the two teams'}
