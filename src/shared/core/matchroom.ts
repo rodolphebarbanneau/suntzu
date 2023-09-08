@@ -1,5 +1,5 @@
 import type { MetricsOptions, MetricsData } from './metrics';
-import type { MatchApiResponse, PlayerApiResponse } from '../types';
+import type { MatchApiResponse, PlayerApiResponse, MetricsModel } from '../types';
 import { FACEIT_MATCHROOM_ROUTES, } from '../settings';
 import { MatchesOption, PlayersOption, TimeSpanOption } from '../types';
 import { Api } from './api';
@@ -383,13 +383,35 @@ export class Matchroom {
    * @returns The list of maps in the matchroom document.
    */
   getMaps(): MatchroomMap[] {
+    // handle map keys
+    const mapKeys = new Set<string>();
+    const addMapKeys = (metricsData?: Record<string, MetricsModel>) => {
+      if (!metricsData) return;
+      Object.values(metricsData).forEach((entity) => {
+        Object.keys(entity.maps).forEach((mapKey) => {
+          mapKeys.add(mapKey);
+        });
+      });
+    }
+    // retrieve map keys from teams and players metrics
+    addMapKeys(this._metrics?.data?.teams);
+    addMapKeys(this._metrics?.data?.players);
+
     // handle matchroom map
     const matchroomMap = (map: HTMLDivElement): MatchroomMap => {
       // retrieve matchroom map name
-      const name = map.querySelector('div > span');
-      // return matchroom player
+      const name = map.querySelector('div > span')?.textContent?.toLowerCase() ?? '';
+      // retrieve matchroom map key
+      let key = name;
+      for (const mapKey of mapKeys) {
+        if (mapKey.includes(name)) {
+          key = mapKey;
+          break;
+        }
+      }
+      // return matchroom map
       return {
-        id: name?.textContent?.toLowerCase() ?? '',
+        id: key,
         container: map,
       }
     };
