@@ -434,8 +434,8 @@ export class Matchroom {
       ));
     } else {
       // ready or finished state
-      const map = wrapper?.children?.[1]?.children?.[0]?.children?.[3]?.children?.[0]
-        || wrapper?.children?.[0]?.children?.[0]?.children?.[3] ?.children?.[0];
+      const map = wrapper?.children?.[0]?.children?.[0]?.children?.[1]?.children?.[0]
+        || wrapper?.children?.[1]?.children?.[0]?.children?.[1]?.children?.[0];
       if (map) maps.push(matchroomMap(map as HTMLDivElement));
     }
     return maps;
