@@ -4,51 +4,33 @@ import { default as ReactShadowRoot } from 'react-shadow';
 import type { Matchroom, MatchroomMap, MatchroomTeam, MetricsData } from 'src/shared/core';
 import { FEATURES_CONFIG } from 'src/shared/features';
 import { Feature } from 'src/shared/core';
-import { getColorScale } from 'src/shared/helpers';
 
+import type { MetricStyle } from 'src/app/components/metrics';
 import { useMetrics } from 'src/app/hooks/use-metrics';
 import { useStorage } from 'src/app/hooks/use-storage';
 import { useStyles } from 'src/app/hooks/use-styles';
-import { Metrics } from 'src/app/components/metrics';
+import { Metrics, getMetricStyle } from 'src/app/components/metrics';
 import { Tooltip } from 'src/app/components/tooltip';
 
+import stylesheetIcon from 'src/app/components/icon.module.scss?inline';
 import stylesheetMetrics from 'src/app/components/metrics.module.scss?inline';
 import stylesheetTooltip from 'src/app/components/tooltip.module.scss?inline';
 
 import stylesheet from './map.module.scss?inline';
 import styles from './map.module.scss';
+import { get } from 'lodash';
 
-/* Background color scale */
-const backgroundColor = getColorScale(
-  [-0.05, +0.05],
-  {
-    hue: [7, 113],
-    saturation: [15, 15],
-    lightness: [15, 15],
-  },
-);
-
-/* Foreground color scale */
-const foregroundColor = getColorScale(
-  [-0.05, +0.05],
-  {
-    hue: [7, 113],
-    saturation: [80, 80],
-    lightness: [50, 50],
-  },
-);
-
-/* Relative win rate */
-const getRelativeWinRate = (
+/* Delta win rate */
+const getDeltaWinRate = (
   teams: MatchroomTeam[],
   map?: MatchroomMap,
   metrics?: MetricsData,
-): number | undefined => {
+): MetricStyle | undefined => {
   if (metrics === undefined) return undefined;
   const winRates = (map === undefined)
     ? teams.map((team) => metrics.teams[team.id].overall.winRate ?? 0)
     : teams.map((team) => metrics.teams[team.id].maps[map.id]?.winRate ?? 0);
-  return winRates[0] - winRates[1];
+  return getMetricStyle(winRates, 'difference');
 }
 
 /* Map component */
@@ -71,8 +53,8 @@ const MapComponent = (
   );
 };
 
-/* Sidebar component */
-const SidebarComponent = (
+/* Layout component */
+const LayoutComponent = (
   { matchroom, teams, map }: {
     matchroom: Matchroom;
     teams: MatchroomTeam[];
@@ -83,52 +65,24 @@ const SidebarComponent = (
   const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
   // retrieve metrics
   const metrics = useMetrics(matchroom);
-  const relativeWinRate = getRelativeWinRate(teams, map, metrics);
+  const deltaWinRate = getDeltaWinRate(teams, map, metrics);
   // retrieve styles
   useStyles(map.container, {
-    backgroundColor: showMap ? backgroundColor(relativeWinRate) : undefined,
+    display: showMap ? 'block' : undefined,
+    position: showMap ? 'relative' : undefined,
+    backgroundColor: showMap ? deltaWinRate?.colors?.[0] : undefined,
   });
   // render
   if (!showMap) return null;
   return (
     <MapComponent stylesheet={[stylesheet]}>
       <div
-        className={styles['sidebar']}
-        style={{ backgroundColor: foregroundColor(relativeWinRate) }}
+        className={styles['layout-sidebar']}
+        style={{ backgroundColor: deltaWinRate?.colors?.[1] }}
       ></div>
     </MapComponent>
   );
 };
-
-/* Summary component */
-const SummaryComponent = (
-  { matchroom, teams, map }: {
-    matchroom: Matchroom;
-    teams: MatchroomTeam[];
-    map: MatchroomMap;
-  },
-) => {
-  // retrieve features
-  const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
-  // retrieve metrics
-  const metrics = useMetrics(matchroom);
-  const relativeWinRate = getRelativeWinRate(teams, map, metrics);
-  // render
-  if (!showMap) return null;
-  return (
-    <MapComponent stylesheet={[stylesheetTooltip, stylesheet]}>
-      <div className={styles['kpi']}>
-        <p style={{ color: foregroundColor(relativeWinRate) }}>
-          {(100 * (relativeWinRate ?? 0)).toFixed(0) + '%'}
-        </p>
-        <Tooltip
-          message={'Relative win rate between the two teams'}
-          position='left'
-        />
-      </div>
-    </MapComponent>
-  );
-}
 
 /* Metrics component */
 const MetricsComponent = (
@@ -142,15 +96,82 @@ const MetricsComponent = (
   const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
   // retrieve metrics
   const metrics = useMetrics(matchroom);
-  const relativeWinRate = getRelativeWinRate(teams, map, metrics);
+  // render
+  if (!showMap) return null;
+  const matches = teams.map((team) => metrics.teams[team.id].overall.matches ?? 0);
+  const winRates = teams.map((team) => metrics.teams[team.id].maps[map.id]?.winRate ?? 0);
+  const avgKills = teams.map((team) => metrics.teams[team.id].maps[map.id]?.avgKills ?? 0);
+  const avgHeadshots = teams.map((team) => metrics.teams[team.id].maps[map.id]?.avgHeadshots ?? 0);
+  const avgKds = teams.map((team) => metrics.teams[team.id].maps[map.id]?.avgKd ?? 0);
+  const avgKrs = teams.map((team) => metrics.teams[team.id].maps[map.id]?.avgKr ?? 0);
+  return (
+    <MapComponent stylesheet={[stylesheetIcon, stylesheetMetrics, stylesheet]}>
+      <div className={styles['layout-metrics']}>
+        <Metrics
+          feature="map"
+          records={[
+            {
+              title: 'Matches',
+              main: { text: matches[0].toFixed(0), style: { group: 'left', showIcon: true } },
+              sub: { text: matches[1].toFixed(0), style: { group: 'right', showIcon: true } },
+            },
+            {
+              title: 'Win rate',
+              main: {
+                text: (100 * winRates[0]).toFixed(0) + '%',
+                style: getMetricStyle(winRates, 'difference', { showColors: true, showIcon: true}),
+              },
+              sub: { text: (100 * winRates[1]).toFixed(0) + '%' },
+            },
+            {
+              title: 'Avg. Kills | HS',
+              main: {
+                text: `${avgKills[0].toFixed(0)} | ${(100 * avgHeadshots[0]).toFixed(0)}%`,
+                style: getMetricStyle(avgKills, 'ratio', { showColors: true, showIcon: true}),
+              },
+              sub: { text: `${avgKills[1].toFixed(0)} | ${(100 * avgHeadshots[1]).toFixed(0)}%` },
+            },
+            {
+              title: 'Avg. K/D | K/R',
+              main: {
+                text: `${avgKds[0].toFixed(2)} | ${avgKrs[0].toFixed(2)}`,
+                style: getMetricStyle(avgKds, 'ratio', { showColors: true, showIcon: true}),
+              },
+              sub: { text: `${avgKds[1].toFixed(2)} | ${avgKrs[1].toFixed(2)}` },
+            },
+          ]}
+        />
+      </div>
+    </MapComponent>
+  );
+}
+
+/* Summary component */
+const SummaryComponent = (
+  { matchroom, teams, map }: {
+    matchroom: Matchroom;
+    teams: MatchroomTeam[];
+    map: MatchroomMap;
+  },
+) => {
+  // retrieve features
+  const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
+  // retrieve metrics
+  const metrics = useMetrics(matchroom);
+  const deltaWinRate = getDeltaWinRate(teams, map, metrics);
   // render
   if (!showMap) return null;
   return (
-    <MapComponent stylesheet={[stylesheetMetrics]}>
-      <Metrics
-        feature="map"
-        data={[]}
-      />
+    <MapComponent stylesheet={[stylesheetTooltip, stylesheet]}>
+      <div className={styles['kpi']}>
+        <p style={{ color: deltaWinRate?.colors?.[1] }}>
+          {deltaWinRate ? (100 * (deltaWinRate?.spread ?? 0)).toFixed(0) + '%' : 'NA'}
+        </p>
+        <Tooltip
+          message={'Relative win rate between the two teams'}
+          position='left'
+        />
+      </div>
     </MapComponent>
   );
 }
@@ -165,24 +186,23 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
 
     // create components and actions for each map
     maps.forEach((map) => {
-
-      // sidebar component
-      feature.addComponent(
-        `sidebar-${map.id}`,
-        <SidebarComponent matchroom={matchroom} teams={teams} map={map} />,
-      )?.prependTo(map.container);
-
       // summary component
       feature.addComponent(
         `summary-${map.id}`,
-        <SummaryComponent matchroom={matchroom} teams={teams} map={map} />
-      )?.appendTo(map.container);
+        <SummaryComponent matchroom={matchroom} teams={teams} map={map} />,
+      )?.appendTo(map.container.children[0] as HTMLDivElement);
 
       // metrics component
       feature.addComponent(
         `metrics-${map.id}`,
-        <MetricsComponent matchroom={matchroom} teams={teams} map={map} />
+        <MetricsComponent matchroom={matchroom} teams={teams} map={map} />,
       )?.appendTo(map.container);
+
+      // layout component
+      feature.addComponent(
+        `layout-${map.id}`,
+        <LayoutComponent matchroom={matchroom} teams={teams} map={map} />,
+      )?.prependTo(map.container);
     });
   },
 );

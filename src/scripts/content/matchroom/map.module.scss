@@ -2,25 +2,31 @@
 @import '../../../colors';
 
 /* Map  */
+.layout-sidebar {
+  position: absolute;
+  width: 3px;
+  height: 99%;
+  top: 0;
+  left: 0;
+  margin: 1px 0;
+	border-radius: 4px 0 0 4px;
+}
+
+.layout-metrics {
+  padding-left: 3px;
+  border-top: 1px solid $color-bg-900;
+}
+
 .kpi {
   display: flex;
   flex: 1;
   justify-content: center;
   align-items: center;
+  margin-right: 8px;
 }
 
 .kpi p {
   margin: 0 4px 0 0;
-  font-size: .8rem;
+  font-size: .9rem;
   font-weight: bold;
-}
-
-.sidebar {
-  position: absolute;
-  width: .2rem;
-  height: 98%;
-  top: 0;
-  left: 0;
-  margin: 1px 0;
-	border-radius: 4px 0 0 4px;
 }

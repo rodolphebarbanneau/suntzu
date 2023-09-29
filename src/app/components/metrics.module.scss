@@ -7,11 +7,11 @@ table {
   margin: 0 auto;
   border-collapse: collapse;
   border-style: hidden;
-  color: $color-fg-500;
+  color: $color-fg-900;
 }
 
 caption {
-  padding: .25rem;
+  padding: 3px;
   font-size: 1rem;
   font-weight: bold;
 }
@@ -24,17 +24,35 @@ tr {
   text-align: left;
 }
 
+tr:first-child td div {
+  border-top: 2px solid transparent;
+}
+
+tr:last-child td div {
+  border-bottom: 2px solid transparent;
+}
+
 th, td {
-  padding: .2rem .3rem;
-  border: 2px solid;
+  padding: 0 5px;
+  border: 1px solid;
   border-top: none;
   border-bottom: none;
 }
 
-.map th, td {
+th {
+  font-size: .6rem;
+  font-weight: bold;
+}
+
+td {
+  font-size: .8rem;
+  font-weight: normal;
+}
+
+.map th, .map td {
   border-color: $color-bg-900;
 }
 
-.player th, td {
-  border-color: $color-fg-500;
+.player th, .player td {
+  border-color: $color-fg-900;
 }
