@@ -1,0 +1,40 @@
+/* Colors */
+@import '../../colors';
+
+/* Icon */
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  padding: 0 2px;
+  font-size: 80%;
+  font-weight: normal;
+}
+
+.greater::before {
+  content: "\2B06";
+}
+
+.less::before {
+  content: "\2B07";
+}
+
+.equal::before {
+  content: "\003D";
+}
+
+.left::before {
+  content: "\25C0";
+}
+
+.right::before {
+  content: "\25B6";
+  padding-left: 3px;
+}
+
+.up::before {
+  content: "\25B2";
+}
+
+.down::before {
+  content: "\25BC";
+}
