@@ -34,6 +34,8 @@ export enum MatchroomState {
 export interface MatchroomMap {
   /* The matchroom map id */
   readonly id: string;
+  /* The matchroom map name */
+  readonly name: string;
   /* The matchroom map container */
   readonly container: HTMLDivElement;
 }
@@ -46,6 +48,8 @@ export interface MatchroomMap {
 export interface MatchroomTeam {
   /* The matchroom team id */
   readonly id: string;
+  /* The matchroom team name */
+  readonly name: string;
 }
 
 /**
@@ -57,6 +61,8 @@ export interface MatchroomTeam {
 export interface MatchroomPlayer {
   /* The matchroom player id */
   readonly id: string;
+  /* The matchroom player name */
+  readonly name: string;
   /* The matchroom player container */
   readonly container: HTMLDivElement;
 }
@@ -314,6 +320,7 @@ export class Matchroom {
       // return matchroom player
       return {
         id: name?.textContent?.toLowerCase() ?? '',
+        name: name?.textContent ?? '',
         container: player,
       }
     };
@@ -367,7 +374,10 @@ export class Matchroom {
    */
   getTeams(sort = false): MatchroomTeam[] {
     // return raw matchroom teams if not sorted
-    if (!sort) return Object.keys(this._match?.teams ?? {}).map((key) => ({ id: key }));
+    if (!sort) return Object.entries(this._match?.teams ?? {}).map(([key, team]) => ({
+      id: key,
+      name: team.name,
+   }));
 
     // retrieve teams sorted with matchroom user team first
     const teams = Object.entries(this._match?.teams ?? {}).sort((a, b) => {
@@ -375,7 +385,10 @@ export class Matchroom {
         - (b[1].roster.some((player) => player.id === this._user?.id) ? 0 : 1);
     });
     // return matchroom teams
-    return teams.map(([key, _]) => ({ id: key }));
+    return teams.map(([key, team]) => ({
+       id: key,
+       name: team.name,
+    }));
   }
 
   /**
@@ -400,7 +413,7 @@ export class Matchroom {
     // handle matchroom map
     const matchroomMap = (map: HTMLDivElement): MatchroomMap => {
       // retrieve matchroom map name
-      const name = map.querySelector('div > span')?.textContent?.toLowerCase() ?? '';
+      const name = map.querySelector('div > div > span')?.textContent?.toLowerCase() ?? '';
       // retrieve matchroom map key
       let key = name;
       for (const mapKey of mapKeys) {
@@ -412,6 +425,7 @@ export class Matchroom {
       // return matchroom map
       return {
         id: key,
+        name: name,
         container: map,
       }
     };
@@ -424,18 +438,17 @@ export class Matchroom {
       const container = wrapper?.children?.[2].children?.[0];
       container?.childNodes.forEach((map) => {
         maps.push(matchroomMap(
-          map.childNodes[0] as HTMLDivElement,
+          map as HTMLDivElement,
         ));
       });
     } else if (this._state === MatchroomState.Configuring) {
       // configuring state
-      maps.push(matchroomMap(
-        wrapper?.children?.[2]?.children?.[0]?.children?.[3]?.children?.[0] as HTMLDivElement,
-      ));
+      const map = wrapper?.children?.[2]?.children?.[0]?.children?.[1];
+      if (map) maps.push(matchroomMap(map as HTMLDivElement));
     } else {
       // ready or finished state
-      const map = wrapper?.children?.[0]?.children?.[0]?.children?.[1]?.children?.[0]
-        || wrapper?.children?.[1]?.children?.[0]?.children?.[1]?.children?.[0];
+      const map = wrapper?.children?.[0]?.children?.[0]?.children?.[1]
+        || wrapper?.children?.[1]?.children?.[0]?.children?.[1];
       if (map) maps.push(matchroomMap(map as HTMLDivElement));
     }
     return maps;
