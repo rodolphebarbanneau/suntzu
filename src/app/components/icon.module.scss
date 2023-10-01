@@ -14,12 +14,20 @@
   content: "\2B06";
 }
 
+.equal::before {
+  content: "\25FC";
+}
+
 .less::before {
   content: "\2B07";
 }
 
-.equal::before {
-  content: "\003D";
+.top::before {
+  content: "\25B2";
+}
+
+.bottom::before {
+  content: "\25BC";
 }
 
 .left::before {
@@ -29,12 +37,4 @@
 .right::before {
   content: "\25B6";
   padding-left: 3px;
-}
-
-.up::before {
-  content: "\25B2";
-}
-
-.down::before {
-  content: "\25BC";
 }
