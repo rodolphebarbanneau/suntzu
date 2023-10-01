@@ -29,15 +29,27 @@ export class Feature {
     this._update = () => update(this);
     // debounce feature update
     const originalUpdate = this.update.bind(this);
-    const debounceUpdate = debounce(originalUpdate, DEBOUNCE_DELAY, { leading: true, trailing: false });
+    const debounceUpdate = debounce(
+      originalUpdate,
+      DEBOUNCE_DELAY,
+      { leading: true, trailing: false },
+    );
     this.update = () => { debounceUpdate(); return this; }
     // debounce feature rendering
     const originalRender = this.render.bind(this);
-    const debounceRender = debounce(originalRender, DEBOUNCE_DELAY, { leading: true, trailing: false });
+    const debounceRender = debounce(
+      originalRender,
+      DEBOUNCE_DELAY,
+      { leading: true, trailing: false },
+    );
     this.render = () => { debounceRender(); return this; }
     // debounce feature unmounting
     const originalUnmount = this.unmount.bind(this);
-    const debounceUnmount = debounce(originalUnmount, DEBOUNCE_DELAY, { leading: true, trailing: false });
+    const debounceUnmount = debounce(
+      originalUnmount,
+      DEBOUNCE_DELAY,
+      { leading: true, trailing: false },
+    );
     this.unmount = () => { debounceUnmount(); return this; }
   }
 

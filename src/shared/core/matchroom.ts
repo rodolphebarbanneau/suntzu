@@ -376,7 +376,7 @@ export class Matchroom {
     if (!sort) return Object.entries(this._match?.teams ?? {}).map(([key, team]) => ({
       id: key,
       name: team.name,
-   }));
+    }));
 
     // retrieve teams sorted with matchroom user team first
     const teams = Object.entries(this._match?.teams ?? {}).sort((a, b) => {
