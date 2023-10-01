@@ -296,13 +296,12 @@ export class Matchroom {
    * Get the document matchroom information.
    * @returns The document matchroom information.
    */
-  getInformationWrapper(): HTMLDivElement | undefined {
-    // retrieve document matchroom information children
-    const children = Array.from(this.getInformation()?.children ?? []);
-    // retrieve document matchroom information wrapper
-    return children.find(
-      (child: Element) => !child.id.startsWith('suntzu')
-    )?.children?.[0] as HTMLDivElement | undefined;
+  getInformationWrapper(): HTMLDivElement | null | undefined {
+    const container = this.getInformation();
+    const wrapper = Array.from(container?.children || []).find(child =>
+      child.tagName === 'DIV' && !child.id
+    )
+    return wrapper?.firstElementChild as HTMLDivElement | null | undefined;
   }
 
   /**
@@ -435,7 +434,9 @@ export class Matchroom {
     const maps: MatchroomMap[] = [];
     if (this._state === MatchroomState.Voting) {
       // voting state
-      const container = wrapper?.children?.[2].children?.[0];
+      const container = wrapper
+        ?.lastElementChild
+        ?.lastElementChild;
       container?.childNodes.forEach((map) => {
         maps.push(matchroomMap(
           map as HTMLDivElement,
@@ -443,12 +444,28 @@ export class Matchroom {
       });
     } else if (this._state === MatchroomState.Configuring) {
       // configuring state
-      const map = wrapper?.children?.[2]?.children?.[0]?.children?.[1];
+      const map = wrapper
+        ?.lastElementChild
+        ?.lastElementChild
+        ?.lastElementChild;
+      if (map) maps.push(matchroomMap(map as HTMLDivElement));
+    } else if (this._state === MatchroomState.Ready) {
+      // ready state
+      const map = wrapper
+        ?.lastElementChild
+        ?.lastElementChild
+        ?.lastElementChild;
       if (map) maps.push(matchroomMap(map as HTMLDivElement));
     } else {
-      // ready or finished state
-      const map = wrapper?.children?.[0]?.children?.[0]?.children?.[1]
-        || wrapper?.children?.[1]?.children?.[0]?.children?.[1];
+      // finished state
+      const map = (
+        wrapper?.firstElementChild
+          ?.lastElementChild
+          ?.lastElementChild
+        || wrapper?.lastElementChild
+          ?.lastElementChild
+          ?.lastElementChild
+      );
       if (map) maps.push(matchroomMap(map as HTMLDivElement));
     }
     return maps;
