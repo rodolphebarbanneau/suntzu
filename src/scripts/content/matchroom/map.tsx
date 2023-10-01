@@ -98,7 +98,7 @@ const MetricsComponent = (
   const metrics = useMetrics(matchroom);
   // render
   if (!showMap) return null;
-  const matches = teams.map((team) => metrics.teams[team.id].overall.matches ?? 0);
+  const matches = teams.map((team) => metrics.teams[team.id].maps[map.id]?.matches ?? 0);
   const winRates = teams.map((team) => metrics.teams[team.id].maps[map.id]?.winRate ?? 0);
   const avgKills = teams.map((team) => metrics.teams[team.id].maps[map.id]?.avgKills ?? 0);
   const avgHeadshots = teams.map((team) => metrics.teams[team.id].maps[map.id]?.avgHeadshots ?? 0);
@@ -112,8 +112,8 @@ const MetricsComponent = (
           records={[
             {
               title: 'Matches',
-              main: { text: matches[0].toFixed(0), style: { group: 'left', showIcon: true } },
-              sub: { text: matches[1].toFixed(0), style: { group: 'right', showIcon: true } },
+              main: { text: matches[0].toFixed(1), style: { group: 'left', showIcon: true } },
+              sub: { text: matches[1].toFixed(1), style: { group: 'right', showIcon: true } },
             },
             {
               title: 'Win rate',
@@ -126,10 +126,10 @@ const MetricsComponent = (
             {
               title: 'Avg. Kills | HS',
               main: {
-                text: `${avgKills[0].toFixed(0)} | ${(100 * avgHeadshots[0]).toFixed(0)}%`,
+                text: `${avgKills[0].toFixed(0)} | ${avgHeadshots[0].toFixed(0)}%`,
                 style: getMetricStyle(avgKills, 'ratio', { showColors: true, showIcon: true}),
               },
-              sub: { text: `${avgKills[1].toFixed(0)} | ${(100 * avgHeadshots[1]).toFixed(0)}%` },
+              sub: { text: `${avgKills[1].toFixed(0)} | ${avgHeadshots[1].toFixed(0)}%` },
             },
             {
               title: 'Avg. K/D | K/R',
@@ -161,6 +161,10 @@ const SummaryComponent = (
   const deltaWinRate = getDeltaWinRate(teams, map, metrics);
   // render
   if (!showMap) return null;
+  //todo: remove debug logs
+  console.log('> SUNTZU METRICS ==============================================================');
+  console.log(metrics);
+  console.log('> SUNTZU METRICS ==============================================================');
   return (
     <MapComponent stylesheet={[stylesheetTooltip, stylesheet]}>
       <div className={styles['kpi']}>

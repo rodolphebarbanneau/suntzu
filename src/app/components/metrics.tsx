@@ -50,7 +50,7 @@ export interface MetricStyle {
   /* Metric value spread from sub comparison */
   spread?: number,
   /* Metric style group */
-  group?: 'greater' | 'less' | 'equal' | 'left' | 'right' | 'up' | 'down',
+  group?: 'greater' | 'equal' | 'less' | 'top' | 'bottom' | 'left' | 'right',
   /* Metric style colors */
   colors?: string[],
   /* Metric style show colors flag */
@@ -82,10 +82,10 @@ export function getMetricStyle(
   if (sub) spread = (operation === 'ratio')
     ? (value - sub) / sub
     : value - sub;
-  let group: 'greater' | 'less' | 'equal' = 'less';
   // determine group
-  if (spread > SPREAD_RANGE) group = 'greater';
-  if (spread > SPREAD_RANGE) group = 'equal';
+  let group: 'greater' | 'equal' | 'less' = 'less';
+  if (spread > -SPREAD_RANGE) group = 'equal';
+  if (spread > +SPREAD_RANGE) group = 'greater';
   // determine colors
   const colors = [
     backgroundColor(spread) ?? '',

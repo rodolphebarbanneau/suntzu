@@ -431,6 +431,7 @@ export class Metrics {
     const matchesRange = this.getMatchesRange(this._options.matches);
     const playersRange = this.getPlayersRange(this._options.players);
     const timeSpanRange = this.getTimeSpanRange(this._options.timeSpan);
+
     // initialize metrics
     const players: Record<string, MetricsModel> = {};
     const teams: Record<string, MetricsModel> = {};
@@ -438,6 +439,11 @@ export class Metrics {
     for (const [faction, team] of Object.entries(this._source.teams)) {
       // initialize team metrics
       this._initializeMetrics(teams, faction);
+
+      // retrieve team match ids
+      const matchIds = [...new Set(
+        team.roster.flatMap((player) => player.matches.map((match) => match.matchId))
+      )];
 
       for (const player of team.roster) {
         // initialize player metrics
@@ -449,6 +455,11 @@ export class Metrics {
           const teammates = team.roster.filter(
             (p1) => match.roster.some((p2) => p2.playerId === p1.playerId)
           );
+          // retrieve match index
+          const matchIndex = matchIds.indexOf(match.matchId);
+          if (matchIndex > -1) {
+            matchIds.splice(matchIndex, 1);
+          }
 
           // check matches range
           if (i < matchesRange[0] || i >= matchesRange[1]) continue;
@@ -459,7 +470,8 @@ export class Metrics {
 
           // retrieve skill metrics updates
           const skillUpdates: SkillMetricsModel = {
-            matches: 1,
+            skillMatches: 1,
+            matches: matchIndex > -1 ? 1 : 0,
             winRate: match.isWinner ? 1 : 0,
             avgKills: parseFloat(match.stats[StatsKey.Kills]) ?? 0,
             avgDeaths: parseFloat(match.stats[StatsKey.Deaths]) ?? 0,
@@ -511,12 +523,11 @@ export class Metrics {
             }
           }
         }
-        // average player metrics
-        this._averageMetrics(players);
       }
-      // average team metrics
-      this._averageMetrics(teams);
     }
+    // average player and team metrics
+    this._averageMetrics(players);
+    this._averageMetrics(teams);
 
     // discard build if token has changed
     if (this._tokens['metrics'] !== token) throw new Error('Operation cancelled');
@@ -585,24 +596,26 @@ export class Metrics {
       // average overall metrics
       const overall = metrics.overall;
       this._applyUpdates(divide, metrics, 'overall', {
-        winRate: overall.matches ?? 1,
-        avgKills: overall.matches ?? 1,
-        avgDeaths: overall.matches ?? 1,
-        avgHeadshots: overall.matches ?? 1,
-        avgKd: overall.matches ?? 1,
-        avgKr: overall.matches ?? 1,
+        matches: overall.skillMatches ?? 1,
+        winRate: overall.skillMatches ?? 1,
+        avgKills: overall.skillMatches ?? 1,
+        avgDeaths: overall.skillMatches ?? 1,
+        avgHeadshots: overall.skillMatches ?? 1,
+        avgKd: overall.skillMatches ?? 1,
+        avgKr: overall.skillMatches ?? 1,
       });
       // average map metrics
       const maps = metrics.maps;
       for (const [key, map] of Object.entries(maps)) {
         this._applyUpdates(divide, maps, key, {
-          winRate: map.matches ?? 1,
-          avgKills: map.matches ?? 1,
-          avgDeaths: map.matches ?? 1,
-          avgHeadshots: map.matches ?? 1,
-          avgKd: map.matches ?? 1,
-          avgKr: map.matches ?? 1,
-          pickRate: map.matches ?? 1,
+          matches: map.skillMatches ?? 1,
+          winRate: map.skillMatches ?? 1,
+          avgKills: map.skillMatches ?? 1,
+          avgDeaths: map.skillMatches ?? 1,
+          avgHeadshots: map.skillMatches ?? 1,
+          avgKd: map.skillMatches ?? 1,
+          avgKr: map.skillMatches ?? 1,
+          pickRate: map.skillMatches ?? 1,
           dropRate: map.dropMatches ?? 1,
         });
       }

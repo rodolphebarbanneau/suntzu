@@ -8,6 +8,7 @@ export interface MetricsModel {
 
 /* Skill metrics model (extension) */
 export interface SkillMetricsModel extends Record<string, number> {
+  skillMatches: number;
   matches: number;
   winRate: number;
   avgKills: number;
