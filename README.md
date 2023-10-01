@@ -11,35 +11,36 @@
 
 **Source Code**: <a href="https://github.com/rodolphebarbanneau/suntzu" target="_blank">https://github.com/rodolphebarbanneau/suntzu</a>
 
+**Discord**: <a href="https://discord.gg/eXqmagTNrr" target="_blank">https://discord.gg/eXqmagTNrr</a>
+
 ---
 
 ## Extension
 
 ✨ Enhancing [FACEIT](https://www.faceit.com) experience with detailed matchmaking insights.
 
-| Browser | Status | Marketplace | Documentation |
+| Browser | Status | Marketplace | Docs for developpers |
 | ------- | ------ | ----------- | ------------- |
-| Chrome  | ✅ | | [Getting Started](https://developer.chrome.com/docs/extensions/mv3/getstarted) |
-| Firefox | ✅ | | |
-| Edge    | 😓 | | |
-| Opera   | 😓 | | |
+| Chrome  | ✅ | TBA | [Getting Started ⇲](https://developer.chrome.com/docs/extensions/mv3/getstarted) |
+| Firefox | ✅ | TBA | [Getting Started ⇲](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_first_WebExtension) |
+| Opera   | ✅ | TBA | [Getting Started ⇲](https://dev.opera.com/extensions/) |
+| Edge    | 😓 | TBA | [Getting Started ⇲](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-started/part1-simple-extension?tabs=v3) |
 
 The extension distribution will generate a folder with the following structure:
 ```
 extension/
 ├── assets/
-│   ├── content.js
-│   ├── index.js
-│   ├── service.js
-│   ├── settings.js
-│   ├── index.css
-│   ├── suntzu.svg
+│   ├── content-xxx.js
+│   ├── index-xxx.js
+│   ├── service-xxx.js
 │   └── ...
 ├── images/
 │   ├── icon-16.png
 │   ├── icon-32.png
 │   ├── icon-48.png
 │   └── icon-128.png
+├── favicon.ico
+├── index.html
 └── manifest.json
 ```
 
@@ -71,15 +72,9 @@ nx run-many -t <target1> <target2> -p <proj1> <proj2>
 
 Targets can be defined in the `package.json` or `projects.json`. Learn more [in the docs](https://nx.dev/core-features/run-tasks).
 
-## Want better Editor Integration?
-
-Have a look at the [Nx Console extensions](https://nx.dev/nx-console). It provides autocomplete support, a UI for exploring and running tasks & generators, and more! Available for VSCode, IntelliJ and comes with a LSP for Vim users.
 
 ## Ready to deploy?
 
 Just run `nx build suntzu` to build the application. The build artifacts will be stored in the `dist/` directory, ready to be deployed.
 
-## Connect with us!
-
-- [Join the community](https://www.reddit.com/r/suntzugg)
-- [Follow us on Twitter](https://twitter.com/suntzugg)
+## [Connect with us on Discord 🎯](https://discord.gg/eXqmagTNrr)
