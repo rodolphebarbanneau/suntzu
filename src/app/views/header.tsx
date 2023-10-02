@@ -1,3 +1,5 @@
+import { EXTENSION_NAME } from 'src/shared/settings';
+
 import svgSuntzu from 'src/assets/suntzu.svg';
 
 import { Link } from '../components/link';
@@ -12,7 +14,7 @@ export const Header = () => (
         <Link
           url="https://github.com/rodolphebarbanneau/suntzu"
           title="Project's GitHub repository"
-          text="0.1.0-beta.1"
+          text={EXTENSION_NAME}
         />
       </div>
     </div>
