@@ -7,11 +7,11 @@
 
 ---
 
-**Documentation**: <a href="https://suntzu.gg/docs" target="_blank">https://suntzu.gg/docs</a>
-
-**Source Code**: <a href="https://github.com/rodolphebarbanneau/suntzu" target="_blank">https://github.com/rodolphebarbanneau/suntzu</a>
-
-**Discord**: <a href="https://discord.gg/eXqmagTNrr" target="_blank">https://discord.gg/eXqmagTNrr</a>
+**Discord** - <a href="https://discord.gg/eXqmagTNrr" target="_blank"><i>https://discord.gg/eXqmagTNrr</i></a>
+<br/>
+**Documentation** - <a href="https://suntzu.gg/docs" target="_blank"><i>https://suntzu.gg/docs</i></a>
+<br/>
+**Source Code** - <a href="https://github.com/rodolphebarbanneau/suntzu" target="_blank"><i>https://github.com/rodolphebarbanneau/suntzu/tree/main/src</i></a>
 
 ---
 
@@ -21,27 +21,37 @@
 
 | Browser | Status | Marketplace | Docs for developpers |
 | ------- | ------ | ----------- | ------------- |
-| Chrome  | ✅ | TBA | [Getting Started ⇲](https://developer.chrome.com/docs/extensions/mv3/getstarted) |
-| Firefox | ✅ | TBA | [Getting Started ⇲](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_first_WebExtension) |
-| Opera   | ✅ | TBA | [Getting Started ⇲](https://dev.opera.com/extensions/) |
-| Edge    | 😓 | TBA | [Getting Started ⇲](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-started/part1-simple-extension?tabs=v3) |
+| Chrome | ✅ | TBA 😓 | [Getting Started ⇲](https://developer.chrome.com/docs/extensions/mv3/getstarted) |
+| Edge _(chrome)_ | ✅ | TBA 😓 | [Getting Started ⇲](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-started/part1-simple-extension?tabs=v3) |
+| Opera _(chrome)_ | ✅ | TBA 😓 | [Getting Started ⇲](https://dev.opera.com/extensions/) |
+| Firefox | ✅ | TBA 😓 | [Getting Started ⇲](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_first_WebExtension) |
 
-The extension distribution will generate a folder with the following structure:
+The extension distribution will generate a folder for the target browser with the following structure:
 ```
-extension/
-├── assets/
-│   ├── content-xxx.js
-│   ├── index-xxx.js
-│   ├── service-xxx.js
-│   └── ...
-├── images/
-│   ├── icon-16.png
-│   ├── icon-32.png
-│   ├── icon-48.png
-│   └── icon-128.png
-├── favicon.ico
-├── index.html
-└── manifest.json
+dist/
+├── chrome/
+│   ├── assets/
+│   │   ├── content-xxx.js
+│   │   ├── index-xxx.js
+│   │   ├── service-xxx.js
+│   │   └── ...
+│   ├── images/
+│   │   ├── icon-16.png
+│   │   ├── icon-32.png
+│   │   ├── icon-48.png
+│   │   └── icon-128.png
+│   ├── favicon.ico
+│   ├── index.html
+│   └── manifest.json
+└── ...
+```
+
+## Initialize repo
+
+Install `nx` globally and load dependencies:
+```
+npm install -g nx
+npm install
 ```
 
 ## Start the app 
@@ -53,28 +63,26 @@ Happy gaming!
 ## Running tasks
 
 To execute tasks with Nx use the following syntax:
-
 ```
 nx <target> <project> <...options>
 ```
 
 You can also run multiple targets:
-
 ```
 nx run-many -t <target1> <target2>
 ```
 
 ..or add `-p` to filter specific projects
-
 ```
 nx run-many -t <target1> <target2> -p <proj1> <proj2>
 ```
 
 Targets can be defined in the `package.json` or `projects.json`. Learn more [in the docs](https://nx.dev/core-features/run-tasks).
 
-
 ## Ready to deploy?
 
 Just run `nx build suntzu` to build the application. The build artifacts will be stored in the `dist/` directory, ready to be deployed.
 
-## [Connect with us on Discord 🎯](https://discord.gg/eXqmagTNrr)
+## Connect with us!
+
+[**Join the Discord community 🎯**](https://discord.gg/eXqmagTNrr)
