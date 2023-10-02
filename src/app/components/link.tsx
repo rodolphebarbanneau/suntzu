@@ -4,16 +4,21 @@ import styles from './link.module.scss';
 
 /* Link */
 export const Link = (
-  { url, title, text, children }: {
+  { url, title, text, style, children }: {
     url: string;
     title: string;
     text?: string;
+    style?: 'dark' | 'light' | 'color' ;
     children?: string | ReactNode;
   },
 ) => (
   <a
     href={url}
-    className={`${styles.link} ${text ? styles.large : styles.small}`}
+    className={
+      styles['link']
+      + ' ' + styles[text ? 'large' : 'small']
+      + ' ' + styles[style ?? 'dark']
+    }
     target="_blank"
     rel="noreferrer"
     title={title}

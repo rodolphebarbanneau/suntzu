@@ -6,16 +6,10 @@ a.link {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 25px;
+  min-height: 25px;
   border-radius: 4px;
   text-decoration: none;
-  background-color: $color-bg-500;
-  color: $color-fg-900;
   cursor: pointer;
-}
-
-a.link:hover {
-  background-color: $color-bg-100;
 }
 
 a.link img, a.link svg {
@@ -36,4 +30,31 @@ a.link.large {
 
 a.link.large img, a.link.large svg {
   margin-right: 6px;
+}
+
+a.dark {
+  background-color: $color-bg-500;
+  color: $color-fg-900;
+}
+
+a.dark:hover {
+  background-color: $color-bg-300;
+}
+
+a.light {
+  background-color: $color-fg-500;
+  color: $color-bg-900;
+}
+
+a.light:hover {
+  background-color: $color-fg-300;
+}
+
+a.color {
+  background-color: $color-faceit-red;
+  color: $color-bg-900;
+}
+
+a.color:hover {
+  background-color: $color-fg-300;
 }

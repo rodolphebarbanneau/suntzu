@@ -18,7 +18,17 @@
   border-bottom: 1px solid $color-bg-500;
 }
 
-.app > header > img {
+.app > header h1 a {
+  display: inline-block;
+  text-decoration: none;
+  color: $color-fg-300;
+}
+
+.app > header h1 a:hover {
+  color: $color-faceit-red;
+}
+
+.app > header img {
   min-height: 80px;
   height: 80px;
 }

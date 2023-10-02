@@ -53,18 +53,18 @@ export const Option = <T extends StorageNamespace, K extends keyof T>(
         <h2>{title}</h2>
         <div
           className={
-            `${styles.selection} ${isSelecting ? styles.selecting : ''}`
+            `${styles['selection']} ${isSelecting ? styles['selecting'] : ''}`
           }
           onMouseDown={() => setSelecting(!isSelecting)}
         >
           {option as string}
         </div>
-        <div className={`${styles['option-items']} ${isSelecting ? '' : styles.hide}`}>
+        <div className={`${styles['option-items']} ${isSelecting ? '' : styles['hide']}`}>
           {options.map((value, index) => (
             <div
               key={index}
               onMouseUp={() => onClick(value as T[K])}
-              className={value === option ? styles.selected : ''}
+              className={value === option ? styles['selected'] : ''}
             >
               {value as string}
             </div>
