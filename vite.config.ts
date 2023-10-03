@@ -52,14 +52,16 @@ function getArgValue(argName: string): string | undefined {
  * @param options.manifest - The relative path to the source manifest template file.
  * @param options.dist - The relative path to the distribution directory.
  * @param options.browser - The manifest target browser.
+ * @param options.mode - The mode in which Vite is running.
  * @returns A Rollup Plugin that performs the processing of the manifest file.
  */
 async function createExtension(
-  { scripts, manifest, dist, browser }: {
+  { scripts, manifest, dist, browser, mode }: {
     scripts: { entry: string; name: string }[];
     manifest: string;
     dist: string;
     browser: string;
+    mode: string;
   },
 ): Promise<void> {
   // build commonjs scripts for the browser extension
@@ -79,7 +81,7 @@ async function createExtension(
     ],
 
     build: {
-      sourcemap: true,
+      sourcemap: mode === 'production' ? false : true,
       emptyOutDir: false,
       rollupOptions: {
         input: {
@@ -216,6 +218,7 @@ export default defineConfig(async ({ command, mode }) => {
     manifest: `./src/browsers/manifest.${browser}.json`,
     dist,
     browser,
+    mode,
   });
 
   return {
@@ -247,7 +250,7 @@ export default defineConfig(async ({ command, mode }) => {
     ],
 
     build: {
-      sourcemap: true,
+      sourcemap: mode === 'production' ? false : true,
       emptyOutDir: false,
       rollupOptions: {
         input: {
