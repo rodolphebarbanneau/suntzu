@@ -1,4 +1,4 @@
-import { EXTENSION_NAME } from 'src/shared/settings';
+import { EXTENSION_VERSION } from 'src/shared/settings';
 
 import svgSuntzu from 'src/assets/suntzu.svg';
 
@@ -14,7 +14,7 @@ export const Header = () => (
         <Link
           url="https://github.com/rodolphebarbanneau/suntzu"
           title="Project's GitHub repository"
-          text={EXTENSION_NAME}
+          text={EXTENSION_VERSION}
         />
       </div>
     </div>

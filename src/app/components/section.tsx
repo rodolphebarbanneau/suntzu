@@ -18,13 +18,14 @@ export const Section = ({ children }: { children: ReactNode | ReactNode[] }) => 
 
 /* Section header */
 export const SectionHeader = <K extends keyof FeaturesConfiguration>(
-  { title, configKey }: {
+  { title, configKey, isDisabled }: {
     title: string;
     configKey?: K;
+    isDisabled?: boolean;
   },
 ) => {
   const [option, setOption] = useStorage(FEATURES_CONFIG, configKey);
-
+  const a = !isDisabled
   return (
     <header>
       <h2>{title}</h2>
@@ -35,6 +36,7 @@ export const SectionHeader = <K extends keyof FeaturesConfiguration>(
             : <Toggle
                 isToggled={!!option}
                 onToggle={() => setOption(!option as FeaturesConfiguration[K])}
+                isDisabled={isDisabled}
               />
           )
           : null

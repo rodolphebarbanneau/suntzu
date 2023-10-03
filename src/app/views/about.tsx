@@ -36,7 +36,7 @@ export const About = () => (
             children={svgDiscord}
           />
           <Link
-            url="https://github.com/rodolphebarbanneau/suntzu/issues"
+            url="https://github.com/rodolphebarbanneau/suntzu/issues/new/choose"
             title="Project's GitHub issues"
             text="Report an issue..."
             style="color"

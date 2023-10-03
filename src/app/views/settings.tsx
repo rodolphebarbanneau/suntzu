@@ -17,6 +17,7 @@ export const PlayerSettings = () => (
     <SectionHeader
       title="Player metrics"
       configKey="showPlayer"
+      isDisabled={true}
     />
     <SectionBody description="Display players metrics (matches, win rate, average kills, headshots, kills/death, and kills/round) for selected map in the matchroom." />
   </Section>
