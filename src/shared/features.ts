@@ -14,7 +14,7 @@ export class FeaturesConfiguration extends StorageNamespace {
   /* The map feature flag */
   @storageRecord showMap = true;
   /* The player feature flag */
-  @storageRecord showPlayer = true;
+  @storageRecord showPlayer = false;
 }
 
 export const FEATURES_CONFIG = FeaturesConfiguration.initialize();

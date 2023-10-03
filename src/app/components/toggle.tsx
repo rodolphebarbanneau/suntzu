@@ -12,9 +12,9 @@ export const Toggle = (
     <label className={styles['toggle']}>
       <input
         type="checkbox"
-        checked={!isDisabled && isToggled}
+        checked={isToggled}
         onChange={onToggle}
-        disabled={isDisabled ?? false}
+        disabled={!!isDisabled}
       />
       <span />
     </label>

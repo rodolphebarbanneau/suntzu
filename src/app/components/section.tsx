@@ -25,7 +25,6 @@ export const SectionHeader = <K extends keyof FeaturesConfiguration>(
   },
 ) => {
   const [option, setOption] = useStorage(FEATURES_CONFIG, configKey);
-  const a = !isDisabled
   return (
     <header>
       <h2>{title}</h2>
