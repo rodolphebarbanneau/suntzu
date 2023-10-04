@@ -13,9 +13,7 @@ const IMPLEMENTATION: Map<string, Feature> = new Map();
 let CURRENT_URL: string;
 let CURRENT_MATCHROOM: Promise<Matchroom | null>;
 
-/**
- * Handle matchroom features.
- */
+/* Handle matchroom features */
 const _handleMatchroom = async () => {
   // check for url change
   if (CURRENT_URL !== window.location.href) {
