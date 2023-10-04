@@ -412,15 +412,21 @@ export class Matchroom {
       // return if map is undefined
       if (!map) return undefined;
       // retrieve matchroom map name
-      const name = map.querySelector('div > div > span')?.textContent ?? '';
+      const span = map.querySelector('div > div > div > span');
+      const name = span?.textContent ?? '';
       const key = mapKeys.get(name);
-      // return if key is undefined
-      if (!key) return null;
+      // return if span, name, or key is undefined
+      if (!span || !name || !key) return null;
       // return matchroom map
       return {
         id: key,
         name: name,
-        container: map as HTMLDivElement,
+        container: (
+          span
+            ?.parentElement
+            ?.parentElement
+            ?.parentElement
+        ) as HTMLDivElement,
       }
     };
 
