@@ -19,14 +19,15 @@
 
 .kpi {
   display: flex;
-  flex: 1;
-  justify-content: center;
   align-items: center;
-  margin-right: 8px;
+  margin: 0 8px 0 0;
+  padding: 0;
+  gap: 4px;
 }
 
-.kpi p {
-  margin: 0 4px 0 0;
+.kpi > span {
+  margin: 0;
+  padding: 0;
   font-size: .9rem;
   font-weight: bold;
 }

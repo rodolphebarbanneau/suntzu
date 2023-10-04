@@ -22,13 +22,15 @@
 .tooltip-box {
   z-index: 9999;
   display: flex;
+  flex-direction: column;
   position: absolute;
   box-sizing: border-box;
+  min-width: 125px;
   max-width: 250px;
   height: auto;
   margin: 0;
   padding: 5px;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   border-radius: .2rem;
   background-color: $color-bg-300;
@@ -36,6 +38,13 @@
   border: 1px solid $color-bg-700;
   font-size: .7rem;
   font-weight: normal;
+}
+
+.tooltip-box > * {
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  gap: 5px;
 }
 
 .tooltip-box-top {

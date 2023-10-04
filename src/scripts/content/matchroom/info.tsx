@@ -30,9 +30,9 @@ const InfoComponent = ({ matchroom }: { matchroom: Matchroom }) => {
   return (
     <ReactShadowRoot.Div>
       {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
-      <style dangerouslySetInnerHTML={{ __html: stylesheetOption }} />
       <style dangerouslySetInnerHTML={{ __html: stylesheetToolbar }} />
       <style dangerouslySetInnerHTML={{ __html: stylesheetTooltip }} />
+      <style dangerouslySetInnerHTML={{ __html: stylesheetOption }} />
       <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
       {
         (showMap || showPlayer) ? (
@@ -46,10 +46,12 @@ const InfoComponent = ({ matchroom }: { matchroom: Matchroom }) => {
                 </svg>
                 <h1>Suntzu</h1>
               </div>
-              <Tooltip
-                message={'Beta version'}
-                position='right'
-              />
+              <Tooltip position='right'>
+                <h3>Parameters</h3>
+                <p>💣 &nbsp;<b>Match</b>: number of matches used for statistics (for each players).</p>
+                <p>🕒 &nbsp;<b>Time</b>: period within which the matches used for statistics were played.</p>
+                <p>🧑‍🤝‍🧑 &nbsp;<b>Player</b>: number of gathered players that must be within a match to be considered and used for statistics.</p>
+              </Tooltip>
             </ToolbarHeader>
             <ToolbarBody>
               <Option

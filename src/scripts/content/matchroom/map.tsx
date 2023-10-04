@@ -105,7 +105,7 @@ const MetricsComponent = (
   const avgKds = teams.map((team) => metrics.teams[team.id].maps[map.id]?.avgKd ?? 0);
   const avgKrs = teams.map((team) => metrics.teams[team.id].maps[map.id]?.avgKr ?? 0);
   return (
-    <MapComponent stylesheet={[stylesheetIcon, stylesheetMetrics, stylesheet]}>
+    <MapComponent stylesheet={[stylesheetMetrics, stylesheetIcon, stylesheet]}>
       <div className={styles['layout-metrics']}>
         <Metrics
           feature="map"
@@ -161,16 +161,17 @@ const SummaryComponent = (
   const deltaWinRate = getDeltaWinRate(teams, map, metrics);
   // render
   if (!showMap) return null;
+  const spread = deltaWinRate?.spread ?? 0
   return (
     <MapComponent stylesheet={[stylesheetTooltip, stylesheet]}>
       <div className={styles['kpi']}>
-        <p style={{ color: deltaWinRate?.colors?.[1] }}>
-          {deltaWinRate ? (100 * (deltaWinRate?.spread ?? 0)).toFixed(0) + '%' : 'NA'}
-        </p>
-        <Tooltip
-          message={'Relative win rate between the two teams'}
-          position='left'
-        />
+        <span style={{ color: deltaWinRate?.colors?.[1] }}>
+          {deltaWinRate ? (spread > 0 ? '+' : '') + (100 * spread).toFixed(0) + '%' : 'NA'}
+        </span>
+        <Tooltip position='left'>
+          <p><b>Relative win rate</b></p>
+          <p>(i.e. difference in percentage between the two teams)</p>
+        </Tooltip>
       </div>
     </MapComponent>
   );

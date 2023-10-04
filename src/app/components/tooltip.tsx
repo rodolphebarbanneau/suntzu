@@ -1,10 +1,12 @@
+import type { ReactNode } from 'react';
+
 import { useEffect, useState } from 'react';
 
 import styles from './tooltip.module.scss';
 
 /* Tooltip */
-export const Tooltip = ({ message, position }: {
-  message: string,
+export const Tooltip = ({ children, position }: {
+  children: ReactNode | ReactNode[],
   position?: 'top' | 'bottom' | 'left' | 'right',
 }) => {
   const [hover, setHover] = useState(false);
@@ -40,7 +42,7 @@ export const Tooltip = ({ message, position }: {
         hover && show && <div
           className={styles['tooltip-box'] + ' ' + styles[`tooltip-box-${position ?? 'top'}`]}
         >
-          <span>{message}</span>
+          {children}
         </div>
       }
     </div>
