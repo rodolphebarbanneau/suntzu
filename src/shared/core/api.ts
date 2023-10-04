@@ -206,8 +206,6 @@ export class Api {
       // log and return null if error
       if (error instanceof FetchError) {
         this._error = error;
-        // eslint-disable-next-line no-console
-        console.error(error.message, error.request, error.response)
       }
       else {
         // eslint-disable-next-line no-console
