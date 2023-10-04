@@ -37,7 +37,7 @@ export class Component {
   private readonly _node: ReactNode;
 
   /* The component host container */
-  private _host: HTMLElement | null = null;
+  private _host: HTMLElement | null | undefined;
 
   /* The component state */
   private _state: ComponentState = ComponentState.INITIALIZED;
@@ -105,7 +105,7 @@ export class Component {
   }
 
   /* Get the component host container */
-  get host(): HTMLElement | null {
+  get host(): HTMLElement | null | undefined {
     return this._host;
   }
 
@@ -119,10 +119,20 @@ export class Component {
    * @param element - The element to append the component to.
    * @returns The component.
    */
-  appendTo(element: HTMLDivElement | null | undefined): Component {
-    if (!element) return this;
+  appendTo(element?: HTMLDivElement): Component {
+    // check if feature container is not undefined
+    const container = this._feature.container;
+    if (!container) return this;
+    // check if element is a child of the feature container
+    const target = element ?? container;
+    if (!this._feature.container.contains(target)) {
+      throw new Error(
+        'Cannot append component to an element that is not a child of the feature container'
+      );
+    }
+    // append component to element
     this._container.remove();
-    element.append(this._container);
+    target.append(this._container);
     this._host = element;
     this._state |= ComponentState.ATTACHED;
     return this;
@@ -133,10 +143,20 @@ export class Component {
    * @param element - The element to prepend the component to.
    * @returns The component.
    */
-  prependTo(element: HTMLDivElement | null | undefined): Component {
-    if (!element) return this;
+  prependTo(element?: HTMLDivElement): Component {
+    // check if feature container is not undefined
+    const container = this._feature.container;
+    if (!container) return this;
+    // check if target element is a child of the feature container
+    const target = element ?? container;
+    if (!this._feature.container.contains(target)) {
+      throw new Error(
+        'Cannot prepend component to an element that is not a child of the feature container'
+      );
+    }
+    // prepend component to element
     this._container.remove();
-    element.prepend(this._container);
+    target.prepend(this._container);
     this._host = element;
     this._state |= ComponentState.ATTACHED;
     return this;

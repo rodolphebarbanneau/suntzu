@@ -89,19 +89,15 @@ const InfoComponent = ({ matchroom }: { matchroom: Matchroom }) => {
   );
 }
 
-
 /* Info feature */
-export const InfoFeature = (matchroom: Matchroom) => new Feature('info',
-  (feature) => {
-    // retrieve matchroom information
-    const info = matchroom.getInformation();
-    // do nothing if matchroom information is not available
-    if (!info) return;
-
-    // create component
+export const InfoFeature = (matchroom: Matchroom) => new Feature({
+  name: 'info',
+  container: matchroom.getInformation(),
+  initialize: (feature) => {
+    // add component
     feature.addComponent({
       name: 'toolbar',
       node: <InfoComponent matchroom={matchroom} />,
-    })?.prependTo(info);
+    })?.prependTo();
   },
-);
+});

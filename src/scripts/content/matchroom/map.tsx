@@ -178,32 +178,29 @@ const SummaryComponent = (
 }
 
 /* Map feature */
-export const MapFeature = (matchroom: Matchroom) => new Feature('map',
-  (feature) => {
+export const MapFeature = (matchroom: Matchroom, map: MatchroomMap) => new Feature({
+  name: `map-${map.id}`,
+  container: map.container,
+  initialize: (feature) => {
     // retrieve matchroom teams
     const teams = matchroom.getTeams();
-    // retrieve matchroom maps
-    const maps = matchroom.getMaps();
-
-    // create components and actions for each map
-    maps.forEach((map) => {
-      // summary component
-      feature.addComponent({
-        name: `summary-${map.id}`,
-        node: <SummaryComponent matchroom={matchroom} teams={teams} map={map} />,
-      })?.appendTo(map.container.children[0] as HTMLDivElement);
-
-      // metrics component
-      feature.addComponent({
-        name: `metrics-${map.id}`,
-        node: <MetricsComponent matchroom={matchroom} teams={teams} map={map} />,
-      })?.appendTo(map.container);
-
-      // layout component
-      feature.addComponent({
-        name: `layout-${map.id}`,
-        node: <LayoutComponent matchroom={matchroom} teams={teams} map={map} />,
-      })?.prependTo(map.container);
-    });
+    // add summary component
+    feature.addComponent({
+      name: `summary-${map.id}`,
+      node: <SummaryComponent matchroom={matchroom} teams={teams} map={map} />,
+    })?.appendTo(feature.container?.children[0] as HTMLDivElement | undefined);
+    // add metrics component
+    feature.addComponent({
+      name: `metrics-${map.id}`,
+      node: <MetricsComponent matchroom={matchroom} teams={teams} map={map} />,
+    })?.appendTo();
+    // add layout component
+    feature.addComponent({
+      name: `layout-${map.id}`,
+      node: <LayoutComponent matchroom={matchroom} teams={teams} map={map} />,
+    })?.prependTo();
   },
-);
+  onChange: (feature) => {
+    feature.unmount();
+  },
+});

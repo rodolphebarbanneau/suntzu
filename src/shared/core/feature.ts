@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { RootOptions } from 'react-dom/client';
 
-import { Component } from './component';
+import { Component, ComponentState } from './component';
 
 /**
  * A feature.
@@ -11,6 +11,9 @@ export class Feature {
   /* The feature name */
   private readonly _name: string;
 
+  /* The feature container */
+  private readonly _container: HTMLDivElement | null | undefined;
+
   /* The feature components */
   private readonly _components = new Map<string, Component>();
 
@@ -19,15 +22,40 @@ export class Feature {
    * @param name - The feature name.
    * @param initialize - The feature initialization function.
    */
-  constructor(name: string, initialize: (feature: Feature) => void) {
-    // initialize
+  constructor(
+    { name, container, initialize, onChange }: {
+      name: string;
+      container: HTMLDivElement | null | undefined;
+      initialize: (feature: Feature) => void;
+      onChange?: (feature: Feature) => void;
+    },
+  ) {
+    // initialize name and container
     this._name = name;
+    this._container = container;
+    // check container
+    if (!container) return;
+    // handle on class change event
+    if (onChange) {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'class') onChange(this);
+        });
+      });
+      observer.observe(container, { attributes: true, childList: true, subtree: true });
+    }
+    // initialize
     initialize(this);
   }
 
   /* Get the feature name */
   get name(): string {
     return this._name;
+  }
+
+  /* Get the feature container */
+  get container(): HTMLDivElement | null | undefined {
+    return this._container;
   }
 
   /* Get the feature components */
@@ -67,9 +95,17 @@ export class Feature {
    */
   extendComponents(...components: Component[]): Feature {
     components.forEach((component) => {
+      // check if component is from this feature
       if (component.feature !== this) {
         throw new Error('Cannot extend component from another feature');
       }
+      // check if component is attached to the feature container
+      if (component.state & ComponentState.ATTACHED) {
+        if (!this._container?.contains(component.container)) {
+          throw new Error('Cannot extend component that is not attached to the feature container');
+        }
+      }
+      // add component to feature
       if (this._components.has(component.name)) return;
       this._components.set(component.name, component);
     });

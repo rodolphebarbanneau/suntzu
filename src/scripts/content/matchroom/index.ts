@@ -31,12 +31,23 @@ const _handleMatchroom = async () => {
   // return if matchroom is not ready
   if (!matchroom.isReady()) return;
 
+  // retrieve matchroom maps
+  const maps = matchroom.getMaps();
+  // retrieve matchroom teams
+  const players = matchroom.getPlayers();
+
   // declare features
-  const features = new Map([
-    ['info', () => InfoFeature(matchroom)],
-    ['map', () => MapFeature(matchroom)],
-    ['player', () => PlayerFeature(matchroom)],
-  ]);
+  const features = new Map<string, () => Feature>();
+  // initialize info feature
+  features.set('info', () => InfoFeature(matchroom));
+  // initialize maps feature
+  maps.forEach((map) => {
+    features.set(`map-${map.id}`, () => MapFeature(matchroom, map));
+  });
+  // initialize players feature
+  players.forEach((player) => {
+    features.set(`player-${player.id}`, () => PlayerFeature(matchroom, player));
+  });
 
   // add features
   features.forEach((feature, key) => {
