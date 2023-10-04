@@ -3,17 +3,19 @@
 
 /* Toolbar */
 .toolbar {
-	padding: 0;
+  display: flex;
+  flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
 	margin: 0;
-	justify-content: left;
-	align-items: center;
+	padding: 0 0 8px 0;
+  gap: 4px;
 	font-family: Play, sans-serif;
 }
 
 .toolbar-header {
   display: flex;
 	align-items: center;
-  padding-bottom: .2rem;
   color: $color-fg-900;
 }
 
@@ -34,6 +36,5 @@
 
 .toolbar-body {
   display: flex;
-  padding-bottom: 1rem;
-  gap: .2rem;
+  gap: 4px;
 }
