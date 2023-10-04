@@ -88,9 +88,9 @@ export const InfoFeature = (matchroom: Matchroom) => new Feature('info',
     if (!info) return;
 
     // create component
-    feature.addComponent(
-      'toolbar',
-      <InfoComponent matchroom={matchroom} />,
-    )?.prependTo(info);
+    feature.addComponent({
+      name: 'toolbar',
+      node: <InfoComponent matchroom={matchroom} />,
+    })?.prependTo(info);
   },
 );

@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import type { RootOptions } from 'react-dom/client';
-import { debounce } from 'lodash';
 
-import { DEBOUNCE_DELAY } from '../settings';
 import { Component } from './component';
 
 /**
@@ -13,44 +11,18 @@ export class Feature {
   /* The feature name */
   private readonly _name: string;
 
-  /* The feature update function */
-  private readonly _update: () => void;
-
   /* The feature components */
   private readonly _components = new Map<string, Component>();
 
   /**
    * Create a feature.
    * @param name - The feature name.
+   * @param initialize - The feature initialization function.
    */
-  constructor(name: string, update: (feature: Feature) => void) {
+  constructor(name: string, initialize: (feature: Feature) => void) {
     // initialize
     this._name = name;
-    this._update = () => update(this);
-    // debounce feature update
-    const originalUpdate = this.update.bind(this);
-    const debounceUpdate = debounce(
-      originalUpdate,
-      DEBOUNCE_DELAY,
-      { leading: true, trailing: false },
-    );
-    this.update = () => { debounceUpdate(); return this; }
-    // debounce feature rendering
-    const originalRender = this.render.bind(this);
-    const debounceRender = debounce(
-      originalRender,
-      DEBOUNCE_DELAY,
-      { leading: true, trailing: false },
-    );
-    this.render = () => { debounceRender(); return this; }
-    // debounce feature unmounting
-    const originalUnmount = this.unmount.bind(this);
-    const debounceUnmount = debounce(
-      originalUnmount,
-      DEBOUNCE_DELAY,
-      { leading: true, trailing: false },
-    );
-    this.unmount = () => { debounceUnmount(); return this; }
+    initialize(this);
   }
 
   /* Get the feature name */
@@ -65,18 +37,25 @@ export class Feature {
 
   /**
    * Add a component to the feature.
-   * @param name - The component name (must be uniquer within the feature).
+   * @param name - The component name (must be unique within the feature).
    * @param node - The component react node.
    * @param options - The component react root options (optional).
    * @returns The created component.
    */
   addComponent(
-    name: string,
-    node: ReactNode,
-    options?: RootOptions
+    { name, node, options }: {
+      name: string;
+      node: ReactNode;
+      options?: RootOptions;
+    },
   ): Component | null {
     if (this._components.has(name)) return null;
-    const component = new Component(this, name, node, options);
+    const component = new Component({
+      feature: this,
+      name,
+      node,
+      options,
+    }).mount();
     this._components.set(component.name, component);
     return component;
   }
@@ -112,23 +91,12 @@ export class Feature {
   }
 
   /**
-   * Update the feature.
+   * Mount the feature.
    * @returns The feature.
-   * @remarks This method is debounced.
    */
-  update(): Feature {
-    this._update();
-    return this;
-  }
-
-  /**
-   * Render the feature.
-   * @returns The feature.
-   * @remarks This method is debounced.
-   */
-  render(): Feature {
+  mount(): Feature {
     this._components.forEach((component) => {
-      component.render();
+      component.mount();
     });
     return this;
   }
@@ -136,12 +104,22 @@ export class Feature {
   /**
    * Unmount the feature.
    * @returns The feature.
-   * @remarks This method is debounced.
    */
   unmount(): Feature {
     this._components.forEach((component) => {
       component.unmount();
     });
     return this;
+  }
+
+  /**
+   * Check if the feature is rendered in the document.
+   * @returns True if the feature is rendered in the document, false otherwise.
+   */
+  isRendered(): boolean {
+    // return false if there are no components
+    if (this._components.size === 0) return false;
+    // return true if every component is rendered, false otherwise
+    return Array.from(this._components.values()).every((component) => component.isRendered());
   }
 }

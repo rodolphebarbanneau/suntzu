@@ -1,6 +1,6 @@
 /* Core */
 export { Api, ApiRequest, ApiResponse } from './api';
-export { Component } from './component';
+export { Component, ComponentState } from './component';
 export { Feature } from './feature';
 export {
   Matchroom,

@@ -5,6 +5,13 @@ import { createRoot } from 'react-dom/client';
 import type { Feature } from './feature';
 import { EXTENSION_NAME } from '../settings';
 
+/* Component State (bitwise flags) */
+export enum ComponentState {
+  INITIALIZED = 0,    // 0: initialized but not yet attached and mounted
+  ATTACHED = 1 << 0,  // 1: attached to the document
+  MOUNTED = 1 << 1,  // 2: mounted in react root
+}
+
 /**
  * A component.
  * It is a general abstraction for creating and handling the extension injected react components
@@ -32,6 +39,9 @@ export class Component {
   /* The component host container */
   private _host: HTMLElement | null = null;
 
+  /* The component state */
+  private _state: ComponentState = ComponentState.INITIALIZED;
+
   /**
    * Create a component.
    * @param feature - The component feature.
@@ -40,10 +50,12 @@ export class Component {
    * @param options - The component react root options (optional).
    */
   constructor(
-    feature: Feature,
-    name: string,
-    node: ReactNode,
-    options?: RootOptions,
+    { feature, name, node, options }: {
+      feature: Feature;
+      name: string;
+      node: ReactNode;
+      options?: RootOptions;
+    },
   ) {
     // initialize feature
     this._feature = feature;
@@ -97,15 +109,22 @@ export class Component {
     return this._host;
   }
 
+  /* Get the component state */
+  get state(): ComponentState {
+    return this._state;
+  }
+
   /**
    * Append the component container.
    * @param element - The element to append the component to.
    * @returns The component.
    */
-  appendTo(element: HTMLDivElement): Component {
+  appendTo(element: HTMLDivElement | null | undefined): Component {
+    if (!element) return this;
     this._container.remove();
     element.append(this._container);
     this._host = element;
+    this._state |= ComponentState.ATTACHED;
     return this;
   }
 
@@ -114,10 +133,12 @@ export class Component {
    * @param element - The element to prepend the component to.
    * @returns The component.
    */
-  prependTo(element: HTMLDivElement): Component {
+  prependTo(element: HTMLDivElement | null | undefined): Component {
+    if (!element) return this;
     this._container.remove();
     element.prepend(this._container);
     this._host = element;
+    this._state |= ComponentState.ATTACHED;
     return this;
   }
 
@@ -129,15 +150,17 @@ export class Component {
     this._root.unmount();
     this._container.remove();
     this._host = null;
+    this._state &= ~ComponentState.ATTACHED;
     return this;
   }
 
   /**
-   * Render the component node into the root attached to the container.
+   * Mount the component node into the root attached to the container.
    * @returns The component.
    */
-  render(): Component {
+  mount(): Component {
     this._root.render(this._node);
+    this._state |= ComponentState.MOUNTED;
     return this;
   }
 
@@ -147,6 +170,15 @@ export class Component {
    */
   unmount(): Component {
     this._root.unmount();
+    this._state &= ~ComponentState.MOUNTED;
     return this;
+  }
+
+  /**
+   * Check if the component is rendered in the document.
+   * @returns True if the component is rendered in the document, false otherwise.
+   */
+  isRendered(): boolean {
+    return document.contains(this._container);
   }
 }

@@ -161,10 +161,6 @@ const SummaryComponent = (
   const deltaWinRate = getDeltaWinRate(teams, map, metrics);
   // render
   if (!showMap) return null;
-  //todo: remove debug logs
-  console.log('> SUNTZU METRICS ==============================================================');
-  console.log(metrics);
-  console.log('> SUNTZU METRICS ==============================================================');
   return (
     <MapComponent stylesheet={[stylesheetTooltip, stylesheet]}>
       <div className={styles['kpi']}>
@@ -191,22 +187,22 @@ export const MapFeature = (matchroom: Matchroom) => new Feature('map',
     // create components and actions for each map
     maps.forEach((map) => {
       // summary component
-      feature.addComponent(
-        `summary-${map.id}`,
-        <SummaryComponent matchroom={matchroom} teams={teams} map={map} />,
-      )?.appendTo(map.container.children[0] as HTMLDivElement);
+      feature.addComponent({
+        name: `summary-${map.id}`,
+        node: <SummaryComponent matchroom={matchroom} teams={teams} map={map} />,
+      })?.appendTo(map.container.children[0] as HTMLDivElement);
 
       // metrics component
-      feature.addComponent(
-        `metrics-${map.id}`,
-        <MetricsComponent matchroom={matchroom} teams={teams} map={map} />,
-      )?.appendTo(map.container);
+      feature.addComponent({
+        name: `metrics-${map.id}`,
+        node: <MetricsComponent matchroom={matchroom} teams={teams} map={map} />,
+      })?.appendTo(map.container);
 
       // layout component
-      feature.addComponent(
-        `layout-${map.id}`,
-        <LayoutComponent matchroom={matchroom} teams={teams} map={map} />,
-      )?.prependTo(map.container);
+      feature.addComponent({
+        name: `layout-${map.id}`,
+        node: <LayoutComponent matchroom={matchroom} teams={teams} map={map} />,
+      })?.prependTo(map.container);
     });
   },
 );
