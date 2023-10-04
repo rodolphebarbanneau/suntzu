@@ -1,9 +1,4 @@
-import type { Feature } from 'src/shared/core';
-
 import { handleMatchroom } from './matchroom';
-
-/* Declare globals */
-export const FEATURES: Map<string, Feature> = new Map();
 
 /**
  * Handle mutations.
@@ -12,10 +7,10 @@ export const FEATURES: Map<string, Feature> = new Map();
  */
 const handleMutation = async (
   mutations: MutationRecord[],
-  observer: MutationObserver
+  observer: MutationObserver,
 ) => {
   // matchroom
-  handleMatchroom(FEATURES);
+  handleMatchroom();
 
   // observe shadow roots
   mutations.forEach((mutation) => {
