@@ -22,6 +22,8 @@ const InfoComponent = ({ matchroom }: { matchroom: Matchroom }) => {
   // retrieve features
   const [showMap] = useStorage(FEATURES_CONFIG, 'showMap');
   const [showPlayer] = useStorage(FEATURES_CONFIG, 'showPlayer');
+  // retrieve matchroom api error
+  const error = matchroom.api.error?.message;
   // handle logo click
   const handleLogoClick = () => {
     window.open('https://suntzu.gg', '_blank', 'noreferrer');
@@ -73,6 +75,13 @@ const InfoComponent = ({ matchroom }: { matchroom: Matchroom }) => {
                 options={Object.values(PlayersOption)}
               />
             </ToolbarBody>
+            {
+              error ? (
+                <div className={styles['error']}>
+                  <p>⚠ {error}</p>
+                </div>
+              ) : null
+            }
           </Toolbar>
         ) : null
       }

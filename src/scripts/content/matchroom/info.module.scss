@@ -3,11 +3,11 @@
 
 /* Info  */
 .title {
+  cursor: pointer;
 	display: flex;
 	align-items: center;
-  gap: .3rem;
+  gap: 4px;
   margin-right: 6px;
-  cursor: pointer;
 }
 
 .title:hover > svg {
@@ -16,4 +16,20 @@
 
 .title:hover > h1 {
   color: $color-faceit-red;
+}
+
+.error {
+  display: flex;
+  position: relative;
+  align-items: stretch;
+  background-color: $color-faceit-red;
+  color: $color-bg-900;
+  border-radius: 4px;
+	font-size: .7rem;
+  font-weight: normal;
+}
+
+.error > p {
+  margin: 0;
+  padding: 4px 6px;
 }

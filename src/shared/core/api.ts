@@ -76,6 +76,9 @@ export class Api {
   /** The api tokens */
   private readonly _tokens: Map<string, string>;
 
+  /** The last api error */
+  private _error: FetchError<unknown> | null = null;
+
   /**
    * Create an application programming interface.
    * @param tokens - The api tokens.
@@ -87,6 +90,11 @@ export class Api {
     if (FACEIT_OPEN_TOKEN) defaults.set(FACEIT_OPEN_BASE_URL, FACEIT_OPEN_TOKEN);
     // initialize api tokens
     this._tokens = new Map([...defaults, ...(tokens || [])]);
+  }
+
+  /* Get the last api error */
+  get error(): FetchError<unknown> | null {
+    return this._error;
   }
 
   /**
@@ -197,6 +205,7 @@ export class Api {
     } catch (error) {
       // log and return null if error
       if (error instanceof FetchError) {
+        this._error = error;
         // eslint-disable-next-line no-console
         console.error(error.message, error.request, error.response)
       }
