@@ -289,7 +289,7 @@ export class Metrics {
     return {
       matchId: matchId,
       timestamp: getTimestamp(match.finishedAt),
-      mapPick: match.voting.map.pick[0],
+      mapPick: match.voting?.map.pick[0] ?? '',
       isWinner: match.summaryResults.winner === faction,
       isLeader: team?.leader === playerId ?? false,
       faction: faction ?? '',
