@@ -64,7 +64,7 @@ export type MatchApiResponse = {
 		};
 	};
 	spectators: string[];
-	voting: {
+	voting?: {
 		voted_entity_types: string[];
 		location: {
 			entities: {
@@ -123,6 +123,113 @@ export type MatchApiResponse = {
 		partyId: string;
 		users: string[];
 	}[];
+  matchCustom: {
+    id: string;
+    overview: {
+      description: { [key: string]: string };
+      game: string;
+      label: { [key: string]: string };
+      name: string;
+      region: string;
+      round: {
+        label: { [key: string]: string };
+        id: string;
+        type: string;
+        to_play: number;
+        to_win: number;
+      };
+      detections: {
+        afk: boolean;
+        leavers: boolean;
+      };
+      spectators: boolean;
+      elo_mode: string;
+      expire_seconds: number;
+      flexible_factions: boolean;
+      grouping_stats: string;
+      max_players: number;
+      min_players: number;
+      team_size: number;
+      time_to_connect: number;
+      time_out_select_random: boolean;
+      organizer_id: string;
+      elo_type: string;
+      match_configuration_type: {
+        value: string;
+        label: { [key: string]: string };
+      };
+      match_finished_type: {
+        value: string;
+        label: { [key: string]: string };
+      };
+      game_type: string;
+    };
+    tree: {
+      game_config: {
+        data_type: string;
+        flags: { [key: string]: string };
+        id: string;
+        leaf_node: boolean;
+        values: {
+          value: string;
+        };
+      };
+      location: {
+        data_type: string;
+        display: {
+          priority: number;
+        };
+        flags: { [key: string]: string };
+        id: string;
+        label: { [key: string]: string };
+        leaf_node: boolean;
+        name: string;
+        values: {
+          multi_select: {
+            memberships: string[];
+            minimum: number;
+          };
+          value: {
+            class_name: string;
+            game_location_id: string;
+            guid: string;
+            image_lg: string;
+            image_sm: string;
+            name: string;
+          }[];
+          voting_steps: string[];
+        };
+      };
+      map: {
+        data_type: string;
+        display: {
+          priority: number;
+        };
+        flags: {
+          votable: boolean;
+        };
+        id: string;
+        label: { [key: string]: string };
+        leaf_node: boolean;
+        name: string;
+        values: {
+          multi_select: {
+            memberships: string[];
+            minimum: number;
+          };
+          value: {
+            class_name: string;
+            game_map_id: string;
+            guid: string;
+            image_lg: string;
+            image_sm: string;
+            name: string;
+          }[];
+          voting_steps: string[];
+        };
+      };
+    };
+  };
 };
 
 /* Match (faceit open api response) */
@@ -175,7 +282,7 @@ export type MatchOpenResponse = {
     };
   };
   version: number;
-  voting: {
+  voting?: {
     location: {
       entities: {
         class_name: string;

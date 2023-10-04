@@ -1,5 +1,7 @@
+import { debounce } from 'lodash';
+
 import type { MetricsOptions, MetricsData } from './metrics';
-import type { MatchApiResponse, PlayerApiResponse, MetricsModel } from '../types';
+import type { MatchApiResponse, PlayerApiResponse } from '../types';
 import { FACEIT_MATCHROOM_ROUTES, } from '../settings';
 import { MatchesOption, PlayersOption, TimeSpanOption } from '../types';
 import { Api } from './api';
@@ -116,6 +118,12 @@ export class Matchroom {
   /* The matchroom metrics */
   private _metrics: Metrics | null = null;
 
+  /* The matchroom update promise */
+  private _updatePromise: Promise<boolean> | null = null;
+
+  /* The matchroom update resolve callback */
+  private _updateResolve: ((value: boolean) => void) | null = null;
+
   /* Create a matchroom */
   private constructor() {
     // initialize
@@ -188,8 +196,8 @@ export class Matchroom {
     if (!Matchroom.isValidUrl()) return null;
     // create matchroom
     const matchroom = new Matchroom();
-    await matchroom.update();
     /* eslint-disable no-underscore-dangle */
+    await matchroom._update();
     matchroom._options = await MatchroomOptions.initialize();
     matchroom._metrics = await Metrics.initialize(matchroom.api, matchroom.id, matchroom.options);
     /* eslint-enable no-underscore-dangle */
@@ -213,31 +221,29 @@ export class Matchroom {
   }
 
   /**
-   * Update the matchroom details.
-   * @returns An empty promise that resolves when the matchroom details are updated.
+   * Update the matchroom data and state.
+   * @returns A promise that resolves to true if the matchroom state is updated, false otherwise.
+   * @remarks This method debounces the private `update` method.
    */
-  async update(): Promise<void> {
-    // fetch user
-    const user = await this._api.fetchMe();
-    this._user = user;
-    // fetch match
-    const match = await this._api.fetchMatch(this.id);
-    this._match = match;
-    // retrieve matchroom state
-    switch (match?.state) {
-      case 'VOTING':
-        this._state = MatchroomState.Voting;
-        return;
-      case 'CONFIGURING':
-        this._state = MatchroomState.Configuring;
-        return;
-      case 'READY':
-        this._state = MatchroomState.Ready;
-        return;
-      default:
-        this._state = MatchroomState.Finished;
-        return;
+  update(): Promise<boolean> {
+    // check if update is already running
+    if (!this._updatePromise) {
+      // create update promise
+      this._updatePromise = new Promise<boolean>((resolve) => {
+        this._updateResolve = resolve;
+        const debouncedUpdate = debounce(async () => {
+          const result = await this._update();
+          if (this._updateResolve) {
+            this._updateResolve(result);
+            this._updateResolve = null;
+            this._updatePromise = null;
+          }
+        }, 1000, { leading: true, trailing: false });
+        debouncedUpdate();
+      });
     }
+    // return update promise
+    return this._updatePromise;
   }
 
   /**
@@ -395,79 +401,92 @@ export class Matchroom {
    * @returns The list of maps in the matchroom document.
    */
   getMaps(): MatchroomMap[] {
-    // handle map keys
-    const mapKeys = new Set<string>();
-    const addMapKeys = (metricsData?: Record<string, MetricsModel>) => {
-      if (!metricsData) return;
-      Object.values(metricsData).forEach((entity) => {
-        Object.keys(entity.maps).forEach((mapKey) => {
-          mapKeys.add(mapKey);
-        });
-      });
-    }
-    // retrieve map keys from teams and players metrics
-    addMapKeys(this._metrics?.data?.teams);
-    addMapKeys(this._metrics?.data?.players);
+    // retrieve map keys
+    const mapKeys = new Map<string, string>();
+    this._match?.matchCustom.tree.map.values.value.forEach((map) => {
+      mapKeys.set(map.name, map.guid);
+    });
 
     // handle matchroom map
-    const matchroomMap = (map: HTMLDivElement): MatchroomMap => {
+    const matchroomMap = (map: Element | null | undefined): MatchroomMap | null | undefined => {
+      // return if map is undefined
+      if (!map) return undefined;
       // retrieve matchroom map name
-      const name = map.querySelector('div > div > span')?.textContent?.toLowerCase() ?? '';
-      // retrieve matchroom map key
-      let key = name;
-      for (const mapKey of mapKeys) {
-        if (mapKey.includes(name)) {
-          key = mapKey;
-          break;
-        }
-      }
+      const name = map.querySelector('div > div > span')?.textContent ?? '';
+      const key = mapKeys.get(name);
+      // return if key is undefined
+      if (!key) return null;
       // return matchroom map
       return {
         id: key,
         name: name,
-        container: map,
+        container: map as HTMLDivElement,
       }
     };
 
-    // retrieve the list of map elements for the active state.
+    // retrieve the list of map elements testing each possible state.
     const wrapper = this.getInformationWrapper();
     const maps: MatchroomMap[] = [];
-    if (this._state === MatchroomState.Voting) {
-      // voting state
-      const container = wrapper
-        ?.lastElementChild
-        ?.lastElementChild;
-      container?.childNodes.forEach((map) => {
-        maps.push(matchroomMap(
-          map as HTMLDivElement,
-        ));
-      });
-    } else if (this._state === MatchroomState.Configuring) {
-      // configuring state
-      const map = wrapper
+    let map: MatchroomMap | null | undefined;
+    // voting state
+    const container = (
+      wrapper
         ?.lastElementChild
         ?.lastElementChild
-        ?.lastElementChild;
-      if (map) maps.push(matchroomMap(map as HTMLDivElement));
-    } else if (this._state === MatchroomState.Ready) {
-      // ready state
-      const map = wrapper
-        ?.lastElementChild
-        ?.lastElementChild
-        ?.lastElementChild;
-      if (map) maps.push(matchroomMap(map as HTMLDivElement));
-    } else {
-      // finished state
-      const map = (
-        wrapper?.firstElementChild
-          ?.lastElementChild
-          ?.lastElementChild
-        || wrapper?.lastElementChild
-          ?.lastElementChild
-          ?.lastElementChild
       );
-      if (map) maps.push(matchroomMap(map as HTMLDivElement));
-    }
+    container?.childNodes.forEach((node) => {
+      map = matchroomMap(node as Element);
+      if (map) maps.push(map);
+    });
+    // configuring and ready state
+    map = matchroomMap(
+      wrapper
+        ?.lastElementChild
+        ?.lastElementChild
+        ?.lastElementChild
+    );
+    if (map) maps.push(map);
+    // finished state
+    map = matchroomMap(
+      wrapper
+        ?.firstElementChild
+        ?.lastElementChild
+        ?.lastElementChild
+    );
+    if (map) maps.push(map);
+
+    // return matchroom maps
     return maps;
+  }
+
+  /**
+   * Update the matchroom data and state.
+   * @returns A promise that resolves to true if the matchroom state is updated, false otherwise.
+   * @remarks This method is debounced through the public `update` method.
+   */
+  private async _update(): Promise<boolean> {
+    // fetch user
+    const user = await this._api.fetchMe();
+    this._user = user;
+    // fetch match
+    const match = await this._api.fetchMatch(this.id);
+    this._match = match;
+    // retrieve matchroom state
+    const state = this._state;
+    switch (match?.state) {
+      case 'VOTING':
+        this._state = MatchroomState.Voting;
+        break;
+      case 'CONFIGURING':
+        this._state = MatchroomState.Configuring;
+        break;
+      case 'READY':
+        this._state = MatchroomState.Ready;
+        break;
+      default:
+        this._state = MatchroomState.Finished;
+        break;
+    }
+    return state !== this._state;
   }
 }
