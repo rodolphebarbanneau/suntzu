@@ -469,9 +469,8 @@ export class Metrics {
           if (match.timestamp < timeSpanRange[0] || match.timestamp >= timeSpanRange[1]) continue;
 
           // retrieve skill metrics updates
-          const skillUpdates: SkillMetricsModel = {
+          const skillUpdates: Partial<SkillMetricsModel> = {
             skillMatches: 1,
-            matches: matchIndex > -1 ? 1 : 0,
             winRate: match.isWinner ? 1 : 0,
             avgKills: parseFloat(match.stats[StatsKey.Kills]) ?? 0,
             avgDeaths: parseFloat(match.stats[StatsKey.Deaths]) ?? 0,
@@ -480,10 +479,18 @@ export class Metrics {
             avgKr: parseFloat(match.stats[StatsKey.KillRoundRatio]) ?? 0,
           };
           // apply skill metrics updates
-          this._applyUpdates(add, players[player.nickname], 'overall', skillUpdates);
-          this._applyUpdates(add, players[player.nickname].maps, match.mapPick, skillUpdates);
-          this._applyUpdates(add, teams[faction], 'overall', skillUpdates);
-          this._applyUpdates(add, teams[faction].maps, match.mapPick, skillUpdates);
+          this._applyUpdates(add, players[player.nickname], 'overall', {
+            ...skillUpdates, matches: 1,
+          });
+          this._applyUpdates(add, players[player.nickname].maps, match.mapPick, {
+            ...skillUpdates, matches: 1,
+          });
+          this._applyUpdates(add, teams[faction], 'overall', {
+            ...skillUpdates, matches: 1 / team.roster.length
+          });
+          this._applyUpdates(add, teams[faction].maps, match.mapPick, {
+            ...skillUpdates, matches: 1 / team.roster.length
+          });
 
           // retrieve other metrics updates
           const otherUpdates: OtherMetricsModel = {
@@ -596,7 +603,6 @@ export class Metrics {
       // average overall metrics
       const overall = metrics.overall;
       this._applyUpdates(divide, metrics, 'overall', {
-        matches: overall.skillMatches ?? 1,
         winRate: overall.skillMatches ?? 1,
         avgKills: overall.skillMatches ?? 1,
         avgDeaths: overall.skillMatches ?? 1,
@@ -608,7 +614,6 @@ export class Metrics {
       const maps = metrics.maps;
       for (const [key, map] of Object.entries(maps)) {
         this._applyUpdates(divide, maps, key, {
-          matches: map.skillMatches ?? 1,
           winRate: map.skillMatches ?? 1,
           avgKills: map.skillMatches ?? 1,
           avgDeaths: map.skillMatches ?? 1,
