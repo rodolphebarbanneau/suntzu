@@ -9,7 +9,7 @@ const handleMutation = async (
   mutations: MutationRecord[],
   observer: MutationObserver,
 ) => {
-  // matchroom
+  // handle matchroom
   handleMatchroom();
 
   // observe shadow roots
