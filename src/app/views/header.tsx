@@ -12,8 +12,8 @@ export const Header = () => (
       <h1><a href="https://suntzu.gg" target="_blank" rel="noreferrer" title="Suntzu.gg">Suntzu</a></h1>
       <div style={{ margin: "5px 0 0 5px"}}>
         <Link
-          url="https://github.com/rodolphebarbanneau/suntzu"
-          title="Project's GitHub repository"
+          url="https://github.com/rodolphebarbanneau/suntzu/releases"
+          title="Project's GitHub releases"
           text={EXTENSION_VERSION}
         />
       </div>

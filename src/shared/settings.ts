@@ -3,7 +3,7 @@ export const DEBOUNCE_DELAY = 250;  // milliseconds
 
 /* Extension */
 export const EXTENSION_NAME = 'suntzu';
-export const EXTENSION_VERSION = '0.1.0-beta.1';
+export const EXTENSION_VERSION = import.meta.env.VITE_VERSION ?? '0.0.0';
 
 /* Faceit */
 export const FACEIT_API_BASE_URL = 'https://api.faceit.com';

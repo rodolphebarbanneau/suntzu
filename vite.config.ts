@@ -9,14 +9,18 @@ import { build, defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
-// read environment variable
-const env = {
-  bundle: process.env.BUNDLE === 'true',
-  outDir: process.env.OUT_DIR || 'dist/chrome',
-}
-
-// read project version
+// retrieve project package.json
 const project = JSON.parse(fs.readFileSync(path.resolve(__dirname, './package.json'), 'utf8'));
+
+// initialize environment variable defaults
+process.env = {
+  ...{
+    BUNDLE: 'false',
+    OUT_DIR: 'dist/chrome',
+    VERSION: project.version,
+  },
+  ...process.env,
+};
 
 /**
  * Retrieve the argument from the command line.
@@ -108,7 +112,7 @@ async function createExtension(
 
   // render manifest template
   let template = fs.readFileSync(target, 'utf-8');
-  template = template.replace('{{version}}', project.version);
+  template = template.replace('{{version}}', process.env.VERSION?.split('-')[0] ?? '0.0.0');
   fs.readdirSync(assets).forEach(file => {
     if (file.match(/^content.*\.js$/)) {
       template = template.replace('{{content}}', `assets/${file}`);
@@ -142,7 +146,7 @@ function createBundle(
     enforce: 'post',
     writeBundle() {
       // check if bundling is enabled
-      if (!env.bundle) return;
+      if (process.env.BUNDLE !== 'true') return;
 
       // create output directory if it does not exist
       if (!fs.existsSync(`${dist}/packages`)) {
@@ -190,8 +194,11 @@ export default defineConfig(async ({ command, mode }) => {
   // load environment variables
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
+  // set vite environment variables
+  process.env.VITE_VERSION = process.env.VERSION;
+
   // retrieve output directory
-  const outDir = getArgValue('outDir') || env.outDir;
+  const outDir = getArgValue('outDir') || process.env.OUT_DIR || '';
   const emptyOutDir = getArgValue('emptyOutDir') ?? true;
 
   // retrieve distribution and target browser directory
