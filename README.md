@@ -87,4 +87,5 @@ Just run `nx build suntzu` to build the application. The build artifacts will be
 
 ## Connect with us!
 
-[**Join the Discord community 🎯**](https://discord.gg/eXqmagTNrr)
+- [**Follow us on X**](https://x.com/suntzugg)
+- [**Join the Discord community 🎯**](https://discord.gg/eXqmagTNrr)
