@@ -7,7 +7,9 @@ export const MapSettings = () => (
       title="Map metrics"
       configKey="showMap"
     />
-    <SectionBody description="Display map metrics (matches, win rate, average kills, headshots, kills/death, and kills/round) for each map card in the matchroom." />
+    <SectionBody>
+      <p>Enable map metrics (matches, win rate, average kills, headshots, kills/death, and kills/round) for each map card in the matchroom.</p>
+    </SectionBody>
   </Section>
 );
 
@@ -19,6 +21,8 @@ export const PlayerSettings = () => (
       configKey="showPlayer"
       isDisabled={true}
     />
-    <SectionBody description="Display players metrics (matches, win rate, average kills, headshots, kills/death, and kills/round) for selected map in the matchroom." />
+    <SectionBody>
+      <p>Enable players metrics (matches, win rate, average kills, headshots, kills/death, and kills/round) for selected map in the matchroom.</p>
+    </SectionBody>
   </Section>
 );

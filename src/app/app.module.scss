@@ -10,25 +10,37 @@
 }
 
 .app > header {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 0px;
+  padding: 15px;
   border-bottom: 1px solid $color-bg-500;
 }
 
-.app > header h1 a {
+.app > header .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.app > header .logo {
+  min-height: 80px;
+  height: 80px;
+}
+
+.app > header .text {
+  display: flex;
+  margin-left: 20px;
+}
+
+.app > header .title {
   display: inline-block;
   text-decoration: none;
   color: $color-fg-300;
 }
 
-.app > header h1 a:hover {
+.app > header .title:hover {
   color: $color-faceit-red;
 }
 
-.app > header img {
-  min-height: 80px;
-  height: 80px;
+.app > header .version {
+  margin: 5px 0 0 5px;
 }

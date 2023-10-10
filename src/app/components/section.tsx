@@ -26,7 +26,7 @@ export const SectionHeader = <K extends keyof FeaturesConfiguration>(
 ) => {
   const [option, setOption] = useStorage(FEATURES_CONFIG, configKey);
   return (
-    <header>
+    <header className={styles['section-header']}>
       <h2>{title}</h2>
       {
         configKey !== undefined
@@ -45,6 +45,11 @@ export const SectionHeader = <K extends keyof FeaturesConfiguration>(
 };
 
 /* Section body */
-export const SectionBody = ({ description }: { description: string }) => (
-  <p>{description}</p>
+export const SectionBody = ({ children }: { children: ReactNode | ReactNode[] }) => (
+  <div className={styles['section-body']}>{children}</div>
+);
+
+/* Section footer */
+export const SectionFooter = ({ children }: { children: ReactNode | ReactNode[] }) => (
+  <div className={styles['section-footer']}>{children}</div>
 );
