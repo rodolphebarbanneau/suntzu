@@ -6,7 +6,7 @@
 	"permissions": ["cookies", "storage"],
   "host_permissions": ["https://*.faceit.com/*"],
   "background": {
-    "scripts": "{{service}}"
+    "scripts": ["{{service}}"]
   },
   "content_scripts": [
     {
