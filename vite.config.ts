@@ -154,7 +154,7 @@ function createBundle(
       }
 
       // create zip archive
-      const stream = fs.createWriteStream(`${dist}/packages/${browser}.zip`);
+      const stream = fs.createWriteStream(`${dist}/packages/${browser}.${process.env.VERSION}.zip`);
       const archive = archiver('zip', {
         zlib: { level: 9 } // set the compression level
       });
