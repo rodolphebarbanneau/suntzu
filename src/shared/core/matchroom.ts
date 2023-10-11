@@ -407,8 +407,25 @@ export class Matchroom {
       mapKeys.set(map.name, map.guid);
     });
 
-    // handle matchroom map
-    const matchroomMap = (map: Element | null | undefined): MatchroomMap | null | undefined => {
+    // get matchroom container
+    const getMatchroomContainer = (
+      element: HTMLElement | null | undefined,
+      index: number,
+    ): HTMLDivElement | null | undefined => {
+      // return if element is undefined
+      if (!element) return undefined;
+      // retrieve matchroom element
+      const children = element.querySelectorAll(':scope > div');
+      if (-index > children.length) return null;
+      if (-index > 0) return children[children.length + index] as HTMLDivElement;
+      if (+index > children.length - 1) return null;
+      return children[index] as HTMLDivElement;
+    };
+
+    // get matchroom map
+    const getMatchroomMap = (
+      map: HTMLElement | null | undefined,
+    ): MatchroomMap | null | undefined => {
       // return if map is undefined
       if (!map) return undefined;
       // retrieve matchroom map name
@@ -433,32 +450,26 @@ export class Matchroom {
     // retrieve the list of map elements testing each possible state.
     const wrapper = this.getInformationWrapper();
     const maps: MatchroomMap[] = [];
+    let container: HTMLDivElement | null | undefined;
     let map: MatchroomMap | null | undefined;
     // voting state
-    const container = (
-      wrapper
-        ?.lastElementChild
-        ?.lastElementChild
-      );
+    container = getMatchroomContainer(wrapper, -1);
+    container = getMatchroomContainer(container, -1);
     container?.childNodes.forEach((node) => {
-      map = matchroomMap(node as Element);
+      map = getMatchroomMap(node as HTMLElement);
       if (map) maps.push(map);
     });
     // configuring and ready state
-    map = matchroomMap(
-      wrapper
-        ?.lastElementChild
-        ?.lastElementChild
-        ?.lastElementChild
-    );
+    container = getMatchroomContainer(wrapper, -1);
+    container = getMatchroomContainer(container, -1);
+    container = getMatchroomContainer(container, -1);
+    map = getMatchroomMap(container);
     if (map) maps.push(map);
     // finished state
-    map = matchroomMap(
-      wrapper
-        ?.firstElementChild
-        ?.lastElementChild
-        ?.lastElementChild
-    );
+    container = getMatchroomContainer(wrapper, 0);
+    container = getMatchroomContainer(container, -1);
+    container = getMatchroomContainer(container, -1);
+    map = getMatchroomMap(container);
     if (map) maps.push(map);
 
     // return matchroom maps
