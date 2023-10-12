@@ -121,7 +121,7 @@ export class Component {
    */
   appendTo(element?: HTMLElement | null): Component {
     // retrieve target element
-    if (!this._feature.host) throw new Error('Feature host does not exist');
+    if (!this._feature?.host) throw new Error('Feature host does not exist');
     const target = element ?? this._feature.host;
     // append component to target element
     this._container.remove();
@@ -140,7 +140,7 @@ export class Component {
    */
   prependTo(element?: HTMLElement | null): Component {
     // retrieve target element
-    if (!this._feature.host) throw new Error('Feature host does not exist');
+    if (!this._feature?.host) throw new Error('Feature host does not exist');
     const target = element ?? this._feature.host;
     // prepend component to target element
     this._container.remove();
@@ -159,7 +159,7 @@ export class Component {
    */
   insertBefore(element?: HTMLElement | null): Component {
     // retrieve target element
-    if (!this._feature.host) throw new Error('Feature host does not exist');
+    if (!this._feature?.host) throw new Error('Feature host does not exist');
     const target = element ?? this._feature.host;
     // insert component before target element
     this._container.remove();
@@ -178,7 +178,7 @@ export class Component {
    */
   insertAfter(element?: HTMLElement | null): Component {
     // retrieve target element
-    if (!this._feature.host) throw new Error('Feature host does not exist');
+    if (!this._feature?.host) throw new Error('Feature host does not exist');
     const target = element ?? this._feature.host;
     // insert component after target element
     this._container.remove();
