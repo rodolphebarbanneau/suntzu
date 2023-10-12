@@ -36,7 +36,7 @@ export class Component {
   /* The component react node */
   private readonly _node: ReactNode;
 
-  /* The component host container */
+  /* The component host */
   private _host: HTMLElement | null | undefined;
 
   /* The component state */
@@ -104,7 +104,7 @@ export class Component {
     return this._node;
   }
 
-  /* Get the component host container */
+  /* Get the component host */
   get host(): HTMLElement | null | undefined {
     return this._host;
   }
@@ -119,16 +119,17 @@ export class Component {
    * @param element - The element to append the component to.
    * @returns The component.
    */
-  appendTo(element?: HTMLDivElement): Component {
+  appendTo(element?: HTMLElement | null): Component {
     // retrieve target element
-    const target = this._getTargetElement(element);
-    // check if target element is undefined
-    if (!target) return this;
+    if (!this._feature.host) throw new Error('Feature host does not exist');
+    const target = element ?? this._feature.host;
     // append component to target element
     this._container.remove();
     target.append(this._container);
     this._host = target;
     this._state |= ComponentState.ATTACHED;
+    // check component container
+    this._checkContainer();
     return this;
   }
 
@@ -137,16 +138,17 @@ export class Component {
    * @param element - The element to prepend the component to.
    * @returns The component.
    */
-  prependTo(element?: HTMLDivElement): Component {
+  prependTo(element?: HTMLElement | null): Component {
     // retrieve target element
-    const target = this._getTargetElement(element);
-    // check if target element is undefined
-    if (!target) return this;
+    if (!this._feature.host) throw new Error('Feature host does not exist');
+    const target = element ?? this._feature.host;
     // prepend component to target element
     this._container.remove();
     target.prepend(this._container);
     this._host = target;
     this._state |= ComponentState.ATTACHED;
+    // check component container
+    this._checkContainer();
     return this;
   }
 
@@ -155,16 +157,40 @@ export class Component {
    * @param element - The element before which the component will be positioned.
    * @returns The component.
    */
-  insert(element?: HTMLDivElement): Component {
+  insertBefore(element?: HTMLElement | null): Component {
     // retrieve target element
-    const target = this._getTargetElement(element);
-    // check if target element is undefined
-    if (!target) return this;
+    if (!this._feature.host) throw new Error('Feature host does not exist');
+    const target = element ?? this._feature.host;
     // insert component before target element
     this._container.remove();
-    target.parentNode?.insertBefore(this._container, target);
-    this._host = target;
+    target.parentElement?.insertBefore(this._container, target);
+    this._host = target.parentElement;
     this._state |= ComponentState.ATTACHED;
+    // check component container
+    this._checkContainer();
+    return this;
+  }
+
+  /**
+   * Insert the component container after the element.
+   * @param element - The element after which the component will be positioned.
+   * @returns The component.
+   */
+  insertAfter(element?: HTMLElement | null): Component {
+    // retrieve target element
+    if (!this._feature.host) throw new Error('Feature host does not exist');
+    const target = element ?? this._feature.host;
+    // insert component after target element
+    this._container.remove();
+    if (target.nextSibling) {
+      target.parentElement?.insertBefore(this._container, target.nextSibling);
+    } else {
+      target.parentElement?.appendChild(this._container);
+    }
+    this._host = target.parentElement;
+    this._state |= ComponentState.ATTACHED;
+    // check component container
+    this._checkContainer();
     return this;
   }
 
@@ -173,7 +199,6 @@ export class Component {
    * @returns The component.
    */
   remove(): Component {
-    this._root.unmount();
     this._container.remove();
     this._host = null;
     this._state &= ~ComponentState.ATTACHED;
@@ -209,21 +234,13 @@ export class Component {
   }
 
   /**
-   * Get the target element, either the component container or the element if provided.
-   * @param element - The element to get the target from.
-   * @returns The target element.
+   * Check if the component container is a child of the feature container.
+   * @throws An error if the component container is not a child of the feature container.
    */
-  private _getTargetElement(element?: HTMLDivElement): HTMLDivElement | undefined {
-    // check if feature container is not undefined
-    const container = this._feature.container;
-    if (!container) return undefined;
-    // check if element is a child of the feature container
-    const target = element ?? container;
-    if (!this._feature.container.contains(target)) {
-      throw new Error(
-        'Cannot target an element that is not a child of the feature container'
-      );
+  private _checkContainer(): void {
+    if (!this._feature.host?.contains(this._container)) {
+      this.remove();
+      throw new Error('Component container is not a child of the feature host');
     }
-    return target;
   }
 }

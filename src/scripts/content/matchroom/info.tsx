@@ -92,7 +92,7 @@ const InfoComponent = ({ matchroom }: { matchroom: Matchroom }) => {
 /* Info feature */
 export const InfoFeature = (matchroom: Matchroom) => new Feature({
   name: 'info',
-  container: matchroom.getInformation(),
+  host: matchroom.getInformation(),
   initialize: (feature) => {
     // add component
     feature.addComponent({

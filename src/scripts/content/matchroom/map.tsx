@@ -180,16 +180,15 @@ const SummaryComponent = (
 /* Map feature */
 export const MapFeature = (matchroom: Matchroom, map: MatchroomMap) => new Feature({
   name: `map-${map.id}`,
-  container: map.container,
+  host: map.container,
   initialize: (feature) => {
     // retrieve matchroom teams
     const teams = matchroom.getTeams();
     // add summary component
-    const slot = feature.container?.querySelector('.endSlot');
     feature.addComponent({
       name: `summary-${map.id}`,
       node: <SummaryComponent matchroom={matchroom} teams={teams} map={map} />,
-    })?.insert(slot as HTMLDivElement | undefined);
+    })?.insertAfter(feature.host?.querySelector('.middleSlot'));
     // add metrics component
     feature.addComponent({
       name: `metrics-${map.id}`,
@@ -201,7 +200,15 @@ export const MapFeature = (matchroom: Matchroom, map: MatchroomMap) => new Featu
       node: <LayoutComponent matchroom={matchroom} teams={teams} map={map} />,
     })?.prependTo();
   },
-  onChange: (feature) => {
-    feature.unmount();
+  update: (feature) => {
+    // retrieve map title span element
+    const title = feature.host?.querySelector('div.middleSlot > span');
+    if (!(title instanceof HTMLSpanElement)) return;
+    // retrieve map title style
+    const style = window.getComputedStyle(title);
+    if (style.color !== 'rgb(0, 0, 0)' && style.color !== 'rgb(255, 255, 255)') {
+      // unmount if title color is not black or white (i.e. banned)
+      feature.unmount();
+    }
   },
 });

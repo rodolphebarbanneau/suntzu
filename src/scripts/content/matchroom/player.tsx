@@ -4,6 +4,6 @@ import { Feature } from 'src/shared/core';
 /* Player feature */
 export const PlayerFeature = (matchroom: Matchroom, player: MatchroomPlayer) => new Feature({
   name: `player-${player.id}`,
-  container: player.container,
+  host: player.container,
   initialize: (feature) => {},
 });

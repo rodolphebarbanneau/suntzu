@@ -11,8 +11,8 @@ export class Feature {
   /* The feature name */
   private readonly _name: string;
 
-  /* The feature container */
-  private readonly _container: HTMLDivElement | null | undefined;
+  /* The feature host */
+  private readonly _host: HTMLElement | null | undefined;
 
   /* The feature components */
   private readonly _components = new Map<string, Component>();
@@ -20,32 +20,38 @@ export class Feature {
   /**
    * Create a feature.
    * @param name - The feature name.
+   * @param host - The feature host.
    * @param initialize - The feature initialization function.
+   * @param update - The feature update function (optional).
    */
   constructor(
-    { name, container, initialize, onChange }: {
+    { name, host, initialize, update }: {
       name: string;
-      container: HTMLDivElement | null | undefined;
+      host: HTMLElement | null | undefined;
       initialize: (feature: Feature) => void;
-      onChange?: (feature: Feature) => void;
+      update?: (feature: Feature, mutation?: MutationRecord) => void;
     },
   ) {
-    // initialize name and container
+    // initialize
     this._name = name;
-    this._container = container;
-    // check container
-    if (!container) return;
-    // handle on class change event
-    if (onChange) {
+    if (host) {
+      this._host = host;
+      initialize(this);
+    } else {
+      return;
+    }
+    // initialize on change
+    if (update) {
+      // execute on change with no mutation
+      update(this);
+      // handle on change with mutation
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'class') onChange(this);
+          update(this, mutation);
         });
       });
-      observer.observe(container, { attributes: true, childList: true, subtree: true });
+      observer.observe(host, { attributes: true, childList: true, subtree: true });
     }
-    // initialize
-    initialize(this);
   }
 
   /* Get the feature name */
@@ -53,9 +59,9 @@ export class Feature {
     return this._name;
   }
 
-  /* Get the feature container */
-  get container(): HTMLDivElement | null | undefined {
-    return this._container;
+  /* Get the feature host */
+  get host(): HTMLElement | null | undefined {
+    return this._host;
   }
 
   /* Get the feature components */
@@ -99,10 +105,10 @@ export class Feature {
       if (component.feature !== this) {
         throw new Error('Cannot extend component from another feature');
       }
-      // check if component is attached to the feature container
+      // check if component is attached to the feature host
       if (component.state & ComponentState.ATTACHED) {
-        if (!this._container?.contains(component.container)) {
-          throw new Error('Cannot extend component that is not attached to the feature container');
+        if (!this._host?.contains(component.container)) {
+          throw new Error('Cannot extend component that is not attached to the feature host');
         }
       }
       // add component to feature
