@@ -185,10 +185,11 @@ export const MapFeature = (matchroom: Matchroom, map: MatchroomMap) => new Featu
     // retrieve matchroom teams
     const teams = matchroom.getTeams();
     // add summary component
+    const slot = feature.container?.querySelector('.endSlot');
     feature.addComponent({
       name: `summary-${map.id}`,
       node: <SummaryComponent matchroom={matchroom} teams={teams} map={map} />,
-    })?.appendTo(feature.container?.children[0] as HTMLDivElement | undefined);
+    })?.insert(slot as HTMLDivElement | undefined);
     // add metrics component
     feature.addComponent({
       name: `metrics-${map.id}`,

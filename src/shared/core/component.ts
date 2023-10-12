@@ -115,49 +115,55 @@ export class Component {
   }
 
   /**
-   * Append the component container.
+   * Insert component container after the last child of element.
    * @param element - The element to append the component to.
    * @returns The component.
    */
   appendTo(element?: HTMLDivElement): Component {
-    // check if feature container is not undefined
-    const container = this._feature.container;
-    if (!container) return this;
-    // check if element is a child of the feature container
-    const target = element ?? container;
-    if (!this._feature.container.contains(target)) {
-      throw new Error(
-        'Cannot append component to an element that is not a child of the feature container'
-      );
-    }
-    // append component to element
+    // retrieve target element
+    const target = this._getTargetElement(element);
+    // check if target element is undefined
+    if (!target) return this;
+    // append component to target element
     this._container.remove();
     target.append(this._container);
-    this._host = element;
+    this._host = target;
     this._state |= ComponentState.ATTACHED;
     return this;
   }
 
   /**
-   * Prepend the component container.
+   * Insert component container before the first child of element.
    * @param element - The element to prepend the component to.
    * @returns The component.
    */
   prependTo(element?: HTMLDivElement): Component {
-    // check if feature container is not undefined
-    const container = this._feature.container;
-    if (!container) return this;
-    // check if target element is a child of the feature container
-    const target = element ?? container;
-    if (!this._feature.container.contains(target)) {
-      throw new Error(
-        'Cannot prepend component to an element that is not a child of the feature container'
-      );
-    }
-    // prepend component to element
+    // retrieve target element
+    const target = this._getTargetElement(element);
+    // check if target element is undefined
+    if (!target) return this;
+    // prepend component to target element
     this._container.remove();
     target.prepend(this._container);
-    this._host = element;
+    this._host = target;
+    this._state |= ComponentState.ATTACHED;
+    return this;
+  }
+
+  /**
+   * Insert the component container before the element.
+   * @param element - The element before which the component will be positioned.
+   * @returns The component.
+   */
+  insert(element?: HTMLDivElement): Component {
+    // retrieve target element
+    const target = this._getTargetElement(element);
+    // check if target element is undefined
+    if (!target) return this;
+    // insert component before target element
+    this._container.remove();
+    target.parentNode?.insertBefore(this._container, target);
+    this._host = target;
     this._state |= ComponentState.ATTACHED;
     return this;
   }
@@ -200,5 +206,24 @@ export class Component {
    */
   isRendered(): boolean {
     return document.contains(this._container);
+  }
+
+  /**
+   * Get the target element, either the component container or the element if provided.
+   * @param element - The element to get the target from.
+   * @returns The target element.
+   */
+  private _getTargetElement(element?: HTMLDivElement): HTMLDivElement | undefined {
+    // check if feature container is not undefined
+    const container = this._feature.container;
+    if (!container) return undefined;
+    // check if element is a child of the feature container
+    const target = element ?? container;
+    if (!this._feature.container.contains(target)) {
+      throw new Error(
+        'Cannot target an element that is not a child of the feature container'
+      );
+    }
+    return target;
   }
 }
