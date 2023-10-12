@@ -112,8 +112,8 @@ const MetricsComponent = (
           records={[
             {
               title: 'Matches',
-              main: { text: matches[0].toFixed(1), style: { group: 'left', showIcon: true } },
-              sub: { text: matches[1].toFixed(1), style: { group: 'right', showIcon: true } },
+              main: { text: matches[0].toFixed(1), style: { group: teams[0].side, showIcon: true } },
+              sub: { text: matches[1].toFixed(1), style: { group: teams[1].side, showIcon: true } },
             },
             {
               title: 'Win rate',

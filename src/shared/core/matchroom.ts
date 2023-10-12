@@ -52,6 +52,10 @@ export interface MatchroomTeam {
   readonly id: string;
   /* The matchroom team name */
   readonly name: string;
+  /* The matchroom team container */
+  readonly container: HTMLDivElement;
+  /* The matchroom team side */
+  readonly side: 'left' | 'right';
 }
 
 /**
@@ -294,8 +298,7 @@ export class Matchroom {
    * @returns The document matchroom information.
    */
   getInformation(): HTMLDivElement | null | undefined {
-    const container = this.getContainer();
-    return container?.querySelector('[name="info"]');
+    return this.getContainer()?.querySelector('[name="info"]');
   }
 
   /**
@@ -377,23 +380,32 @@ export class Matchroom {
    * @param sort - Whether to sort the teams with the matchroom user team first. Defaults to false.
    * @returns The list of teams in the matchroom document.
    */
-  getTeams(sort = false): MatchroomTeam[] {
-    // return raw matchroom teams if not sorted
-    if (!sort) return Object.entries(this._match?.teams ?? {}).map(([key, team]) => ({
+  getTeams(sort = true): MatchroomTeam[] {
+    // retrieve matchroom teams
+    const teams = Object.entries(this._match?.teams ?? {}).map(
+      ([key, team], index,) => [key, {
+        side: index === 0 ? 'left' : 'right',
+        container: this.getContainer()?.querySelector(`[name="roster${index + 1}"]`),
+        ...team,
+      }] as const,
+    ).filter(([, team]) => team.container);
+    // if no sort, return raw matchroom teams
+    if (!sort) return teams.map(([key, team]) => ({
       id: key,
       name: team.name,
+      container: team.container as HTMLDivElement,
+      side: team.side,
     }));
-
-    // retrieve teams sorted with matchroom user team first
-    const teams = Object.entries(this._match?.teams ?? {}).sort((a, b) => {
+    // if user is found within a team, sort the teams with the user first
+    return teams.sort((a, b) => {
       return (a[1].roster.some((player) => player.id === this._user?.id) ? 0 : 1)
         - (b[1].roster.some((player) => player.id === this._user?.id) ? 0 : 1);
-    });
-    // return matchroom teams
-    return teams.map(([key, team]) => ({
-       id: key,
-       name: team.name,
-    }));
+    }).map(([key, team]) => ({
+      id: key,
+      name: team.name,
+      container: team.container as HTMLDivElement,
+      side: team.side,
+   }))
   }
 
   /**
