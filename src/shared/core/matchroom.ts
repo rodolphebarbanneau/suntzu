@@ -77,7 +77,7 @@ export interface MatchroomPlayer {
 @storageOptions({ name: 'matchroom', sync: false })
 export class MatchroomOptions extends StorageNamespace implements MetricsOptions {
   /* The matchroom matches option */
-  @storageRecord matches = MatchesOption.Maximum20;
+  @storageRecord matches = MatchesOption.Maximum100;
   /* The matchroom players option */
   @storageRecord players = PlayersOption.Any;
   /* The matchroom time span option */
