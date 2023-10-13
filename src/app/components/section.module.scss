@@ -13,12 +13,6 @@
   border: none;
 }
 
-.section > p {
-  color: $color-fg-900;
-  margin-bottom: 8px;
-  font-size: .8rem;
-}
-
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -28,10 +22,16 @@
 
 .section-body {
   display: flex;
+  margin-bottom: 8px;
+}
+
+.section-body p {
+  color: $color-fg-900;
+  font-size: .8rem;
 }
 
 .section-footer {
   display: flex;
   justify-content: space-between;
-  margin: 20px 0 10px 0;
+  margin: 10px 0;
 }
