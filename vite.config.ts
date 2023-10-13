@@ -9,7 +9,7 @@ import { build, defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
-// retrieve project package.json
+// retrieve package.json
 const project = JSON.parse(fs.readFileSync(path.resolve(__dirname, './package.json'), 'utf8'));
 
 // initialize environment variable defaults
@@ -112,7 +112,13 @@ async function createExtension(
 
   // render manifest template
   let template = fs.readFileSync(target, 'utf-8');
+  // handle version
   template = template.replace('{{version}}', process.env.VERSION?.split('-')[0] ?? '0.0.0');
+  // handle package manifest
+  Object.entries(project.manifest).forEach(([key, value]) => {
+    template = template.replace(`{{${key}}}`, value as string);
+  });
+  // handle ontent and service scripts
   fs.readdirSync(assets).forEach(file => {
     if (file.match(/^content.*\.js$/)) {
       template = template.replace('{{content}}', `assets/${file}`);
@@ -121,6 +127,8 @@ async function createExtension(
       template = template.replace('{{service}}', `assets/${file}`);
     }
   });
+
+  // write manifest file
   fs.writeFileSync(target, template);
 }
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Suntzu (FACEIT matchmaking insights)",
-  "description": "Enhancing FACEIT experience with detailed matchmaking insights such as opponent's map related statistics and drop probability.",
+  "name": "{{name}}",
+  "description": "{{description}}",
   "version": "{{version}}",
 	"permissions": ["cookies", "storage"],
   "host_permissions": ["https://*.faceit.com/*"],
@@ -11,7 +11,7 @@
   "content_scripts": [
     {
       "js": ["{{content}}"],
-      "matches": ["https://www.faceit.com/*"],
+      "matches": ["https://*.faceit.com/*"],
       "run_at": "document_end"
     }
   ],
@@ -22,7 +22,7 @@
       "48": "images/icon-48.png",
       "128": "images/icon-128.png"
     },
-    "default_title": "Suntzu (settings)",
+    "default_title": "{{title}}",
     "default_popup": "index.html"
   },
   "icons": {
@@ -33,7 +33,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "{3b97fb03-3e94-42f0-8718-68887eec07ed}",
+      "id": "{{{id}}}",
       "strict_min_version": "109.0"
     }
   }
