@@ -3,6 +3,12 @@
   "version": "0.1.0-beta.4",
   "license": "GPL-3.0",
   "private": false,
+  "manifest": {
+    "id": "b847eafe-7751-4c9b-b25a-4b54004805ae",
+    "name": "Suntzu (FACEIT matchmaking insights)",
+    "description": "Enhancing FACEIT experience with detailed matchmaking insights such as team opponent's map and player related statistics.",
+    "title": "Suntzu (settings)"
+  },
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
@@ -31,6 +37,10 @@
     {
       "name": "Lucas Barbanneau",
       "email": "lucas.barbanneau@gmail.com"
+    },
+    {
+      "name": "Andreas Berger",
+      "email": "andreas.brg@icloud.com"
     }
   ],
   "repository": {
