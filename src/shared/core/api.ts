@@ -34,7 +34,7 @@ export interface ApiRequest {
   /* The request method */
   method: 'GET';
   /* The request endpoint */
-  endpoint: URL;
+  endpoint: string;
   /* The request headers */
   headers: Record<string, string>;
 }
@@ -157,7 +157,7 @@ export class Api {
     const request: ApiRequest = {
       method: 'GET',
       headers,
-      endpoint,
+      endpoint: endpoint.toString(),
     }
 
     // fetch data
@@ -206,6 +206,8 @@ export class Api {
       // log and return null if error
       if (error instanceof FetchError) {
         this._error = error;
+        // eslint-disable-next-line no-console
+        console.log(error)
       }
       else {
         // eslint-disable-next-line no-console
