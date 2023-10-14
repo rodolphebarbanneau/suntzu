@@ -1,20 +1,11 @@
 {
   "manifest_version": 3,
   "name": "{{name}}",
-  "description": "{{description}}",
+  "short_name": "{{short_name}}",
   "version": "{{version}}",
-	"permissions": ["cookies", "storage"],
-  "host_permissions": ["https://*.faceit.com/*"],
-  "background": {
-    "service_worker": "{{service}}"
-  },
-  "content_scripts": [
-    {
-      "js": ["{{content}}"],
-      "matches": ["https://*.faceit.com/*"],
-      "run_at": "document_end"
-    }
-  ],
+  "description": "{{description}}",
+  "homepage_url": "{{url}}",
+  "author": "{{author}}",
   "action": {
     "default_icon": {
       "16": "images/icon-16.png",
@@ -22,7 +13,7 @@
       "48": "images/icon-48.png",
       "128": "images/icon-128.png"
     },
-    "default_title": "{{title}}",
+    "default_title": "{{popup_title}}",
     "default_popup": "index.html"
   },
   "icons": {
@@ -30,5 +21,22 @@
     "32": "images/icon-32.png",
     "48": "images/icon-48.png",
     "128": "images/icon-128.png"
-  }
+  },
+	"permissions": [
+    "cookies",
+    "notifications",
+    "storage"
+  ],
+  "host_permissions": ["*://*.faceit.com/*"],
+  "background": {
+    "service_worker": "{{service}}"
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": ["*://*.faceit.com/*"],
+      "js": ["{{content}}"]
+    }
+  ],
+  "minimum_chrome_version": "107"
 }

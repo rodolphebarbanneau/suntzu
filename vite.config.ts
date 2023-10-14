@@ -112,14 +112,14 @@ async function createExtension(
 
   // render manifest template
   let template = fs.readFileSync(target, 'utf-8');
-  // handle version
+  // handle package version
   template = template.replace('{{version}}', process.env.VERSION?.split('-')[0] ?? '0.0.0');
   // handle package manifest
   Object.entries(project.manifest).forEach(([key, value]) => {
     template = template.replace(`{{${key}}}`, value as string);
   });
-  // handle ontent and service scripts
-  fs.readdirSync(assets).forEach(file => {
+  // handle content and service scripts paths
+  fs.readdirSync(assets).forEach((file) => {
     if (file.match(/^content.*\.js$/)) {
       template = template.replace('{{content}}', `assets/${file}`);
     }
