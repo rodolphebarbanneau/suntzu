@@ -1,0 +1,18 @@
+Elevate your game on FACEIT with SUNTZU Matchmaking Insights – Adopted by players across the globe, this extension supercharges your FACEIT match rooms with enhanced insights and customizable stats.
+
+
+☆ Highlights ☆
+- Advanced Map Stats: Get an edge by viewing team statistics for each map directly in match rooms.
+- Dynamic Player Insights: Dive into player global and map statistics for a better read on individual and team performance (coming soon).
+- Custom Configurations: Tailor the extension to show stats based on your chosen parameters, control the number of matches, time scale, and player constraints.
+
+Every feature is designed to be configurable, ensuring a personalized experience.
+
+
+☆ Connect with Us ☆
+- Twitter: https://x.com/suntzugg
+- GitHub: https://github.com/rodolphebarbanneau/suntzu
+- Discord: https://discord.gg/eXqmagTNrr
+
+
+SUNTZU is independently developed and, while crafted for FACEIT enthusiasts, is not officially endorsed by or affiliated with FACEIT.

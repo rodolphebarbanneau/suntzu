@@ -1,0 +1,5 @@
+The extension utilizes cookies to maintain session state with the FACEIT platform. Accessing these cookies programmatically allows for more efficient data retrieval and ensures consistent user experience across sessions. We strictly adhere to best practices, ensuring that only relevant cookies are accessed and no personal data is stored or processed.
+
+The extensions employs the Chrome Storage API for persisting user preferences and caching relevant data. This ensures that users don't need to reconfigure their settings on every session and allows for faster data access, minimizing redundant network requests and enhancing overall extension performance.
+
+To ensure the extension can interface effectively with the FACEIT platform and any associated domains for data retrieval, we require host permissions. This grants the extension flexibility to request and interact with necessary resources across the web, ensuring optimal functionality and responsiveness. All interactions are done securely, adhering to CORS and content security policies.
