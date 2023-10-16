@@ -419,70 +419,28 @@ export class Matchroom {
       mapKeys.set(map.name, map.guid);
     });
 
-    // get matchroom container
-    const getMatchroomContainer = (
-      element: HTMLElement | null | undefined,
-      index: number,
-    ): HTMLDivElement | null | undefined => {
-      // return if element is undefined
-      if (!element) return undefined;
-      // retrieve matchroom element
-      const children = element.querySelectorAll(':scope > div');
-      if (-index > children.length) return null;
-      if (-index > 0) return children[children.length + index] as HTMLDivElement;
-      if (+index > children.length - 1) return null;
-      return children[index] as HTMLDivElement;
-    };
-
-    // get matchroom map
-    const getMatchroomMap = (
-      map: HTMLElement | null | undefined,
-    ): MatchroomMap | null | undefined => {
-      // return if map is undefined
-      if (!map) return undefined;
-      // retrieve matchroom map name
-      const span = map.querySelector('div > div > div > span');
-      const name = span?.textContent ?? '';
-      const key = mapKeys.get(name);
-      // return if span, name, or key is undefined
-      if (!span || !name || !key) return null;
-      // return matchroom map
-      return {
-        id: key,
-        name: name,
-        container: (
-          span
-            ?.parentElement
-            ?.parentElement
-            ?.parentElement
-        ) as HTMLDivElement,
-      }
-    };
-
-    // retrieve the list of map elements testing each possible state.
+    // retrieve matchroom maps
     const wrapper = this.getInformationWrapper();
     const maps: MatchroomMap[] = [];
-    let container: HTMLDivElement | null | undefined;
-    let map: MatchroomMap | null | undefined;
-    // voting state
-    container = getMatchroomContainer(wrapper, -1);
-    container = getMatchroomContainer(container, -1);
-    container?.childNodes.forEach((node) => {
-      map = getMatchroomMap(node as HTMLElement);
-      if (map) maps.push(map);
+    const thumbnails = wrapper?.querySelectorAll('div[src*="/third_party/"]') ?? [];
+    thumbnails.forEach((thumbnail) => {
+      // retrieve matchroom map container
+      const container = thumbnail
+        ?.parentElement
+        ?.parentElement
+        ?.parentElement as HTMLDivElement;
+      // retrieve matchroom map name
+      const name = container.querySelector('span')?.textContent ?? '';
+      const key = mapKeys.get(name);
+      // add matchroom map
+      if (name && key) {
+        maps.push({
+          id: key,
+          name: name,
+          container,
+        });
+      }
     });
-    // configuring and ready state
-    container = getMatchroomContainer(wrapper, -1);
-    container = getMatchroomContainer(container, -1);
-    container = getMatchroomContainer(container, -1);
-    map = getMatchroomMap(container);
-    if (map) maps.push(map);
-    // finished state
-    container = getMatchroomContainer(wrapper, 0);
-    container = getMatchroomContainer(container, -1);
-    container = getMatchroomContainer(container, -1);
-    map = getMatchroomMap(container);
-    if (map) maps.push(map);
 
     // return matchroom maps
     return maps;
