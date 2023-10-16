@@ -23,10 +23,10 @@
 
 | Browser | Status | Marketplace | Docs for developpers |
 | ------- | ------ | ----------- | ------------- |
-| Chrome | ✅ | TBA 😓 | [Getting Started ⇲](https://developer.chrome.com/docs/extensions/mv3/getstarted) |
-| Edge _(chrome)_ | ✅ | TBA 😓 | [Getting Started ⇲](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-started/part1-simple-extension?tabs=v3) |
-| Opera _(chrome)_ | ✅ | TBA 😓 | [Getting Started ⇲](https://dev.opera.com/extensions/) |
-| Firefox | ✅ | TBA 😓 | [Getting Started ⇲](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_first_WebExtension) |
+| Chrome | ✅ | [🛒 ⇲](https://chrome.google.com/webstore/detail/suntzu-faceit-matchmaking/kjjbihoclddloccfhbeioidjfhkanblm) | [Getting Started ⇲](https://developer.chrome.com/docs/extensions/mv3/getstarted) |
+| Edge _(chrome)_ | ✅ | [🛒 ⇲](https://chrome.google.com/webstore/detail/suntzu-faceit-matchmaking/kjjbihoclddloccfhbeioidjfhkanblm) | [Getting Started ⇲](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-started/part1-simple-extension?tabs=v3) |
+| Opera _(chrome)_ | ✅ | [🛒 ⇲](https://chrome.google.com/webstore/detail/suntzu-faceit-matchmaking/kjjbihoclddloccfhbeioidjfhkanblm) | [Getting Started ⇲](https://dev.opera.com/extensions/) |
+| Firefox | ✅ | [🛒 ⇲](https://addons.mozilla.org/en-US/firefox/addon/suntzu) | [Getting Started ⇲](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_first_WebExtension) |
 
 The extension distribution will generate a folder for the target browser with the following structure:
 ```
