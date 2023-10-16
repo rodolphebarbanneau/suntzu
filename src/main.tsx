@@ -10,7 +10,7 @@ const root = createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-/* Render */
+/* Render popup */
 root.render(
   <StrictMode>
     <App />
