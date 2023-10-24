@@ -21,8 +21,8 @@
 
 ✨ Enhancing [FACEIT](https://www.faceit.com) experience with detailed matchmaking insights.
 
-| Browser | Status | Marketplace | Docs for developpers |
-| ------- | ------ | ----------- | ------------- |
+| Browser | Status | Web store | Docs for developpers |
+| ------- | ------ | --------- | -------------------- |
 | Chrome | ✅ | [🛒 ⇲](https://chrome.google.com/webstore/detail/suntzu-faceit-matchmaking/kjjbihoclddloccfhbeioidjfhkanblm) | [Getting Started ⇲](https://developer.chrome.com/docs/extensions/mv3/getstarted) |
 | Edge _(chrome)_ | ✅ | [🛒 ⇲](https://chrome.google.com/webstore/detail/suntzu-faceit-matchmaking/kjjbihoclddloccfhbeioidjfhkanblm) | [Getting Started ⇲](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-started/part1-simple-extension?tabs=v3) |
 | Opera _(chrome)_ | ✅ | [🛒 ⇲](https://chrome.google.com/webstore/detail/suntzu-faceit-matchmaking/kjjbihoclddloccfhbeioidjfhkanblm) | [Getting Started ⇲](https://dev.opera.com/extensions/) |
@@ -89,3 +89,4 @@ Just run `nx build suntzu` to build the application. The build artifacts will be
 
 - [**Follow us on X**](https://x.com/suntzugg)
 - [**Join the Discord community 🎯**](https://discord.gg/eXqmagTNrr)
+- [**Have fun on Reddit 🎮**](https://www.reddit.com/r/suntzugg)
